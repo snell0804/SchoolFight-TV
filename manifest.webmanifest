@@ -1,0 +1,12 @@
+{
+  "name": "海星國小 大亂鬥 (SchoolFight)",
+  "short_name": "海星國小大亂鬥",
+  "description": "呆呆伶 × 超級帆 · 海星國小／阿強國小／冬花國小 三校大亂鬥 2.5D 橫向卷軸清版動作遊戲",
+  "start_url": "./?tv=1",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#080612",
+  "theme_color": "#151224",
+  "categories": ["games", "entertainment"]
+}

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>海星國小 大亂鬥 | 橫向卷軸清版動作網頁遊戲</title>
+  <meta name="description" content="海星國小 大亂鬥（SchoolFight）— 呆呆伶、超級帆橫掃海星國小、阿強國小、冬花國小三大關卡，支援遊戲手把與動作自訂。" />
+  <meta name="theme-color" content="#151224" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="data:," />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="arcade-shell">
+    <header class="top-bar">
+      <div class="brand">
+        <h1>海星國小 大亂鬥</h1>
+        <span class="badge-res">呆呆伶 × 超級帆 · 三校大亂鬥</span>
+      </div>
+      <div class="toolbar">
+        <button id="btnGear" class="btn gear-btn" title="開啟齒輪設定區：檢視/微調各角色連幀動畫、按鍵綁定或新增動作上傳">⚙️ 動作與按鍵設定</button>
+        <button id="btnGamepad" class="btn gamepad-btn" title="開啟遊戲手把按鍵對應設定與即時訊號測試">🎮 手把設定</button>
+        <button id="btnBgm" class="btn active" title="切換復古街機背景音樂">🎵 BGM：開</button>
+        <button id="btnSfx" class="btn active" title="切換戰鬥音效">🔊 音效：開</button>
+        <button id="btnTouch" class="btn" title="顯示/隱藏虛擬搖桿">🕹️ 虛擬按鍵</button>
+        <button id="btnSelectHero" class="btn" title="回到開機選擇主角與關卡畫面">🎭 選角 / 選關</button>
+        <button id="btnFullscreen" class="btn" title="切換電視 / 大螢幕全螢幕模式">📺 全螢幕</button>
+        <button id="btnRestart" class="btn" title="重新開始關卡">↻ 重玩</button>
+      </div>
+    </header>
+
+    <main class="viewport-frame">
+      <canvas id="gameCanvas" width="1024" height="512" tabindex="0"></canvas>
+    </main>
+
+    <section class="controls-bar" aria-label="操作說明">
+      <div id="controlsLegend" class="key-groups"></div>
+      <div id="statusReadout">STAGE 1 · 海星國小 · 準備開戰</div>
+    </section>
+
+    <section id="touchPad" class="touch-pad" aria-label="虛擬控制器">
+      <div class="dpad">
+        <div></div>
+        <button class="pad-btn" data-key="ArrowUp">▲</button>
+        <div></div>
+        <button class="pad-btn" data-key="ArrowLeft">◀</button>
+        <div></div>
+        <button class="pad-btn" data-key="ArrowRight">▶</button>
+        <div></div>
+        <button class="pad-btn" data-key="ArrowDown">▼</button>
+        <div></div>
+      </div>
+      <div class="action-pads">
+        <button class="act-btn atk" data-action="lightAttack"><span>輕攻</span><small>Num4</small></button>
+        <button class="act-btn atk" data-action="heavyAttack"><span>重攻</span><small>Num5</small></button>
+        <button class="act-btn sp" data-action="special"><span>能量砲</span><small>Num0</small></button>
+        <button class="act-btn jmp" data-action="dash"><span>瞬刺</span><small>Shift</small></button>
+      </div>
+    </section>
+
+    <!-- 🎮 Gamepad Controller Settings Page -->
+    <section id="gamepadPanel" class="gamepad-panel" aria-label="遊戲手把按鍵設定頁面">
+      <div class="studio-top">
+        <div>
+          <h2>🎮 遊戲手把按鍵設定頁面｜Xbox · PlayStation · Switch Pro · 街機搖桿</h2>
+          <p>接上手把並按任意鍵即可自動偵測。點擊右側任一動作按鈕再按下手把按鍵即可立即改綁，支援左搖桿移動、十字鍵連按跑步與戰鬥震動回饋！</p>
+        </div>
+        <div class="studio-actions">
+          <button id="btnGpPresetStd" class="btn" title="套用標準 Xbox / PS 動作遊戲配置">🎯 標準配置</button>
+          <button id="btnGpPresetArc" class="btn" title="套用街機格鬥六鍵配置">🕹️ 街機配置</button>
+          <button id="btnGpReset" class="btn">↺ 恢復預設</button>
+          <button id="btnCloseGamepad" class="btn">✕ 收合手把設定</button>
+        </div>
+      </div>
+
+      <div id="gpStatusBar" class="gp-status-bar">
+        <span id="gpStatusDot" class="gp-dot"></span>
+        <span id="gpStatusText">尚未偵測到手把 — 請插入 USB 或連接藍牙手把，並按下手把任意按鍵喚醒瀏覽器偵測</span>
+      </div>
+
+      <div class="gp-layout">
+        <!-- Left: Live Visual Gamepad Monitor & Analog/Rumble Options -->
+        <div class="gp-monitor">
+          <div class="gp-monitor-title">即時手把訊號測試器（Live Monitor）</div>
+          <div class="gp-diagram">
+            <div class="gp-shoulders">
+              <span class="gp-chip" data-gp-btn="6">LT / L2</span>
+              <span class="gp-chip" data-gp-btn="4">LB / L1</span>
+              <span class="gp-chip" data-gp-btn="5">RB / R1</span>
+              <span class="gp-chip" data-gp-btn="7">RT / R2</span>
+            </div>
+            <div class="gp-middle">
+              <div class="gp-stick-box">
+                <div class="gp-stick-ring">
+                  <div id="gpDeadzoneRing" class="gp-dz-ring"></div>
+                  <div id="gpStickDot" class="gp-stick-dot"></div>
+                </div>
+                <span id="gpStickReadout" class="gp-stick-label">L-Stick (0.00, 0.00)</span>
+              </div>
+              <div class="gp-center-btns">
+                <span class="gp-chip mini" data-gp-btn="8">Select</span>
+                <span class="gp-chip mini" data-gp-btn="9">Start</span>
+                <div class="gp-dpad-mini">
+                  <span></span><span class="gp-chip sq" data-gp-btn="12">↑</span><span></span>
+                  <span class="gp-chip sq" data-gp-btn="14">←</span><span class="gp-chip sq muted">＋</span><span class="gp-chip sq" data-gp-btn="15">→</span>
+                  <span></span><span class="gp-chip sq" data-gp-btn="13">↓</span><span></span>
+                </div>
+              </div>
+              <div class="gp-face-diamond">
+                <span></span><span class="gp-chip round y" data-gp-btn="3">Y/△</span><span></span>
+                <span class="gp-chip round x" data-gp-btn="2">X/□</span><span></span><span class="gp-chip round b" data-gp-btn="1">B/○</span>
+                <span></span><span class="gp-chip round a" data-gp-btn="0">A/✕</span><span></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="gp-options">
+            <div class="gp-opt-row">
+              <label for="gpDeadzoneRange">左搖桿死區 (Deadzone)：<strong id="gpDeadzoneVal">22%</strong></label>
+              <input id="gpDeadzoneRange" type="range" min="10" max="50" step="2" value="22" />
+            </div>
+            <div class="gp-opt-row inline">
+              <label class="gp-check-label">
+                <input id="gpRumbleCheck" type="checkbox" checked />
+                <span>啟用打擊與必殺技手把震動 (Rumble)</span>
+              </label>
+              <button id="btnGpTestRumble" class="mini-btn">📳 測試震動</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Rebindable Action Mapping Cards -->
+        <div id="gpBindingsGrid" class="gp-bindings-grid"></div>
+      </div>
+    </section>
+
+    <!-- ⚙️ Gear Settings Studio -->
+    <section id="gearStudio" class="gear-studio" aria-label="齒輪動作與按鍵設定區">
+      <div class="studio-top">
+        <div>
+          <h2>⚙️ 齒輪設定區｜角色連幀動畫・按鍵綁定・微調與上傳</h2>
+          <p>檢視每個角色的逐幀動畫、微調播放速度 (FPS)、點擊按鍵立即改綁、上傳替換精靈表（自動去背＋無裁切谷底切格），或新增全新自訂動作！</p>
+        </div>
+        <div class="studio-actions">
+          <button id="btnResetConfig" class="btn" title="恢復所有按鍵與 FPS 預設值">↺ 恢復預設</button>
+          <button id="btnCloseGear" class="btn">✕ 收合設定</button>
+        </div>
+      </div>
+
+      <div id="charTabs" class="char-tabs"></div>
+
+      <div id="spriteSlots" class="sprite-slots"></div>
+
+      <div class="add-action-bar">
+        <strong>＋ 新增自訂動作：</strong>
+        <input id="newActName" type="text" placeholder="動作名稱（例：迴旋踢）" size="18" />
+        <label>欄 <input id="newActCols" type="number" value="5" min="1" max="16" style="width:46px" /></label>
+        <label>列 <input id="newActRows" type="number" value="2" min="1" max="8" style="width:46px" /></label>
+        <label>FPS <input id="newActFps" type="number" value="14" min="4" max="30" style="width:52px" /></label>
+        <button id="btnAddAction" class="btn gear-btn">建立動作槽位</button>
+      </div>
+    </section>
+  </div>
+
+  <script src="game.js"></script>
+  <script>
+    (function () {
+      try {
+        var params = new URLSearchParams(window.location.search);
+        if (params.get('tv') === '1' || /AndroidTV|GoogleTV|SMART-TV|AFT|BRAVIA|Viera/i.test(navigator.userAgent)) {
+          document.body.classList.add('tv-mode');
+        }
+      } catch (_) {}
+      if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register('./sw.js').catch(function () {});
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
