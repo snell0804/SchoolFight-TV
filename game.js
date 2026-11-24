@@ -280,7 +280,7 @@
       name: '呆呆伶',
       hudName: '呆呆伶',
       badge: '😈 海星魔杖使',
-      subtitle: '徒手三連拳 · ↓↑龍捲旋風腳 · 能量砲十連發',
+      subtitle: '徒手三連拳 · ↑+重攻 龍捲旋風腳 · 能量砲十連發',
       accent: '#f43f8e',
       accentLight: '#f9a8d4',
       accentDark: '#581c87',
@@ -321,7 +321,7 @@
       name: '超級帆',
       hudName: '超級帆',
       badge: '🦊 烈焰拳鬥士',
-      subtitle: '五連閃電拳 · ↓↑烈焰龍捲旋風腳 · 百拳連擊',
+      subtitle: '五連閃電拳 · ↑+重攻 烈焰龍捲旋風腳 · 百拳連擊',
       accent: '#f97316',
       accentLight: '#fde047',
       accentDark: '#7c2d12',
@@ -444,7 +444,7 @@
       { id: 'heavyAttack', label: '重攻擊・魔杖重擊 (Heavy)', triggerDesc: '強力魔杖重砸與擊飛＋美漫打擊框', sheetKey: 'attack', fallbackSheet: null, fps: 14, cols: 5, rows: 2, key: 'Numpad5', altKeys: ['KeyU', 'KeyC'], rebindable: true },
       { id: 'dashLightAttack', label: '衝刺輕攻擊・浪子踢球 (Dash Light)', triggerDesc: '跑步中 按 輕攻擊 發動！踢出能量足球', sheetKey: 'dashLightAttack', fallbackSheet: 'lightAttack', fps: 17, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
       { id: 'dashAttack', label: '衝刺重攻擊・星杖衝刺斬 (Dash Heavy)', triggerDesc: '跑步中 按 重攻擊 發動！', sheetKey: 'dashAttack', fallbackSheet: 'attack', fps: 18, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
-      { id: 'tornadoKick', label: '特殊招式・龍捲旋風腳 (Tornado Kick)', triggerDesc: '快速先按 ↓ 再按 ↑（S→W）發動！多段旋風擊飛浮空可空中追打', sheetKey: 'tornadoKick', fallbackSheet: 'dashAttack', fps: 15, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
+      { id: 'tornadoKick', label: '特殊招式・龍捲旋風腳 (Tornado Kick)', triggerDesc: '按住 ↑ 再按 重攻擊（W+Num5 / 手把 ↑+重攻）發動！多段旋風擊飛浮空可空中追打', sheetKey: 'tornadoKick', fallbackSheet: 'dashAttack', fps: 15, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
       { id: 'special', label: '能量砲十連發 (Special)', triggerDesc: '霸體集氣・全螢幕十連擊光砲＋美漫衝擊幀', sheetKey: 'special', fallbackSheet: null, fps: 12, cols: 5, rows: 2, key: 'Numpad0', altKeys: ['KeyL', 'KeyX'], rebindable: true },
       { id: 'jump', label: '跳躍 (Jump)', triggerDesc: '原地／移動跳躍（空中可揮杖追打）', sheetKey: 'jump', fallbackSheet: 'run', fps: 12, cols: 5, rows: 2, key: 'Space', altKeys: ['KeyK'], rebindable: true },
       { id: 'hurt', label: '受傷／受擊 (Hurt)', triggerDesc: '高解析 10 幀受傷硬直、踉蹌與回復', sheetKey: 'hurt', fallbackSheet: null, fps: 15, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
@@ -460,7 +460,7 @@
       { id: 'rp_dash', label: '瞬間衝刺・蒼藍音爆閃身步 (Dash)', triggerDesc: '10 幀極速蒼藍音爆破風瞬間突進（Shift 觸發）', sheetKey: 'rp_dash', fallbackSheet: null, fps: 24, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
       { id: 'rp_lightAttack', label: '輕攻擊・五連閃電連擊 (Light)', triggerDesc: '金色閃電高速連拳（共用輕攻鍵）', sheetKey: 'rp_lightAttack', fallbackSheet: null, fps: 18, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
       { id: 'rp_dashAttack', label: '重攻／衝刺撞擊 (Heavy & Dash)', triggerDesc: '赤焰高速衝刺撞擊＋爆裂火花（共用重攻鍵）', sheetKey: 'rp_dashAttack', fallbackSheet: null, fps: 18, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
-      { id: 'rp_tornadoKick', label: '特殊招式・烈焰龍捲旋風腳 (Tornado Kick)', triggerDesc: '快速先按 ↓ 再按 ↑（S→W）發動！烈焰旋風打浮空可空中追打', sheetKey: 'rp_tornadoKick', fallbackSheet: 'rp_dashAttack', fps: 15, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
+      { id: 'rp_tornadoKick', label: '特殊招式・烈焰龍捲旋風腳 (Tornado Kick)', triggerDesc: '按住 ↑ 再按 重攻擊（W+Num5 / 手把 ↑+重攻）發動！烈焰旋風打浮空可空中追打', sheetKey: 'rp_tornadoKick', fallbackSheet: 'rp_dashAttack', fps: 15, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
       { id: 'rp_special', label: '必殺技・赤焰百拳連擊 (Special)', triggerDesc: '霸體狂暴 10 連擊烈焰百烈拳（共用必殺鍵）', sheetKey: 'rp_special', fallbackSheet: null, fps: 14, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
       { id: 'rp_hurt', label: '受傷／受擊 (Hurt)', triggerDesc: '可上傳獨立 10 幀受傷精靈表', sheetKey: 'rp_hurt', fallbackSheet: 'rp_idle', fps: 14, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
       { id: 'rp_victory', label: '戰鬥勝利動作 (Victory)', triggerDesc: '過關結算專屬 10 幀金星慶祝勝利動畫', sheetKey: 'rp_victory', fallbackSheet: 'rp_idle', fps: 10, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
@@ -653,9 +653,14 @@
           custom: false,
         };
       });
-      // Load stitched anime-stylized Haixing Elementary real street panorama
+      // Load Sanrio-illustrated street panoramas + 10-frame Kids Rice Cooker supply boxes & pickups
       const bgDef = [
         { key: 'starfish', embedKey: 'bg_starfish_street', file: 'assets/bg_starfish_street.webp' },
+        { key: 'aqiang', embedKey: 'bg_aqiang_street', file: 'assets/bg_aqiang_street.webp' },
+        { key: 'cooker_hp', embedKey: 'prop_cooker_sheet', file: 'assets/prop_cooker_sheet.webp' },
+        { key: 'cooker_mp', embedKey: 'prop_cooker_mp_sheet', file: 'assets/prop_cooker_mp_sheet.webp' },
+        { key: 'foods', embedKey: 'item_foods_sheet', file: 'assets/item_foods_sheet.webp' },
+        { key: 'mana', embedKey: 'item_mana_bottle', file: 'assets/item_mana_bottle.webp' },
       ];
       for (const b of bgDef) {
         promises.push((async () => {
@@ -1011,8 +1016,6 @@
   let lastTapDir = 0;
   let lastTapTime = 0;
   let doubleTapRunTrigger = 0;
-  let lastDownTapTime = 0;
-  let tornadoKickTrigger = false;
 
   function isActionJustPressed(actionId) {
     if (typeof GamepadManager !== 'undefined' && GamepadManager.isActionJustPressed(actionId)) return true;
@@ -1048,13 +1051,6 @@
         } else {
           lastTapDir = -1;
           lastTapTime = now;
-        }
-      } else if (code === 'ArrowDown' || code === 'KeyS') {
-        lastDownTapTime = now;
-      } else if (code === 'ArrowUp' || code === 'KeyW') {
-        if (lastDownTapTime > 0 && now - lastDownTapTime < 360) {
-          tornadoKickTrigger = true;
-          lastDownTapTime = 0;
         }
       }
     }
@@ -2381,11 +2377,8 @@
       const wantSpecial = isActionJustPressed('special');
       const wantJump = isActionJustPressed('jump');
       const wantDash = isActionJustPressed('dash');
-      let wantTornado = false;
-      if (tornadoKickTrigger) {
-        wantTornado = true;
-        tornadoKickTrigger = false;
-      }
+      // Both heroes trigger 龍捲旋風腳 via Up + Heavy Attack (↑ + 重攻擊)!
+      const wantTornado = wantHeavy && (moveZ < -0.35);
 
       // Check double-tap AA / DD (or Gamepad Hold-to-Run LB/L1!) -> enter Running mode!
       if (doubleTapRunTrigger !== 0) {
@@ -2439,7 +2432,7 @@
       } else if (this.state === 'tornadoKick') {
         this.updateTornadoKick(dt, wantSpecial);
       } else if (this.state === 'dash') {
-        this.updateDash(dt, wantLight, wantHeavy, wantSpecial);
+        this.updateDash(dt, wantLight, wantHeavy, wantSpecial, wantTornado);
       } else if (this.state === 'dashLightAttack') {
         this.updateDashLightAttack(dt, wantSpecial);
       } else if (this.state === 'dashAttack') {
@@ -2571,7 +2564,7 @@
     /**
      * 100% Image-faithful 10-frame Instant Burst Dash (閃身步!) triggered by SHIFT!
      */
-    updateDash(dt, wantLight, wantHeavy, wantSpecial) {
+    updateDash(dt, wantLight, wantHeavy, wantSpecial, wantTornado = false) {
       this.stateTime += dt;
       const fps = StudioState.getFps(this.hero.id === 'redpanda' ? 'rp_dash' : 'dash', 25);
       const totalDur = 10 / fps;
@@ -2603,9 +2596,10 @@
         });
       }
 
-      // Cancel brake frames (7-9) right into 浪子踢球 / 星杖衝刺斬 / 能量砲!
+      // Cancel brake frames (7-9) right into 龍捲旋風腳 / 浪子踢球 / 星杖衝刺斬 / 能量砲!
       if (this.frame >= 7) {
         if (wantSpecial) { this.startSpecial(); return; }
+        if (wantTornado && (!this.tornadoCd || this.tornadoCd <= 0)) { this.startTornadoKick(); return; }
         if (wantHeavy) { this.startDashAttack(); return; }
         if (wantLight) { this.startDashLightAttack(); return; }
       }
@@ -3990,17 +3984,33 @@
   }
 
   // --------------------------------------------------------------------------
-  // DESTRUCTIBLE PROPS & CLASSIC ARCADE PICKUPS
+  // SANRIO KIDS RICE COOKER SUPPLY BOXES (10-FRAME OPENING!) & KAWAII PICKUPS
   // --------------------------------------------------------------------------
+  const KAWAII_FOOD_NAMES = [
+    '🍗 黃金炸雞腿',
+    '🍰 草莓蛋糕',
+    '🍔 微笑漢堡',
+    '🥟 熱騰騰肉包',
+    '🍓 草莓大福',
+    '🍡 三色糰子',
+  ];
+
   class Prop {
     constructor(x, z, kind, dropType) {
       this.id = nextEntityId++;
       this.x = x;
       this.z = z;
-      this.kind = kind; // crate | drum
+      this.kind = kind; // 'crate' (HP Pink Kids Rice Cooker) | 'drum' (MP Starry Blue Kids Rice Cooker)
       this.dropType = dropType; // food | crystal | coin
       this.hp = 35;
-      this.broken = false;
+      this.broken = false; // Prevents further hits once opened
+      this.opening = false;
+      this.openTime = 0;
+      this.openFrame = 0;
+      this.dropped = false;
+      this.gone = false;
+      this.alpha = 1;
+      this.age = Math.random() * 6;
       this.shake = 0;
     }
 
@@ -4009,58 +4019,95 @@
       this.hp -= dmg;
       this.shake = 0.16;
       sfx.playHit(false);
-      spawnParticles(this.x, this.z - 34, this.kind === 'crate' ? '#d97706' : '#64748b', 8, 180, 6);
+      const isMp = this.kind === 'drum' || this.dropType === 'crystal';
+      spawnParticles(this.x, this.z - 38, isMp ? '#7dd3fc' : '#f9a8d4', 8, 170, 5);
       if (this.hp <= 0) {
         this.broken = true;
+        this.opening = true;
+        this.openTime = 0;
+        this.openFrame = 0;
+        this.dropped = false;
         sfx.playCrateBreak();
-        spawnParticles(this.x, this.z - 36, this.kind === 'crate' ? '#b45309' : '#475569', 16, 260, 8);
-        if (this.dropType) {
-          game.pickups.push(new Pickup(this.x, this.z, this.dropType));
-        }
+        addFloatText(this.x, this.z - 84, isMp ? '✨ 魔力電鍋開鍋!' : '✨ 美味電鍋開鍋!', isMp ? '#7dd3fc' : '#f9a8d4', 17);
       }
     }
 
     update(dt) {
+      this.age += dt;
       if (this.shake > 0) this.shake -= dt;
+      if (this.opening && !this.gone) {
+        this.openTime += dt;
+        const fps = 14;
+        const animDur = 10 / fps; // ~0.714s full 10-frame lid-pop opening!
+        this.openFrame = Math.min(9, Math.floor(this.openTime * fps));
+        // Spawn HP food or starry blue mana bottle right as lid bursts open on Frame 4!
+        if (this.openFrame >= 4 && !this.dropped) {
+          this.dropped = true;
+          const isMp = this.kind === 'drum' || this.dropType === 'crystal';
+          spawnParticles(this.x, this.z - 54, isMp ? '#38bdf8' : '#fef08a', 16, 240, 7);
+          spawnParticles(this.x, this.z - 46, '#ffffff', 10, 180, 6);
+          if (this.dropType) {
+            game.pickups.push(new Pickup(this.x, this.z, this.dropType));
+          }
+        }
+        // Hold cute happy ^ ^ open rice cooker briefly, then gently fade away
+        const holdEnd = animDur + 0.55;
+        const fadeDur = 0.45;
+        if (this.openTime > holdEnd) {
+          this.alpha = Math.max(0, 1 - (this.openTime - holdEnd) / fadeDur);
+          if (this.alpha <= 0) this.gone = true;
+        }
+      }
     }
 
     draw(ctx) {
-      if (this.broken) return;
-      const sx = this.shake > 0 ? (Math.random() - 0.5) * 8 : 0;
+      if (this.gone) return;
+      const sx = this.shake > 0 ? (Math.random() - 0.5) * 9 : 0;
+      const isMp = this.kind === 'drum' || this.dropType === 'crystal';
+      const sheet = SpriteBank.bgImages && SpriteBank.bgImages[isMp ? 'cooker_mp' : 'cooker_hp'];
+
       ctx.save();
-      ctx.fillStyle = 'rgba(8,5,18,0.45)';
+      ctx.globalAlpha = this.alpha;
+      ctx.fillStyle = 'rgba(26, 16, 44, 0.34)';
       ctx.beginPath();
-      ctx.ellipse(this.x, this.z + 3, 38, 11, 0, 0, Math.PI * 2);
+      ctx.ellipse(this.x, this.z + 3, 42, 11, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.translate(Math.round(this.x + sx), Math.round(this.z));
-      ctx.lineWidth = 4;
-      ctx.strokeStyle = '#0d0b14';
+      if (sheet && sheet.width >= 500) {
+        const cols = 5, rows = 2;
+        const cw = sheet.width / cols;
+        const ch = sheet.height / rows;
+        const fIdx = this.opening ? this.openFrame : 0;
+        const fc = fIdx % cols;
+        const fr = Math.floor(fIdx / cols);
+        // Gentle idle cute bounce before opened
+        const idleSquash = !this.opening ? Math.sin(this.age * 4.5) * 0.025 : 0;
+        const drawScale = 0.86;
+        const dw = cw * drawScale;
+        const dh = ch * drawScale;
+        // Anchor matches ox = 86, oy = 166 in 200x200 cell!
+        const anchorX = (86 / 200) * dw;
+        const anchorY = (166 / 200) * dh;
 
-      if (this.kind === 'crate') {
-        ctx.fillStyle = '#b45309';
-        ctx.beginPath();
-        ctx.roundRect(-30, -64, 60, 64, 6);
-        ctx.fill();
-        ctx.stroke();
-        ctx.fillStyle = '#d97706';
-        ctx.fillRect(-22, -56, 44, 48);
-        ctx.strokeRect(-22, -56, 44, 48);
-        // Diagonal brace
-        ctx.beginPath();
-        ctx.moveTo(-22, -56); ctx.lineTo(22, -8);
-        ctx.moveTo(22, -56); ctx.lineTo(-22, -8);
-        ctx.stroke();
+        ctx.translate(Math.round(this.x + sx), Math.round(this.z));
+        ctx.scale(1 - idleSquash, 1 + idleSquash);
+        ctx.drawImage(sheet, fc * cw, fr * ch, cw, ch, -anchorX, -anchorY, dw, dh);
       } else {
-        // Gothic Neon Oil Drum
-        ctx.fillStyle = '#4c1d95';
+        // Fallback cute vector rice cooker if sheet hasn't loaded yet
+        ctx.translate(Math.round(this.x + sx), Math.round(this.z));
+        ctx.lineWidth = 3.5;
+        ctx.strokeStyle = '#3a2449';
+        ctx.fillStyle = isMp ? '#60a5fa' : '#ff8fb1';
         ctx.beginPath();
-        ctx.roundRect(-26, -70, 52, 70, 10);
+        ctx.roundRect(-34, -56, 68, 52, 14);
         ctx.fill();
         ctx.stroke();
-        ctx.fillStyle = '#ec4899';
-        ctx.fillRect(-24, -46, 48, 16);
-        ctx.strokeRect(-24, -46, 48, 16);
+        ctx.fillStyle = isMp ? '#e0f2fe' : '#ffe4ec';
+        ctx.beginPath();
+        ctx.arc(0, -56, 33, Math.PI, 0);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
       }
       ctx.restore();
     }
@@ -4071,8 +4118,9 @@
       this.x = x;
       this.z = z;
       this.type = type; // food | crystal | coin
-      this.vy = 240;
-      this.jumpY = 12;
+      this.foodIdx = Math.floor(Math.random() * KAWAII_FOOD_NAMES.length);
+      this.vy = 285;
+      this.jumpY = 26;
       this.taken = false;
       this.age = 0;
     }
@@ -4093,12 +4141,15 @@
         sfx.playPickup(this.type);
         if (this.type === 'food') {
           p.hp = Math.min(p.maxHp, p.hp + 50);
-          addFloatText(this.x, this.z - 60, 'HP +50!', '#4ade80', 22);
-          spawnParticles(this.x, this.z - 30, '#4ade80', 12, 180, 6);
+          const fName = KAWAII_FOOD_NAMES[this.foodIdx] || '🍗 美味補給';
+          addFloatText(this.x, this.z - 64, `${fName} HP+50!`, '#4ade80', 20);
+          spawnParticles(this.x, this.z - 30, '#f9a8d4', 10, 180, 6);
+          spawnParticles(this.x, this.z - 30, '#4ade80', 10, 180, 6);
         } else if (this.type === 'crystal') {
           p.energy = Math.min(p.maxEnergy, p.energy + 55);
-          addFloatText(this.x, this.z - 60, '能量 +55!', '#e879f9', 22);
-          spawnParticles(this.x, this.z - 30, '#e879f9', 12, 180, 6);
+          addFloatText(this.x, this.z - 64, '🌙 星月魔力 +55!', '#38bdf8', 21);
+          spawnParticles(this.x, this.z - 30, '#38bdf8', 12, 190, 6);
+          spawnParticles(this.x, this.z - 30, '#fef08a', 8, 160, 5);
         } else {
           game.score += 500;
           addFloatText(this.x, this.z - 60, '+500', '#facc15', 20);
@@ -4109,50 +4160,69 @@
 
     draw(ctx) {
       if (this.taken) return;
-      const bob = Math.sin(this.age * 7) * 4;
+      const bob = Math.sin(this.age * 6.5) * 4.5;
       ctx.save();
-      ctx.fillStyle = 'rgba(0,0,0,0.4)';
+      ctx.fillStyle = 'rgba(26, 16, 44, 0.34)';
       ctx.beginPath();
-      ctx.ellipse(this.x, this.z + 2, 22, 7, 0, 0, Math.PI * 2);
+      ctx.ellipse(this.x, this.z + 2, 24, 7.5, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.translate(Math.round(this.x), Math.round(this.z - this.jumpY - 18 + bob));
-      ctx.lineWidth = 3.5;
-      ctx.strokeStyle = '#0d0b14';
+      ctx.translate(Math.round(this.x), Math.round(this.z - this.jumpY - 24 + bob));
 
       if (this.type === 'food') {
-        // Classic Streets of Rage Roast Drumstick!
-        ctx.fillStyle = '#f8fafc';
+        // Soft warm healing glow halo behind kawaii food!
+        const aura = ctx.createRadialGradient(0, 0, 6, 0, 0, 34);
+        aura.addColorStop(0, 'rgba(254, 240, 138, 0.55)');
+        aura.addColorStop(0.6, 'rgba(249, 168, 212, 0.25)');
+        aura.addColorStop(1, 'rgba(249, 168, 212, 0)');
+        ctx.fillStyle = aura;
         ctx.beginPath();
-        ctx.roundRect(6, -5, 20, 10, 4);
+        ctx.arc(0, 0, 34, 0, Math.PI * 2);
         ctx.fill();
-        ctx.stroke();
-        ctx.fillStyle = '#ea580c';
-        ctx.beginPath();
-        ctx.ellipse(-6, 0, 18, 13, -0.2, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.stroke();
+
+        const foodsImg = SpriteBank.bgImages && SpriteBank.bgImages.foods;
+        if (foodsImg && foodsImg.width >= 384) {
+          const fw = foodsImg.width / 6;
+          const fh = foodsImg.height;
+          const sz = 66;
+          ctx.drawImage(foodsImg, this.foodIdx * fw, 0, fw, fh, -sz / 2, -sz / 2, sz, sz);
+        } else {
+          ctx.lineWidth = 3.2;
+          ctx.strokeStyle = '#3a2449';
+          ctx.fillStyle = '#fb923c';
+          ctx.beginPath();
+          ctx.ellipse(0, 0, 18, 13, -0.2, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+        }
       } else if (this.type === 'crystal') {
-        // Glowing Purple Energy Crystal
-        ctx.fillStyle = '#e879f9';
+        // Soft celestial blue starry aura behind Starry Moon Mana Bottle!
+        const aura = ctx.createRadialGradient(0, 0, 6, 0, 0, 36);
+        aura.addColorStop(0, 'rgba(56, 189, 248, 0.58)');
+        aura.addColorStop(0.6, 'rgba(129, 140, 248, 0.26)');
+        aura.addColorStop(1, 'rgba(56, 189, 248, 0)');
+        ctx.fillStyle = aura;
         ctx.beginPath();
-        ctx.moveTo(0, -22);
-        ctx.lineTo(15, 0);
-        ctx.lineTo(0, 18);
-        ctx.lineTo(-15, 0);
-        ctx.closePath();
+        ctx.arc(0, 0, 36, 0, Math.PI * 2);
         ctx.fill();
-        ctx.stroke();
-        ctx.fillStyle = '#ffffff';
-        ctx.beginPath();
-        ctx.moveTo(0, -14);
-        ctx.lineTo(6, -2);
-        ctx.lineTo(0, 6);
-        ctx.lineTo(-6, -2);
-        ctx.closePath();
-        ctx.fill();
+
+        const manaImg = SpriteBank.bgImages && SpriteBank.bgImages.mana;
+        if (manaImg && manaImg.width >= 80) {
+          const sz = 68;
+          ctx.drawImage(manaImg, -sz / 2, -sz / 2 - 4, sz, sz);
+        } else {
+          ctx.lineWidth = 3.2;
+          ctx.strokeStyle = '#3a2449';
+          ctx.fillStyle = '#38bdf8';
+          ctx.beginPath();
+          ctx.roundRect(-14, -18, 28, 36, 10);
+          ctx.fill();
+          ctx.stroke();
+        }
       } else {
-        // Gold Arcade Coin
+        // Cute Gold Arcade Star Coin
+        ctx.lineWidth = 3.2;
+        ctx.strokeStyle = '#3a2449';
         ctx.fillStyle = '#facc15';
         ctx.beginPath();
         ctx.arc(0, 0, 14, 0, Math.PI * 2);
@@ -4247,18 +4317,25 @@
     const stage = getCurrentStage();
     const theme = SCHOOL_THEMES[stage.key] || SCHOOL_THEMES.starfish;
     const signs = stage.signs || [];
-    const starfishBg = (stage.key === 'starfish' && SpriteBank.bgImages && SpriteBank.bgImages.starfish)
-      ? SpriteBank.bgImages.starfish
+    const stageBg = (SpriteBank.bgImages && SpriteBank.bgImages[stage.key])
+      ? SpriteBank.bgImages[stage.key]
       : null;
+    const isSanrio = !!stageBg && (stage.key === 'starfish' || stage.key === 'aqiang');
 
     // ------------------------------------------------------------------------
-    // LAYER 0 (0.05x): Ultra-Far Sky Gradient & Sun / Sunset / Winter Moon
+    // LAYER 0 (0.05x): Pastel Sanrio Sky & Smiling Sun / Winter Moon
     // ------------------------------------------------------------------------
     const sky = ctx.createLinearGradient(0, 0, 0, 315);
-    if (starfishBg) {
-      sky.addColorStop(0, '#1d84e5');
-      sky.addColorStop(0.48, '#53b7fb');
-      sky.addColorStop(1, '#cdeeff');
+    if (isSanrio && stage.key === 'starfish') {
+      // Sanrio Ocean Sky-Blue -> Baby-Blue -> Strawberry-Milk Horizon!
+      sky.addColorStop(0, '#5cc2ff');
+      sky.addColorStop(0.55, '#bae6fd');
+      sky.addColorStop(1, '#fff0f6');
+    } else if (isSanrio && stage.key === 'aqiang') {
+      // Sanrio Warm Hualien Afternoon Sky -> Soft Buttercream -> Pastel Peach Horizon!
+      sky.addColorStop(0, '#62c3ff');
+      sky.addColorStop(0.54, '#cbeeff');
+      sky.addColorStop(1, '#ffedd5');
     } else {
       sky.addColorStop(0, theme.sky[0]);
       sky.addColorStop(0.55, theme.sky[1]);
@@ -4267,166 +4344,266 @@
     ctx.fillStyle = sky;
     ctx.fillRect(0, 0, CANVAS_W, 320);
 
-    const orbX = 830 - camX * 0.05;
-    if (theme.celestialType === 'sun') {
+    const orbX = 835 - camX * 0.05;
+    if (isSanrio) {
+      // Cute Smiling Sanrio Pastel Sun (0.05x) with warm plum outline & rosy cheeks!
+      const sunY = stage.key === 'aqiang' ? 68 : 62;
+      const sunGlow = ctx.createRadialGradient(orbX, sunY, 16, orbX, sunY, 112);
+      sunGlow.addColorStop(0, 'rgba(255, 253, 224, 0.96)');
+      sunGlow.addColorStop(0.42, stage.key === 'aqiang' ? 'rgba(253, 224, 71, 0.56)' : 'rgba(254, 240, 138, 0.52)');
+      sunGlow.addColorStop(1, 'rgba(254, 240, 138, 0)');
+      ctx.fillStyle = sunGlow;
+      ctx.beginPath();
+      ctx.arc(orbX, sunY, 112, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Gentle rotating Sanrio sun rays
+      ctx.save();
+      ctx.translate(orbX, sunY);
+      ctx.rotate(game.time * 0.14);
+      ctx.strokeStyle = 'rgba(254, 240, 138, 0.85)';
+      ctx.lineWidth = 4.5;
+      ctx.lineCap = 'round';
+      for (let i = 0; i < 8; i++) {
+        const a = (i * Math.PI) / 4;
+        ctx.beginPath();
+        ctx.moveTo(Math.cos(a) * 34, Math.sin(a) * 34);
+        ctx.lineTo(Math.cos(a) * 44, Math.sin(a) * 44);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // Sun disc with warm Sanrio outline & tiny kawaii smile
+      ctx.fillStyle = '#fef08a';
+      ctx.strokeStyle = 'rgba(90, 56, 108, 0.55)';
+      ctx.lineWidth = 2.4;
+      ctx.beginPath();
+      ctx.arc(orbX, sunY, 27, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = 'rgba(251, 113, 133, 0.45)';
+      ctx.beginPath();
+      ctx.ellipse(orbX - 11, sunY + 4, 4.5, 2.8, 0, 0, Math.PI * 2);
+      ctx.ellipse(orbX + 11, sunY + 4, 4.5, 2.8, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = 'rgba(58, 36, 73, 0.72)';
+      ctx.beginPath();
+      ctx.arc(orbX - 7, sunY - 1, 2.2, 0, Math.PI * 2);
+      ctx.arc(orbX + 7, sunY - 1, 2.2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(58, 36, 73, 0.72)';
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      ctx.arc(orbX, sunY + 1, 4.2, 0.15 * Math.PI, 0.85 * Math.PI);
+      ctx.stroke();
+
+      // LAYER 1A (0.10x): Thick-Outlined Fluffy Sanrio Cotton-Candy Clouds!
+      const cloudOff = -((camX * 0.10 + game.time * 8) % 340);
+      for (let cx = cloudOff - 170; cx < CANVAS_W + 240; cx += 340) {
+        const idx = Math.abs(Math.round((cx - cloudOff) / 340));
+        const cy = 48 + (idx % 2) * 22;
+        const lobes = [
+          { x: cx, y: cy + 10, r: 21 },
+          { x: cx + 25, y: cy, r: 28 },
+          { x: cx + 56, y: cy + 6, r: 24 },
+          { x: cx + 80, y: cy + 12, r: 17 },
+        ];
+        // Pass 1: Soft Sanrio lavender-plum cloud outline
+        ctx.fillStyle = 'rgba(89, 59, 107, 0.28)';
+        for (const l of lobes) {
+          ctx.beginPath(); ctx.arc(l.x, l.y, l.r + 2.4, 0, Math.PI * 2); ctx.fill();
+        }
+        ctx.fillRect(cx - 4, cy + 10, 88, 22);
+        // Pass 2: Fluffy pastel-cream white fill
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.92)';
+        for (const l of lobes) {
+          ctx.beginPath(); ctx.arc(l.x, l.y, l.r, 0, Math.PI * 2); ctx.fill();
+        }
+        ctx.fillRect(cx, cy + 10, 80, 19);
+        // Soft pastel pink/peach cloud belly tint
+        ctx.fillStyle = stage.key === 'aqiang' ? 'rgba(254, 215, 170, 0.35)' : 'rgba(251, 207, 232, 0.35)';
+        ctx.beginPath();
+        ctx.roundRect(cx + 4, cy + 20, 72, 8, 4);
+        ctx.fill();
+      }
+    } else if (theme.celestialType === 'sun') {
       const sunGrad = ctx.createRadialGradient(orbX, 66, 10, orbX, 66, 108);
       sunGrad.addColorStop(0, 'rgba(255, 254, 232, 0.98)');
       sunGrad.addColorStop(0.38, 'rgba(253, 224, 71, 0.52)');
       sunGrad.addColorStop(1, 'rgba(253, 224, 71, 0)');
       ctx.fillStyle = sunGrad;
-      ctx.beginPath();
-      ctx.arc(orbX, 66, 108, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.beginPath(); ctx.arc(orbX, 66, 108, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = '#fef9c3';
-      ctx.beginPath();
-      ctx.arc(orbX, 66, 30, 0, Math.PI * 2);
-      ctx.fill();
-
-      // LAYER 1A (0.10x): Slow drifting fluffy sunny clouds
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.72)';
-      const cloudOff = -((camX * 0.10 + game.time * 7) % 320);
-      for (let cx = cloudOff - 160; cx < CANVAS_W + 220; cx += 320) {
-        const cy = 54 + ((Math.round((cx - cloudOff) / 320) % 2) * 20);
-        ctx.beginPath();
-        ctx.arc(cx, cy + 8, 22, 0, Math.PI * 2);
-        ctx.arc(cx + 26, cy, 30, 0, Math.PI * 2);
-        ctx.arc(cx + 58, cy + 8, 23, 0, Math.PI * 2);
-        ctx.arc(cx + 80, cy + 12, 16, 0, Math.PI * 2);
-        ctx.fill();
-      }
+      ctx.beginPath(); ctx.arc(orbX, 66, 30, 0, Math.PI * 2); ctx.fill();
     } else if (theme.celestialType === 'sunset') {
       const sunGrad = ctx.createRadialGradient(orbX, 118, 16, orbX, 118, 128);
       sunGrad.addColorStop(0, 'rgba(255, 247, 200, 0.96)');
       sunGrad.addColorStop(0.4, 'rgba(251, 146, 60, 0.62)');
       sunGrad.addColorStop(1, 'rgba(239, 68, 68, 0)');
       ctx.fillStyle = sunGrad;
-      ctx.beginPath();
-      ctx.arc(orbX, 118, 128, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.beginPath(); ctx.arc(orbX, 118, 128, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = '#fef08a';
-      ctx.beginPath();
-      ctx.arc(orbX, 118, 44, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Sunset clouds (0.10x)
-      ctx.fillStyle = 'rgba(254, 215, 170, 0.36)';
-      const cloudOff = -((camX * 0.10 + game.time * 6) % 360);
-      for (let cx = cloudOff - 180; cx < CANVAS_W + 220; cx += 360) {
-        ctx.beginPath();
-        ctx.ellipse(cx + 45, 78, 66, 14, 0, 0, Math.PI * 2);
-        ctx.fill();
-      }
+      ctx.beginPath(); ctx.arc(orbX, 118, 44, 0, Math.PI * 2); ctx.fill();
     } else {
       const moonGrad = ctx.createRadialGradient(orbX, 82, 12, orbX, 82, 98);
       moonGrad.addColorStop(0, 'rgba(240, 249, 255, 0.96)');
       moonGrad.addColorStop(0.38, 'rgba(192, 132, 252, 0.52)');
       moonGrad.addColorStop(1, 'rgba(192, 132, 252, 0)');
       ctx.fillStyle = moonGrad;
-      ctx.beginPath();
-      ctx.arc(orbX, 82, 98, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.beginPath(); ctx.arc(orbX, 82, 98, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = '#f8fafc';
-      ctx.beginPath();
-      ctx.arc(orbX, 82, 35, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.beginPath(); ctx.arc(orbX, 82, 35, 0, Math.PI * 2); ctx.fill();
     }
 
     // ------------------------------------------------------------------------
     // LAYER 1B (0.18x & 0.28x): Distant Hualien Mountain Ridges (Slow Parallax!)
     // ------------------------------------------------------------------------
-    const mtnFarCol = stage.key === 'starfish'
-      ? 'rgba(108, 168, 224, 0.58)'
-      : (stage.key === 'aqiang' ? 'rgba(124, 45, 18, 0.48)' : 'rgba(49, 46, 129, 0.55)');
-    const mtnMidCol = stage.key === 'starfish'
-      ? 'rgba(72, 138, 178, 0.65)'
-      : (stage.key === 'aqiang' ? 'rgba(92, 28, 22, 0.62)' : 'rgba(30, 27, 75, 0.72)');
+    if (isSanrio) {
+      // Soft rounded pastel Sanrio Hualien mountains (0.18x far + 0.28x mid!)
+      const farCol = stage.key === 'aqiang' ? 'rgba(196, 181, 253, 0.58)' : 'rgba(165, 180, 252, 0.55)';
+      const midCol = stage.key === 'aqiang' ? 'rgba(134, 239, 172, 0.48)' : 'rgba(110, 231, 183, 0.48)';
 
-    // Far misty mountain peaks (0.18x)
-    ctx.fillStyle = mtnFarCol;
-    const mFarOff = -(camX * 0.18) % 520;
-    ctx.beginPath();
-    ctx.moveTo(0, 315);
-    for (let x = mFarOff - 520; x <= CANVAS_W + 520; x += 260) {
-      ctx.lineTo(x, 222);
-      ctx.lineTo(x + 95, 128);
-      ctx.lineTo(x + 180, 174);
-      ctx.lineTo(x + 260, 142);
-    }
-    ctx.lineTo(CANVAS_W + 520, 315);
-    ctx.closePath();
-    ctx.fill();
-
-    // Closer mountain foothills (0.28x)
-    ctx.fillStyle = mtnMidCol;
-    const mMidOff = -(camX * 0.28) % 440;
-    ctx.beginPath();
-    ctx.moveTo(0, 315);
-    for (let x = mMidOff - 440; x <= CANVAS_W + 440; x += 220) {
-      ctx.lineTo(x, 244);
-      ctx.lineTo(x + 75, 178);
-      ctx.lineTo(x + 150, 206);
-      ctx.lineTo(x + 220, 182);
-    }
-    ctx.lineTo(CANVAS_W + 440, 315);
-    ctx.closePath();
-    ctx.fill();
-
-    // ------------------------------------------------------------------------
-    // LAYER 2 (0.42x): Far Campus / City Horizon Silhouette
-    // ------------------------------------------------------------------------
-    ctx.fillStyle = stage.key === 'starfish' ? 'rgba(56, 108, 148, 0.52)' : theme.farFill;
-    const farOff = -(camX * 0.42) % 320;
-    for (let x = farOff - 320; x < CANVAS_W + 320; x += 160) {
-      ctx.fillRect(x, 152, 68, 164);
-      ctx.fillRect(x + 72, 126, 56, 190);
+      ctx.fillStyle = farCol;
+      ctx.strokeStyle = 'rgba(89, 59, 107, 0.24)';
+      ctx.lineWidth = 2.2;
+      const mFarOff = -(camX * 0.18) % 520;
       ctx.beginPath();
-      ctx.moveTo(x + 70, 126);
-      ctx.lineTo(x + 100, 92);
-      ctx.lineTo(x + 130, 126);
+      ctx.moveTo(-520, 315);
+      for (let x = mFarOff - 520; x <= CANVAS_W + 520; x += 260) {
+        ctx.quadraticCurveTo(x + 70, 108, x + 140, 176);
+        ctx.quadraticCurveTo(x + 205, 126, x + 260, 200);
+      }
+      ctx.lineTo(CANVAS_W + 520, 315);
       ctx.closePath();
       ctx.fill();
-      ctx.fillRect(x + 132, 168, 34, 148);
+      ctx.stroke();
 
-      ctx.fillStyle = theme.farWin;
-      for (let wy = 160; wy < 268; wy += 24) {
-        ctx.fillRect(x + 12, wy, 12, 10);
-        ctx.fillRect(x + 38, wy, 12, 10);
-        ctx.fillRect(x + 86, wy - 16, 12, 10);
+      ctx.fillStyle = midCol;
+      const mMidOff = -(camX * 0.28) % 440;
+      ctx.beginPath();
+      ctx.moveTo(-440, 315);
+      for (let x = mMidOff - 440; x <= CANVAS_W + 440; x += 220) {
+        ctx.quadraticCurveTo(x + 65, 162, x + 125, 206);
+        ctx.quadraticCurveTo(x + 178, 172, x + 220, 224);
       }
-      ctx.fillStyle = stage.key === 'starfish' ? 'rgba(56, 108, 148, 0.52)' : theme.farFill;
+      ctx.lineTo(CANVAS_W + 440, 315);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    } else {
+      const mtnFarCol = 'rgba(49, 46, 129, 0.55)';
+      const mtnMidCol = 'rgba(30, 27, 75, 0.72)';
+      ctx.fillStyle = mtnFarCol;
+      const mFarOff = -(camX * 0.18) % 520;
+      ctx.beginPath();
+      ctx.moveTo(0, 315);
+      for (let x = mFarOff - 520; x <= CANVAS_W + 520; x += 260) {
+        ctx.lineTo(x, 222);
+        ctx.lineTo(x + 95, 128);
+        ctx.lineTo(x + 180, 174);
+        ctx.lineTo(x + 260, 142);
+      }
+      ctx.lineTo(CANVAS_W + 520, 315);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = mtnMidCol;
+      const mMidOff = -(camX * 0.28) % 440;
+      ctx.beginPath();
+      ctx.moveTo(0, 315);
+      for (let x = mMidOff - 440; x <= CANVAS_W + 440; x += 220) {
+        ctx.lineTo(x, 244);
+        ctx.lineTo(x + 75, 178);
+        ctx.lineTo(x + 150, 206);
+        ctx.lineTo(x + 220, 182);
+      }
+      ctx.lineTo(CANVAS_W + 440, 315);
+      ctx.closePath();
+      ctx.fill();
     }
 
-    // Soft atmospheric depth haze between distant mountains/skyline and midground campus
+    // ------------------------------------------------------------------------
+    // LAYER 2 (0.42x): Far Campus / Town Horizon Silhouette
+    // ------------------------------------------------------------------------
+    const farOff = -(camX * 0.42) % 320;
+    if (isSanrio) {
+      const farFillA = stage.key === 'aqiang' ? 'rgba(254, 215, 170, 0.62)' : 'rgba(221, 214, 254, 0.62)';
+      const farFillB = stage.key === 'aqiang' ? 'rgba(251, 207, 232, 0.56)' : 'rgba(186, 230, 253, 0.58)';
+      for (let x = farOff - 320; x < CANVAS_W + 320; x += 160) {
+        ctx.fillStyle = farFillA;
+        ctx.beginPath();
+        ctx.roundRect(x, 168, 66, 148, [8, 8, 0, 0]);
+        ctx.fill();
+        ctx.fillStyle = farFillB;
+        ctx.beginPath();
+        ctx.roundRect(x + 72, 144, 56, 172, [10, 10, 0, 0]);
+        ctx.fill();
+        ctx.fillStyle = farFillA;
+        ctx.beginPath();
+        ctx.roundRect(x + 132, 182, 32, 134, [6, 6, 0, 0]);
+        ctx.fill();
+
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.52)';
+        for (let wy = 178; wy < 268; wy += 24) {
+          ctx.fillRect(x + 12, wy, 12, 10);
+          ctx.fillRect(x + 38, wy, 12, 10);
+          ctx.fillRect(x + 86, wy - 16, 12, 10);
+        }
+      }
+    } else {
+      ctx.fillStyle = theme.farFill;
+      for (let x = farOff - 320; x < CANVAS_W + 320; x += 160) {
+        ctx.fillRect(x, 152, 68, 164);
+        ctx.fillRect(x + 72, 126, 56, 190);
+        ctx.beginPath();
+        ctx.moveTo(x + 70, 126);
+        ctx.lineTo(x + 100, 92);
+        ctx.lineTo(x + 130, 126);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillRect(x + 132, 168, 34, 148);
+
+        ctx.fillStyle = theme.farWin;
+        for (let wy = 160; wy < 268; wy += 24) {
+          ctx.fillRect(x + 12, wy, 12, 10);
+          ctx.fillRect(x + 38, wy, 12, 10);
+          ctx.fillRect(x + 86, wy - 16, 12, 10);
+        }
+        ctx.fillStyle = theme.farFill;
+      }
+    }
+
+    // Soft atmospheric depth haze separating distant skyline (0.42x) from midground street (0.76x)!
     const haze = ctx.createLinearGradient(0, 175, 0, 316);
-    haze.addColorStop(0, 'rgba(224, 242, 254, 0)');
-    haze.addColorStop(1, stage.key === 'starfish'
-      ? 'rgba(224, 242, 254, 0.45)'
-      : (stage.key === 'aqiang' ? 'rgba(251, 146, 60, 0.22)' : 'rgba(99, 102, 241, 0.22)'));
+    haze.addColorStop(0, 'rgba(255, 255, 255, 0)');
+    haze.addColorStop(1, isSanrio
+      ? (stage.key === 'aqiang' ? 'rgba(255, 247, 237, 0.55)' : 'rgba(255, 240, 246, 0.52)')
+      : 'rgba(99, 102, 241, 0.22)');
     ctx.fillStyle = haze;
     ctx.fillRect(0, 175, CANVAS_W, 141);
 
     // ------------------------------------------------------------------------
-    // LAYER 3 (0.78x - 0.82x): Midground Stitched 海星國小 Street Panorama
-    // (or Parallax School Buildings for Stages 2 & 3!)
+    // LAYER 3 (~0.76x): Sanrio Hand-Drawn Multi-Photo Campus Street Panorama
+    // (Stage 1: 海星國小 | Stage 2: 阿強 鑄強國小・永興路 | Stage 3: 冬花國小)
     // ------------------------------------------------------------------------
-    if (starfishBg) {
-      const bgW = starfishBg.width || 3120;
-      const bgH = 296;
+    if (isSanrio && stageBg) {
+      const bgW = stageBg.width || 3120;
+      const bgH = 308;
       const maxScroll = Math.max(1, STAGE_W - CANVAS_W);
       const maxBgShift = Math.max(0, bgW - CANVAS_W);
-      // Smooth 0.78x-mapped parallax spanning Start (#001 Gate) -> Boss (#011 Silver Dragon)!
+      // Smooth 0.76x parallax spanning all 11 real street photos from Start -> Boss!
       const bgDrawX = -Math.round((camX / maxScroll) * maxBgShift);
       ctx.save();
-      ctx.drawImage(starfishBg, bgDrawX, 22, bgW, bgH);
-      // Subtle grounded contact shadow along base of panorama so it locks to the 1.0x sidewalk
-      const baseShadow = ctx.createLinearGradient(0, 294, 0, 318);
-      baseShadow.addColorStop(0, 'rgba(15, 23, 42, 0)');
-      baseShadow.addColorStop(1, 'rgba(15, 23, 42, 0.34)');
+      ctx.drawImage(stageBg, bgDrawX, 12, bgW, bgH);
+      // Soft grounded contact tint along base of panorama locking cleanly to 1.00x sidewalk
+      const baseShadow = ctx.createLinearGradient(0, 302, 0, 320);
+      baseShadow.addColorStop(0, 'rgba(58, 36, 73, 0)');
+      baseShadow.addColorStop(1, 'rgba(58, 36, 73, 0.22)');
       ctx.fillStyle = baseShadow;
-      ctx.fillRect(0, 294, CANVAS_W, 24);
+      ctx.fillRect(0, 302, CANVAS_W, 18);
       ctx.restore();
     } else {
-      // Stages 2 & 3 Midground School Buildings with 0.82x Parallax Depth!
+      // Stage 3 (冬花國小) Midground School Buildings with 0.82x Parallax Depth!
       ctx.save();
       const midCamX = Math.round(camX * 0.82);
       ctx.translate(-midCamX, 0);
@@ -4455,10 +4632,7 @@
         ctx.strokeStyle = theme.doorLine;
         ctx.lineWidth = 2;
         for (let sy = 236; sy < 312; sy += 14) {
-          ctx.beginPath();
-          ctx.moveTo(bx + 28, sy);
-          ctx.lineTo(bx + 112, sy);
-          ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(bx + 28, sy); ctx.lineTo(bx + 112, sy); ctx.stroke();
         }
 
         const winGrad = ctx.createLinearGradient(bx + 138, 220, bx + 138, 298);
@@ -4470,10 +4644,8 @@
         ctx.lineWidth = 2.5;
         ctx.strokeRect(bx + 138, 224, 98, 70);
         ctx.beginPath();
-        ctx.moveTo(bx + 187, 224);
-        ctx.lineTo(bx + 187, 294);
-        ctx.moveTo(bx + 138, 259);
-        ctx.lineTo(bx + 236, 259);
+        ctx.moveTo(bx + 187, 224); ctx.lineTo(bx + 187, 294);
+        ctx.moveTo(bx + 138, 259); ctx.lineTo(bx + 236, 259);
         ctx.stroke();
 
         ctx.fillStyle = theme.upperWin;
@@ -4487,17 +4659,13 @@
         if (idx % 2 === 0) {
           const clkX = bx + 130, clkY = topY + 55;
           ctx.fillStyle = '#ffffff';
-          ctx.beginPath();
-          ctx.arc(clkX, clkY, 15, 0, Math.PI * 2);
-          ctx.fill();
+          ctx.beginPath(); ctx.arc(clkX, clkY, 15, 0, Math.PI * 2); ctx.fill();
           ctx.strokeStyle = '#334155';
           ctx.lineWidth = 2.5;
           ctx.stroke();
           ctx.beginPath();
-          ctx.moveTo(clkX, clkY);
-          ctx.lineTo(clkX, clkY - 9);
-          ctx.moveTo(clkX, clkY);
-          ctx.lineTo(clkX + 7, clkY + 2);
+          ctx.moveTo(clkX, clkY); ctx.lineTo(clkX, clkY - 9);
+          ctx.moveTo(clkX, clkY); ctx.lineTo(clkX + 7, clkY + 2);
           ctx.stroke();
         }
       }
@@ -4510,66 +4678,87 @@
     ctx.save();
     ctx.translate(-Math.round(camX), 0);
 
-    // Glowing Landmark Banners (aligned with world zones; compact pill style over real Haixing BG)
+    // Cute Sanrio Landmark Pill Signs (compact & positioned cleanly so panoramas shine!)
     for (const s of signs) {
       if (s.x + s.w < camX - 60 || s.x > camX + CANVAS_W + 60) continue;
       ctx.save();
-      const sy = starfishBg ? Math.max(82, s.y - 36) : s.y;
-      ctx.fillStyle = starfishBg ? 'rgba(15, 23, 42, 0.80)' : theme.signBg;
-      ctx.strokeStyle = s.color;
-      ctx.lineWidth = 2.5;
+      const sy = isSanrio ? Math.max(58, s.y - 46) : s.y;
+      ctx.fillStyle = isSanrio ? 'rgba(58, 36, 73, 0.84)' : theme.signBg;
+      ctx.strokeStyle = isSanrio ? '#fef08a' : s.color;
+      ctx.lineWidth = 2.6;
       ctx.shadowColor = s.color;
-      ctx.shadowBlur = stage.key === 'starfish' ? 8 : 15;
+      ctx.shadowBlur = isSanrio ? 6 : 15;
       ctx.beginPath();
-      ctx.roundRect(s.x, sy, s.w, s.h - 4, 8);
+      ctx.roundRect(s.x, sy, s.w, s.h - 4, 10);
       ctx.fill();
       ctx.stroke();
       ctx.shadowBlur = 0;
       ctx.fillStyle = '#ffffff';
-      ctx.font = '800 17px "Noto Sans TC", sans-serif';
+      ctx.font = '800 16px "Noto Sans TC", sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(s.text, s.x + s.w / 2, sy + (s.h - 4) / 2 + 1);
       ctx.restore();
     }
 
-    // Campus Sidewalk with Dynamic 2.5D Perspective Tile Slant (y = 310..347)
-    const walkGrad = ctx.createLinearGradient(0, 310, 0, 340);
-    if (starfishBg) {
-      walkGrad.addColorStop(0, '#cbd5e1');
-      walkGrad.addColorStop(1, '#94a3b8');
+    // Campus Sidewalk with Dynamic 2.5D Perspective Tile Slant (y = 312..347)
+    const walkGrad = ctx.createLinearGradient(0, 312, 0, 340);
+    if (isSanrio) {
+      walkGrad.addColorStop(0, '#f8fafc');
+      walkGrad.addColorStop(1, '#e2e8f0');
     } else {
       walkGrad.addColorStop(0, theme.sidewalk);
       walkGrad.addColorStop(1, theme.curb);
     }
     ctx.fillStyle = walkGrad;
-    ctx.fillRect(0, 310, STAGE_W, 28);
-    ctx.strokeStyle = 'rgba(15, 23, 42, 0.28)';
-    ctx.lineWidth = 2;
+    ctx.fillRect(0, 312, STAGE_W, 26);
+
     const screenCenterWorldX = camX + CANVAS_W * 0.5;
+    if (isSanrio) {
+      // Cute pastel mint-teal diamond/chevron paver accents (matching Haixing #002 & Aqiang #001-#002!)
+      ctx.fillStyle = stage.key === 'aqiang' ? 'rgba(134, 239, 172, 0.36)' : 'rgba(125, 211, 252, 0.32)';
+      for (let tx = 20; tx < STAGE_W; tx += 48) {
+        if (tx < camX - 60 || tx > camX + CANVAS_W + 60) continue;
+        ctx.beginPath();
+        ctx.moveTo(tx, 318);
+        ctx.lineTo(tx + 16, 325);
+        ctx.lineTo(tx, 332);
+        ctx.lineTo(tx - 16, 325);
+        ctx.closePath();
+        ctx.fill();
+      }
+    }
+
+    ctx.strokeStyle = isSanrio ? 'rgba(58, 36, 73, 0.28)' : 'rgba(15, 23, 42, 0.28)';
+    ctx.lineWidth = 2;
     for (let sx = 0; sx < STAGE_W; sx += 76) {
       if (sx < camX - 90 || sx > camX + CANVAS_W + 90) continue;
-      // True 1-point perspective slant pointing toward horizon center!
       const slant = Math.max(-36, Math.min(36, (sx - screenCenterWorldX) * 0.085));
       ctx.beginPath();
-      ctx.moveTo(sx, 310);
+      ctx.moveTo(sx, 312);
       ctx.lineTo(sx + slant, 338);
       ctx.stroke();
     }
-    ctx.fillStyle = starfishBg ? '#64748b' : theme.curb;
+    ctx.fillStyle = isSanrio ? '#a78bfa' : theme.curb;
     ctx.fillRect(0, 338, STAGE_W, 9);
+    if (isSanrio) {
+      ctx.strokeStyle = '#3a2449';
+      ctx.lineWidth = 2.4;
+      ctx.beginPath();
+      ctx.moveTo(0, 338); ctx.lineTo(STAGE_W, 338);
+      ctx.moveTo(0, 347); ctx.lineTo(STAGE_W, 347);
+      ctx.stroke();
+    }
 
-    // Roadside Lamps (skip procedural dark poles on real Haixing street so the iconic gate & blue skybridge stay unobstructed!)
-    if (!starfishBg) {
+    // Roadside Lamps (only on Stage 3 Winter Campus so Sanrio daytime street art stays unobstructed!)
+    if (!isSanrio) {
       for (let lx = 260; lx < STAGE_W; lx += 460) {
         if (lx < camX - 140 || lx > camX + CANVAS_W + 140) continue;
         ctx.fillStyle = '#1e293b';
         ctx.fillRect(lx - 4, 152, 8, 166);
         ctx.fillRect(lx - 4, 152, 30, 6);
         ctx.fillStyle = '#fef08a';
-        ctx.beginPath();
-        ctx.arc(lx + 24, 162, 7.5, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.beginPath(); ctx.arc(lx + 24, 162, 7.5, 0, Math.PI * 2); ctx.fill();
 
         const cone = ctx.createRadialGradient(lx + 24, 168, 6, lx + 24, 340, 175);
         cone.addColorStop(0, theme.lampGlow);
@@ -4587,11 +4776,11 @@
 
     // Playable 2.5D Street / Track Ground (y = 347..512)
     const road = ctx.createLinearGradient(0, 347, 0, CANVAS_H);
-    if (starfishBg) {
-      // Sunlit Hualien campus street asphalt matching the real Haixing photos!
-      road.addColorStop(0, '#5b6577');
-      road.addColorStop(0.55, '#475162');
-      road.addColorStop(1, '#333b4a');
+    if (isSanrio) {
+      // Soft Sanrio pastel lavender-slate campus street so bright heroes & monsters pop crisply!
+      road.addColorStop(0, stage.key === 'aqiang' ? '#7b7894' : '#767a99');
+      road.addColorStop(0.55, stage.key === 'aqiang' ? '#625f7a' : '#5e6280');
+      road.addColorStop(1, stage.key === 'aqiang' ? '#4a4761' : '#474a66');
     } else {
       road.addColorStop(0, theme.road[0]);
       road.addColorStop(0.55, theme.road[1]);
@@ -4601,7 +4790,7 @@
     ctx.fillRect(0, 347, STAGE_W, CANVAS_H - 347);
 
     // Subtle 1-point perspective road expansion lines for crisp depth sensation
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.07)';
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
     ctx.lineWidth = 2;
     for (let rx = 0; rx < STAGE_W; rx += 180) {
       if (rx < camX - 240 || rx > camX + CANVAS_W + 240) continue;
@@ -4613,29 +4802,44 @@
       ctx.stroke();
     }
 
-    // Ground sunlight pools / reflections
+    // Iconic Taiwanese Green-White School Crosswalk in front of 阿強 School Gate (Photos #005 & #009!)
+    if (isSanrio && stage.key === 'aqiang') {
+      for (const cwX of [1620, 2460]) {
+        if (cwX + 160 < camX - 40 || cwX > camX + CANVAS_W + 40) continue;
+        ctx.fillStyle = 'rgba(52, 211, 153, 0.42)';
+        ctx.fillRect(cwX, 354, 148, 138);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.72)';
+        for (let wy = 362; wy < 484; wy += 24) {
+          ctx.fillRect(cwX + 10, wy, 128, 12);
+        }
+      }
+    }
+
+    // Ground sunlight pools / soft pastel reflections
     for (let px = 310; px < STAGE_W; px += 520) {
       if (px < camX - 140 || px > camX + CANVAS_W + 140) continue;
-      ctx.fillStyle = starfishBg ? 'rgba(254, 249, 195, 0.08)' : theme.puddleA;
+      ctx.fillStyle = isSanrio ? 'rgba(254, 249, 195, 0.11)' : theme.puddleA;
       ctx.beginPath();
       ctx.ellipse(px, 430, 74, 14, 0, 0, Math.PI * 2);
       ctx.fill();
-      ctx.fillStyle = starfishBg ? 'rgba(125, 211, 252, 0.07)' : theme.puddleB;
+      ctx.fillStyle = isSanrio ? 'rgba(249, 168, 212, 0.09)' : theme.puddleB;
       ctx.beginPath();
       ctx.ellipse(px + 20, 432, 38, 7, 0, 0, Math.PI * 2);
       ctx.fill();
     }
 
     // Street / Track Lane Markings
-    if (starfishBg) {
-      // Crisp white roadside edge line + warm yellow center dashes (real Taiwanese campus street!)
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.58)';
+    if (isSanrio) {
+      // Crisp white roadside edge stripe + warm sunny-yellow center dashes
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
       ctx.fillRect(0, 355, STAGE_W, 3);
-      ctx.fillStyle = 'rgba(250, 204, 21, 0.72)';
+      ctx.fillStyle = 'rgba(253, 224, 71, 0.78)';
       for (let dx = 30; dx < STAGE_W; dx += 140) {
-        ctx.fillRect(dx, 422, 74, 6);
+        ctx.beginPath();
+        ctx.roundRect(dx, 421, 74, 7, 3.5);
+        ctx.fill();
       }
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.42)';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.48)';
       ctx.fillRect(0, 492, STAGE_W, 3);
     } else {
       ctx.fillStyle = theme.laneMark;
@@ -4664,66 +4868,89 @@
   }
 
   // --------------------------------------------------------------------------
-  // LAYER 5 (1.38x FAST FOREGROUND DEPTH-OF-FIELD / 景深虛化前景層)
-  // Scrolls 38% FASTER than the player/camera for vivid 2.5D perspective depth!
+  // LAYER 5 (1.38x & 1.48x FAST FOREGROUND DEPTH-OF-FIELD / 景深虛化前景層)
+  // Scrolls 38%-48% FASTER than the player/camera for vivid 2.5D perspective depth!
   // --------------------------------------------------------------------------
   function drawForegroundParallax(ctx, camX) {
     const stage = getCurrentStage();
+    const isSanrio = stage.key === 'starfish' || stage.key === 'aqiang';
     const fgScroll = camX * 1.38;
 
     ctx.save();
-    // 1. Out-of-focus foreground foliage/bush silhouettes sweeping rapidly past the bottom rim
-    const bushStep = 560;
+    // 1. Out-of-focus foreground Sanrio cloud-bush silhouettes sweeping rapidly past the bottom rim!
+    const bushStep = 540;
     const firstBush = Math.floor((fgScroll - 220) / bushStep) * bushStep;
-    const bushMain = stage.key === 'starfish'
-      ? 'rgba(12, 46, 28, 0.72)'
-      : (stage.key === 'aqiang' ? 'rgba(38, 14, 14, 0.72)' : 'rgba(18, 16, 46, 0.74)');
-    const bushEdge = stage.key === 'starfish'
-      ? 'rgba(34, 128, 72, 0.30)'
-      : (stage.key === 'aqiang' ? 'rgba(234, 88, 12, 0.24)' : 'rgba(147, 197, 253, 0.26)');
+    const bushMain = isSanrio
+      ? (stage.key === 'aqiang' ? 'rgba(22, 101, 52, 0.62)' : 'rgba(16, 110, 78, 0.60)')
+      : 'rgba(18, 16, 46, 0.74)';
+    const bushEdge = isSanrio
+      ? (stage.key === 'aqiang' ? 'rgba(134, 239, 172, 0.36)' : 'rgba(110, 231, 183, 0.36)')
+      : 'rgba(147, 197, 253, 0.26)';
 
     for (let bx = firstBush; bx < fgScroll + CANVAS_W + 260; bx += bushStep) {
       const sx = bx - fgScroll;
       const variant = Math.abs(Math.round(bx / bushStep)) % 3;
-      // Soft outer bokeh halo (mimics shallow camera depth-of-field blur without slow canvas filters!)
+
+      // Soft outer bokeh halo (depth-of-field blur effect!)
       ctx.fillStyle = bushEdge;
       ctx.beginPath();
-      ctx.ellipse(sx, CANVAS_H + 10, 96 + variant * 16, 42 + variant * 6, 0, Math.PI, Math.PI * 2);
-      ctx.ellipse(sx + 62, CANVAS_H + 12, 68, 34, 0, Math.PI, Math.PI * 2);
+      ctx.ellipse(sx, CANVAS_H + 10, 96 + variant * 16, 40 + variant * 6, 0, Math.PI, Math.PI * 2);
+      ctx.ellipse(sx + 62, CANVAS_H + 12, 68, 32, 0, Math.PI, Math.PI * 2);
       ctx.fill();
 
       ctx.fillStyle = bushMain;
       ctx.beginPath();
-      ctx.ellipse(sx, CANVAS_H + 12, 82 + variant * 14, 32 + variant * 5, 0, Math.PI, Math.PI * 2);
-      ctx.ellipse(sx + 56, CANVAS_H + 14, 54, 24, 0, Math.PI, Math.PI * 2);
+      ctx.ellipse(sx, CANVAS_H + 12, 82 + variant * 14, 30 + variant * 5, 0, Math.PI, Math.PI * 2);
+      ctx.ellipse(sx + 56, CANVAS_H + 14, 54, 22, 0, Math.PI, Math.PI * 2);
       ctx.fill();
+
+      // Cute soft-focus pastel Sanrio blossom dots tucked into foreground bushes!
+      if (isSanrio) {
+        ctx.fillStyle = variant === 1 ? 'rgba(254, 240, 138, 0.72)' : 'rgba(251, 207, 232, 0.76)';
+        ctx.beginPath();
+        ctx.arc(sx - 24, CANVAS_H - 9, 5.5, 0, Math.PI * 2);
+        ctx.arc(sx + 22, CANVAS_H - 12, 4.5, 0, Math.PI * 2);
+        ctx.arc(sx + 62, CANVAS_H - 7, 5.0, 0, Math.PI * 2);
+        ctx.fill();
+      }
 
       // Occasional blurred roadside palm frond overhang at top edge (1.38x speed!)
       if (variant === 0) {
         const tx = sx + 180;
         ctx.fillStyle = bushEdge;
         ctx.beginPath();
-        ctx.ellipse(tx, -6, 108, 28, 0.14, 0, Math.PI * 2);
+        ctx.ellipse(tx, -6, 108, 26, 0.14, 0, Math.PI * 2);
         ctx.fill();
         ctx.fillStyle = bushMain;
         ctx.beginPath();
-        ctx.ellipse(tx, -10, 90, 20, 0.14, 0, Math.PI * 2);
+        ctx.ellipse(tx, -10, 90, 18, 0.14, 0, Math.PI * 2);
         ctx.fill();
       }
     }
 
-    // 2. Fast-moving foreground optical bokeh dust / sunlit motes / snow (1.48x speed!)
-    const moteCol = stage.key === 'starfish'
-      ? 'rgba(254, 249, 195, 0.34)'
-      : (stage.key === 'aqiang' ? 'rgba(253, 186, 116, 0.34)' : 'rgba(224, 242, 254, 0.42)');
-    ctx.fillStyle = moteCol;
+    // 2. Fast-moving foreground optical bokeh sparkles / sunlit motes / snow (1.48x speed!)
     for (let i = 0; i < 16; i++) {
       const mx = (((i * 193 - camX * 1.48 + game.time * (28 + (i % 4) * 9)) % (CANVAS_W + 120)) + (CANVAS_W + 120)) % (CANVAS_W + 120) - 60;
       const my = 42 + ((i * 73 + Math.sin(game.time * 1.6 + i) * 18) % (CANVAS_H - 70));
-      const r = 4.5 + (i % 3) * 3.2;
-      ctx.beginPath();
-      ctx.arc(mx, my, r, 0, Math.PI * 2);
-      ctx.fill();
+      const r = 4.2 + (i % 3) * 2.8;
+      if (isSanrio && i % 3 === 0) {
+        // Dreamy twinkling 4-point Sanrio bokeh star!
+        ctx.fillStyle = stage.key === 'aqiang' ? 'rgba(254, 240, 138, 0.50)' : 'rgba(251, 207, 232, 0.52)';
+        ctx.beginPath();
+        ctx.moveTo(mx, my - r * 1.3);
+        ctx.quadraticCurveTo(mx, my, mx + r * 1.3, my);
+        ctx.quadraticCurveTo(mx, my, mx, my + r * 1.3);
+        ctx.quadraticCurveTo(mx, my, mx - r * 1.3, my);
+        ctx.quadraticCurveTo(mx, my, mx, my - r * 1.3);
+        ctx.fill();
+      } else {
+        ctx.fillStyle = isSanrio
+          ? (stage.key === 'aqiang' ? 'rgba(254, 243, 199, 0.36)' : 'rgba(255, 255, 255, 0.38)')
+          : 'rgba(224, 242, 254, 0.42)';
+        ctx.beginPath();
+        ctx.arc(mx, my, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
     }
     ctx.restore();
   }
@@ -5203,7 +5430,7 @@
       const hk = formatKeyCode(StudioState.getAction('heavyAttack')?.key);
       const sk = formatKeyCode(StudioState.getAction('special')?.key);
       const dk = formatKeyCode(StudioState.getAction('dash')?.key);
-      ctx.fillText(`WASD走路 ｜ AA/DD跑步 ｜ ↓↑龍捲旋風腳(浮空追打) ｜ ${dk}閃身步 ｜ ${lk}輕攻 ｜ ${hk}重攻 ｜ ${sk}必殺技`, CANVAS_W / 2, 492);
+      ctx.fillText(`WASD走路 ｜ AA/DD跑步 ｜ ↑+${hk}龍捲旋風腳(浮空追打) ｜ ${dk}閃身步 ｜ ${lk}輕攻 ｜ ${hk}重攻 ｜ ${sk}必殺技`, CANVAS_W / 2, 492);
       ctx.restore();
     } else if (game.state === 'paused') {
       ctx.save();
@@ -5760,7 +5987,7 @@
 
       // STRICT 2.5D Z-DEPTH SORTING across player, enemies, crates, pickups, projectiles!
       const drawList = [];
-      for (const pr of game.props) if (!pr.broken) drawList.push({ z: pr.z, draw: () => pr.draw(ctx) });
+      for (const pr of game.props) if (!pr.gone) drawList.push({ z: pr.z, draw: () => pr.draw(ctx) });
       for (const pk of game.pickups) drawList.push({ z: pk.z, draw: () => pk.draw(ctx) });
       for (const e of game.enemies) drawList.push({ z: e.z, draw: () => e.draw(ctx) });
       for (const pj of game.projectiles) drawList.push({ z: pj.z + 2, draw: () => pj.draw(ctx) });
@@ -5842,7 +6069,7 @@
     el.innerHTML = `
       <span class="key-item"><kbd>WASD</kbd> 走路</span>
       <span class="key-item"><kbd>AA</kbd>/<kbd>DD</kbd> 跑步</span>
-      <span class="key-item special"><kbd>↓</kbd><kbd>↑</kbd> 龍捲旋風腳</span>
+      <span class="key-item special"><kbd>↑</kbd>+<kbd>${hk}</kbd> 龍捲旋風腳</span>
       <span class="key-item"><kbd>${dk}</kbd> 閃身步</span>
       <span class="key-item"><kbd>${lk}</kbd> 輕攻(拳)</span>
       <span class="key-item"><kbd>${hk}</kbd> 重攻(杖)</span>
@@ -6019,7 +6246,7 @@
           : (act.id === 'dashAttack'
             ? `觸發：跑步+${formatKeyCode(StudioState.getAction('heavyAttack')?.key)}`
             : (act.id === 'tornadoKick' || act.id === 'rp_tornadoKick'
-              ? '觸發：快速 ↓ → ↑'
+              ? `觸發：↑ + ${formatKeyCode(StudioState.getAction('heavyAttack')?.key)}`
               : (act.id === 'victory' || act.id === 'rp_victory'
                 ? '觸發：戰鬥勝利結算'
                 : (act.id === 'run' || act.id === 'rp_run'
@@ -6291,7 +6518,7 @@
 
   const GP_ACTION_DEFS = [
     { id: 'lightAttack', label: '輕攻擊 (Light)', desc: '快速連拳 / 跑步中發動浪子踢球' },
-    { id: 'heavyAttack', label: '重攻擊 (Heavy)', desc: '強力重擊 / 跑步中發動衝刺重擊' },
+    { id: 'heavyAttack', label: '重攻擊 (Heavy)', desc: '強力重擊 / 跑步衝刺重擊 / 按住↑+重攻 龍捲旋風腳' },
     { id: 'special', label: '必殺技 (Special)', desc: '能量砲十連發 / 赤焰百拳連擊' },
     { id: 'jump', label: '跳躍 / 確認 (Jump)', desc: '跳躍 / 選角畫面確認開戰' },
     { id: 'dash', label: '瞬間衝刺・閃身步 (Dash)', desc: '喊出「閃身步!!」瞬間突進' },
@@ -6628,17 +6855,7 @@
         }
       }
 
-      // Fast Down -> Up (↓↑) on Gamepad D-Pad or Stick triggers 龍捲旋風腳 during gameplay!
-      if (game.state === 'playing') {
-        if (vertEdgeDown) {
-          lastDownTapTime = performance.now();
-        } else if (vertEdgeUp && lastDownTapTime > 0 && performance.now() - lastDownTapTime < 380) {
-          tornadoKickTrigger = true;
-          lastDownTapTime = 0;
-        }
-      }
-
-      // 3. Action Edge Triggers
+      // 3. Action Edge Triggers (Up + Heavy Attack triggers 龍捲旋風腳 automatically via moveZ < -0.35!)
       const actionIds = ['lightAttack', 'heavyAttack', 'special', 'jump', 'dash', 'pause'];
       for (const id of actionIds) {
         if (isEdge(this.bindings[id])) {
