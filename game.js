@@ -4559,28 +4559,30 @@
     ctx.fillStyle = starfishBg ? '#64748b' : theme.curb;
     ctx.fillRect(0, 338, STAGE_W, 9);
 
-    // Roadside Lamps (1.00x world depth anchors — spaced cleanly so they never clutter Haixing gate)
-    for (let lx = 260; lx < STAGE_W; lx += 460) {
-      if (lx < camX - 140 || lx > camX + CANVAS_W + 140) continue;
-      ctx.fillStyle = '#1e293b';
-      ctx.fillRect(lx - 4, 152, 8, 166);
-      ctx.fillRect(lx - 4, 152, 30, 6);
-      ctx.fillStyle = '#fef08a';
-      ctx.beginPath();
-      ctx.arc(lx + 24, 162, 7.5, 0, Math.PI * 2);
-      ctx.fill();
+    // Roadside Lamps (skip procedural dark poles on real Haixing street so the iconic gate & blue skybridge stay unobstructed!)
+    if (!starfishBg) {
+      for (let lx = 260; lx < STAGE_W; lx += 460) {
+        if (lx < camX - 140 || lx > camX + CANVAS_W + 140) continue;
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(lx - 4, 152, 8, 166);
+        ctx.fillRect(lx - 4, 152, 30, 6);
+        ctx.fillStyle = '#fef08a';
+        ctx.beginPath();
+        ctx.arc(lx + 24, 162, 7.5, 0, Math.PI * 2);
+        ctx.fill();
 
-      const cone = ctx.createRadialGradient(lx + 24, 168, 6, lx + 24, 340, 175);
-      cone.addColorStop(0, theme.lampGlow);
-      cone.addColorStop(1, 'rgba(254, 240, 138, 0)');
-      ctx.fillStyle = cone;
-      ctx.beginPath();
-      ctx.moveTo(lx + 16, 164);
-      ctx.lineTo(lx - 90, 415);
-      ctx.lineTo(lx + 140, 415);
-      ctx.lineTo(lx + 32, 164);
-      ctx.closePath();
-      ctx.fill();
+        const cone = ctx.createRadialGradient(lx + 24, 168, 6, lx + 24, 340, 175);
+        cone.addColorStop(0, theme.lampGlow);
+        cone.addColorStop(1, 'rgba(254, 240, 138, 0)');
+        ctx.fillStyle = cone;
+        ctx.beginPath();
+        ctx.moveTo(lx + 16, 164);
+        ctx.lineTo(lx - 90, 415);
+        ctx.lineTo(lx + 140, 415);
+        ctx.lineTo(lx + 32, 164);
+        ctx.closePath();
+        ctx.fill();
+      }
     }
 
     // Playable 2.5D Street / Track Ground (y = 347..512)
