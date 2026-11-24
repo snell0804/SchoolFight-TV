@@ -629,6 +629,7 @@
 
   const SpriteBank = {
     sheets: {},
+    bgImages: {},
     ready: false,
     portraitCanvas: null,
     portraits: {},
@@ -652,6 +653,20 @@
           custom: false,
         };
       });
+      // Load stitched anime-stylized Haixing Elementary real street panorama
+      const bgDef = [
+        { key: 'starfish', embedKey: 'bg_starfish_street', file: 'assets/bg_starfish_street.webp' },
+      ];
+      for (const b of bgDef) {
+        promises.push((async () => {
+          try {
+            const src = embedded[b.embedKey] || b.file;
+            this.bgImages[b.key] = await this.loadImage(src);
+          } catch (_) {
+            this.bgImages[b.key] = null;
+          }
+        })());
+      }
       await Promise.all(promises);
       this.buildPortrait();
       this.ready = true;
@@ -1292,13 +1307,13 @@
       bossWarnName: '海星國小 宇宙海星體育股長 登場！',
       clearTitle: 'STAGE 1 CLEAR!! 制霸海星國小！',
       signs: [
-        { x: 220, y: 142, w: 164, h: 44, text: '海星國小', color: '#38bdf8' },
-        { x: 640, y: 128, w: 140, h: 38, text: '海洋生態池', color: '#38bdf8' },
-        { x: 1180, y: 144, w: 152, h: 42, text: '校園福利社', color: '#f43f8e' },
-        { x: 1660, y: 132, w: 148, h: 40, text: '水族自然室', color: '#22c55e' },
-        { x: 2180, y: 138, w: 160, h: 42, text: '海星司令台', color: '#f59e0b' },
-        { x: 2760, y: 128, w: 170, h: 44, text: '海星大操場', color: '#38bdf8' },
-        { x: 3250, y: 142, w: 150, h: 40, text: 'BOSS 決戰', color: '#f43f5e' },
+        { x: 180, y: 122, w: 156, h: 40, text: '海星國小大門', color: '#38bdf8' },
+        { x: 640, y: 120, w: 142, h: 38, text: '主教學大樓', color: '#facc15' },
+        { x: 1180, y: 124, w: 148, h: 40, text: '綠藤椰林道', color: '#22c55e' },
+        { x: 1680, y: 120, w: 148, h: 40, text: '紅磚壁畫牆', color: '#f43f8e' },
+        { x: 2200, y: 122, w: 152, h: 40, text: '陽光木棧道', color: '#38bdf8' },
+        { x: 2740, y: 120, w: 156, h: 40, text: '紅頂大涼亭', color: '#f59e0b' },
+        { x: 3240, y: 124, w: 164, h: 40, text: '銀龍地標 BOSS', color: '#f43f5e' },
       ],
       zones: [
         {
@@ -4232,39 +4247,51 @@
     const stage = getCurrentStage();
     const theme = SCHOOL_THEMES[stage.key] || SCHOOL_THEMES.starfish;
     const signs = stage.signs || [];
+    const starfishBg = (stage.key === 'starfish' && SpriteBank.bgImages && SpriteBank.bgImages.starfish)
+      ? SpriteBank.bgImages.starfish
+      : null;
 
-    // 1. School Sky Gradient
-    const sky = ctx.createLinearGradient(0, 0, 0, 290);
-    sky.addColorStop(0, theme.sky[0]);
-    sky.addColorStop(0.55, theme.sky[1]);
-    sky.addColorStop(1, theme.sky[2]);
+    // ------------------------------------------------------------------------
+    // LAYER 0 (0.05x): Ultra-Far Sky Gradient & Sun / Sunset / Winter Moon
+    // ------------------------------------------------------------------------
+    const sky = ctx.createLinearGradient(0, 0, 0, 315);
+    if (starfishBg) {
+      sky.addColorStop(0, '#1d84e5');
+      sky.addColorStop(0.48, '#53b7fb');
+      sky.addColorStop(1, '#cdeeff');
+    } else {
+      sky.addColorStop(0, theme.sky[0]);
+      sky.addColorStop(0.55, theme.sky[1]);
+      sky.addColorStop(1, theme.sky[2]);
+    }
     ctx.fillStyle = sky;
-    ctx.fillRect(0, 0, CANVAS_W, 300);
+    ctx.fillRect(0, 0, CANVAS_W, 320);
 
-    // 2. Celestial Element (Sun / Sunset / Winter Moon) + Atmospheric Effects
-    const orbX = 820 - camX * 0.06;
+    const orbX = 830 - camX * 0.05;
     if (theme.celestialType === 'sun') {
-      const sunGrad = ctx.createRadialGradient(orbX, 74, 10, orbX, 74, 95);
-      sunGrad.addColorStop(0, 'rgba(255, 253, 230, 0.98)');
-      sunGrad.addColorStop(0.38, 'rgba(253, 224, 71, 0.55)');
+      const sunGrad = ctx.createRadialGradient(orbX, 66, 10, orbX, 66, 108);
+      sunGrad.addColorStop(0, 'rgba(255, 254, 232, 0.98)');
+      sunGrad.addColorStop(0.38, 'rgba(253, 224, 71, 0.52)');
       sunGrad.addColorStop(1, 'rgba(253, 224, 71, 0)');
       ctx.fillStyle = sunGrad;
       ctx.beginPath();
-      ctx.arc(orbX, 74, 95, 0, Math.PI * 2);
+      ctx.arc(orbX, 66, 108, 0, Math.PI * 2);
       ctx.fill();
       ctx.fillStyle = '#fef9c3';
       ctx.beginPath();
-      ctx.arc(orbX, 74, 34, 0, Math.PI * 2);
+      ctx.arc(orbX, 66, 30, 0, Math.PI * 2);
       ctx.fill();
 
-      // Soft drifting daytime school clouds
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
-      const cloudOff = -((camX * 0.1 + game.time * 8) % 340);
-      for (let cx = cloudOff - 160; cx < CANVAS_W + 220; cx += 340) {
+      // LAYER 1A (0.10x): Slow drifting fluffy sunny clouds
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.72)';
+      const cloudOff = -((camX * 0.10 + game.time * 7) % 320);
+      for (let cx = cloudOff - 160; cx < CANVAS_W + 220; cx += 320) {
+        const cy = 54 + ((Math.round((cx - cloudOff) / 320) % 2) * 20);
         ctx.beginPath();
-        ctx.arc(cx, 68, 22, 0, Math.PI * 2);
-        ctx.arc(cx + 24, 60, 28, 0, Math.PI * 2);
-        ctx.arc(cx + 52, 68, 20, 0, Math.PI * 2);
+        ctx.arc(cx, cy + 8, 22, 0, Math.PI * 2);
+        ctx.arc(cx + 26, cy, 30, 0, Math.PI * 2);
+        ctx.arc(cx + 58, cy + 8, 23, 0, Math.PI * 2);
+        ctx.arc(cx + 80, cy + 12, 16, 0, Math.PI * 2);
         ctx.fill();
       }
     } else if (theme.celestialType === 'sunset') {
@@ -4280,6 +4307,15 @@
       ctx.beginPath();
       ctx.arc(orbX, 118, 44, 0, Math.PI * 2);
       ctx.fill();
+
+      // Sunset clouds (0.10x)
+      ctx.fillStyle = 'rgba(254, 215, 170, 0.36)';
+      const cloudOff = -((camX * 0.10 + game.time * 6) % 360);
+      for (let cx = cloudOff - 180; cx < CANVAS_W + 220; cx += 360) {
+        ctx.beginPath();
+        ctx.ellipse(cx + 45, 78, 66, 14, 0, 0, Math.PI * 2);
+        ctx.fill();
+      }
     } else {
       const moonGrad = ctx.createRadialGradient(orbX, 82, 12, orbX, 82, 98);
       moonGrad.addColorStop(0, 'rgba(240, 249, 255, 0.96)');
@@ -4295,154 +4331,243 @@
       ctx.fill();
     }
 
-    // Distant Campus Buildings & Trees Silhouette (0.2x parallax)
-    ctx.fillStyle = theme.farFill;
-    const farOff = -(camX * 0.2) % 320;
+    // ------------------------------------------------------------------------
+    // LAYER 1B (0.18x & 0.28x): Distant Hualien Mountain Ridges (Slow Parallax!)
+    // ------------------------------------------------------------------------
+    const mtnFarCol = stage.key === 'starfish'
+      ? 'rgba(108, 168, 224, 0.58)'
+      : (stage.key === 'aqiang' ? 'rgba(124, 45, 18, 0.48)' : 'rgba(49, 46, 129, 0.55)');
+    const mtnMidCol = stage.key === 'starfish'
+      ? 'rgba(72, 138, 178, 0.65)'
+      : (stage.key === 'aqiang' ? 'rgba(92, 28, 22, 0.62)' : 'rgba(30, 27, 75, 0.72)');
+
+    // Far misty mountain peaks (0.18x)
+    ctx.fillStyle = mtnFarCol;
+    const mFarOff = -(camX * 0.18) % 520;
+    ctx.beginPath();
+    ctx.moveTo(0, 315);
+    for (let x = mFarOff - 520; x <= CANVAS_W + 520; x += 260) {
+      ctx.lineTo(x, 222);
+      ctx.lineTo(x + 95, 128);
+      ctx.lineTo(x + 180, 174);
+      ctx.lineTo(x + 260, 142);
+    }
+    ctx.lineTo(CANVAS_W + 520, 315);
+    ctx.closePath();
+    ctx.fill();
+
+    // Closer mountain foothills (0.28x)
+    ctx.fillStyle = mtnMidCol;
+    const mMidOff = -(camX * 0.28) % 440;
+    ctx.beginPath();
+    ctx.moveTo(0, 315);
+    for (let x = mMidOff - 440; x <= CANVAS_W + 440; x += 220) {
+      ctx.lineTo(x, 244);
+      ctx.lineTo(x + 75, 178);
+      ctx.lineTo(x + 150, 206);
+      ctx.lineTo(x + 220, 182);
+    }
+    ctx.lineTo(CANVAS_W + 440, 315);
+    ctx.closePath();
+    ctx.fill();
+
+    // ------------------------------------------------------------------------
+    // LAYER 2 (0.42x): Far Campus / City Horizon Silhouette
+    // ------------------------------------------------------------------------
+    ctx.fillStyle = stage.key === 'starfish' ? 'rgba(56, 108, 148, 0.52)' : theme.farFill;
+    const farOff = -(camX * 0.42) % 320;
     for (let x = farOff - 320; x < CANVAS_W + 320; x += 160) {
-      ctx.fillRect(x, 126, 68, 174);
-      ctx.fillRect(x + 72, 98, 56, 202);
-      // School bell tower roof
+      ctx.fillRect(x, 152, 68, 164);
+      ctx.fillRect(x + 72, 126, 56, 190);
       ctx.beginPath();
-      ctx.moveTo(x + 70, 98);
-      ctx.lineTo(x + 100, 62);
-      ctx.lineTo(x + 130, 98);
+      ctx.moveTo(x + 70, 126);
+      ctx.lineTo(x + 100, 92);
+      ctx.lineTo(x + 130, 126);
       ctx.closePath();
       ctx.fill();
-      ctx.fillRect(x + 132, 148, 34, 152);
+      ctx.fillRect(x + 132, 168, 34, 148);
 
       ctx.fillStyle = theme.farWin;
-      for (let wy = 136; wy < 252; wy += 24) {
-        ctx.fillRect(x + 12, wy, 12, 11);
-        ctx.fillRect(x + 38, wy, 12, 11);
-        ctx.fillRect(x + 86, wy - 16, 12, 11);
+      for (let wy = 160; wy < 268; wy += 24) {
+        ctx.fillRect(x + 12, wy, 12, 10);
+        ctx.fillRect(x + 38, wy, 12, 10);
+        ctx.fillRect(x + 86, wy - 16, 12, 10);
       }
-      ctx.fillStyle = theme.farFill;
+      ctx.fillStyle = stage.key === 'starfish' ? 'rgba(56, 108, 148, 0.52)' : theme.farFill;
     }
 
-    // 3. Midground School Buildings & Classrooms (1:1 world space)
+    // Soft atmospheric depth haze between distant mountains/skyline and midground campus
+    const haze = ctx.createLinearGradient(0, 175, 0, 316);
+    haze.addColorStop(0, 'rgba(224, 242, 254, 0)');
+    haze.addColorStop(1, stage.key === 'starfish'
+      ? 'rgba(224, 242, 254, 0.45)'
+      : (stage.key === 'aqiang' ? 'rgba(251, 146, 60, 0.22)' : 'rgba(99, 102, 241, 0.22)'));
+    ctx.fillStyle = haze;
+    ctx.fillRect(0, 175, CANVAS_W, 141);
+
+    // ------------------------------------------------------------------------
+    // LAYER 3 (0.78x - 0.82x): Midground Stitched 海星國小 Street Panorama
+    // (or Parallax School Buildings for Stages 2 & 3!)
+    // ------------------------------------------------------------------------
+    if (starfishBg) {
+      const bgW = starfishBg.width || 3120;
+      const bgH = 296;
+      const maxScroll = Math.max(1, STAGE_W - CANVAS_W);
+      const maxBgShift = Math.max(0, bgW - CANVAS_W);
+      // Smooth 0.78x-mapped parallax spanning Start (#001 Gate) -> Boss (#011 Silver Dragon)!
+      const bgDrawX = -Math.round((camX / maxScroll) * maxBgShift);
+      ctx.save();
+      ctx.drawImage(starfishBg, bgDrawX, 22, bgW, bgH);
+      // Subtle grounded contact shadow along base of panorama so it locks to the 1.0x sidewalk
+      const baseShadow = ctx.createLinearGradient(0, 294, 0, 318);
+      baseShadow.addColorStop(0, 'rgba(15, 23, 42, 0)');
+      baseShadow.addColorStop(1, 'rgba(15, 23, 42, 0.34)');
+      ctx.fillStyle = baseShadow;
+      ctx.fillRect(0, 294, CANVAS_W, 24);
+      ctx.restore();
+    } else {
+      // Stages 2 & 3 Midground School Buildings with 0.82x Parallax Depth!
+      ctx.save();
+      const midCamX = Math.round(camX * 0.82);
+      ctx.translate(-midCamX, 0);
+      const midSpan = Math.ceil(STAGE_W * 0.88) + 300;
+      for (let bx = 0; bx < midSpan; bx += 260) {
+        if (bx + 260 < midCamX - 40 || bx > midCamX + CANVAS_W + 40) continue;
+        const idx = Math.floor(bx / 260);
+        const bH = 198 + (idx % 2) * 20;
+        const topY = 314 - bH;
+
+        ctx.fillStyle = idx % 2 === 0 ? theme.wallA : theme.wallB;
+        ctx.fillRect(bx + 4, topY, 252, bH);
+        ctx.strokeStyle = theme.wallStroke;
+        ctx.lineWidth = 3;
+        ctx.strokeRect(bx + 4, topY, 252, bH);
+
+        ctx.fillStyle = theme.roof;
+        ctx.fillRect(bx, topY, 260, 15);
+        if (stage.key === 'donghua') {
+          ctx.fillStyle = 'rgba(241, 245, 249, 0.85)';
+          ctx.fillRect(bx, topY - 4, 260, 6);
+        }
+
+        ctx.fillStyle = theme.doorFill;
+        ctx.fillRect(bx + 26, 224, 88, 90);
+        ctx.strokeStyle = theme.doorLine;
+        ctx.lineWidth = 2;
+        for (let sy = 236; sy < 312; sy += 14) {
+          ctx.beginPath();
+          ctx.moveTo(bx + 28, sy);
+          ctx.lineTo(bx + 112, sy);
+          ctx.stroke();
+        }
+
+        const winGrad = ctx.createLinearGradient(bx + 138, 220, bx + 138, 298);
+        winGrad.addColorStop(0, theme.winTop);
+        winGrad.addColorStop(1, theme.winBot);
+        ctx.fillStyle = winGrad;
+        ctx.fillRect(bx + 138, 224, 98, 70);
+        ctx.strokeStyle = theme.winBorder;
+        ctx.lineWidth = 2.5;
+        ctx.strokeRect(bx + 138, 224, 98, 70);
+        ctx.beginPath();
+        ctx.moveTo(bx + 187, 224);
+        ctx.lineTo(bx + 187, 294);
+        ctx.moveTo(bx + 138, 259);
+        ctx.lineTo(bx + 236, 259);
+        ctx.stroke();
+
+        ctx.fillStyle = theme.upperWin;
+        ctx.fillRect(bx + 32, topY + 34, 62, 42);
+        ctx.fillRect(bx + 166, topY + 34, 62, 42);
+        ctx.strokeStyle = theme.wallStroke;
+        ctx.lineWidth = 2;
+        ctx.strokeRect(bx + 32, topY + 34, 62, 42);
+        ctx.strokeRect(bx + 166, topY + 34, 62, 42);
+
+        if (idx % 2 === 0) {
+          const clkX = bx + 130, clkY = topY + 55;
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.arc(clkX, clkY, 15, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = '#334155';
+          ctx.lineWidth = 2.5;
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(clkX, clkY);
+          ctx.lineTo(clkX, clkY - 9);
+          ctx.moveTo(clkX, clkY);
+          ctx.lineTo(clkX + 7, clkY + 2);
+          ctx.stroke();
+        }
+      }
+      ctx.restore();
+    }
+
+    // ------------------------------------------------------------------------
+    // LAYER 4 (1.00x World Space): Signs, Perspective Sidewalk, Lamps & Ground
+    // ------------------------------------------------------------------------
     ctx.save();
     ctx.translate(-Math.round(camX), 0);
 
-    for (let bx = 0; bx < STAGE_W; bx += 260) {
-      const idx = Math.floor(bx / 260);
-      const bH = 198 + (idx % 2) * 20;
-      const topY = 314 - bH;
-
-      // School classroom facade
-      ctx.fillStyle = idx % 2 === 0 ? theme.wallA : theme.wallB;
-      ctx.fillRect(bx + 4, topY, 252, bH);
-      ctx.strokeStyle = theme.wallStroke;
-      ctx.lineWidth = 3;
-      ctx.strokeRect(bx + 4, topY, 252, bH);
-
-      // School roof trim + snow cap for 冬花國小
-      ctx.fillStyle = theme.roof;
-      ctx.fillRect(bx, topY, 260, 15);
-      if (stage.key === 'donghua') {
-        ctx.fillStyle = 'rgba(241, 245, 249, 0.85)';
-        ctx.fillRect(bx, topY - 4, 260, 6);
-      }
-
-      // Classroom entrance / shutter door
-      ctx.fillStyle = theme.doorFill;
-      ctx.fillRect(bx + 26, 224, 88, 90);
-      ctx.strokeStyle = theme.doorLine;
-      ctx.lineWidth = 2;
-      for (let sy = 236; sy < 312; sy += 14) {
-        ctx.beginPath();
-        ctx.moveTo(bx + 28, sy);
-        ctx.lineTo(bx + 112, sy);
-        ctx.stroke();
-      }
-
-      // Classroom panoramic window with panes
-      const winGrad = ctx.createLinearGradient(bx + 138, 220, bx + 138, 298);
-      winGrad.addColorStop(0, theme.winTop);
-      winGrad.addColorStop(1, theme.winBot);
-      ctx.fillStyle = winGrad;
-      ctx.fillRect(bx + 138, 224, 98, 70);
-      ctx.strokeStyle = theme.winBorder;
-      ctx.lineWidth = 2.5;
-      ctx.strokeRect(bx + 138, 224, 98, 70);
-      ctx.beginPath();
-      ctx.moveTo(bx + 187, 224);
-      ctx.lineTo(bx + 187, 294);
-      ctx.moveTo(bx + 138, 259);
-      ctx.lineTo(bx + 236, 259);
-      ctx.stroke();
-
-      // 2F Classroom Windows + School Wall Clock on every 2nd block
-      ctx.fillStyle = theme.upperWin;
-      ctx.fillRect(bx + 32, topY + 34, 62, 42);
-      ctx.fillRect(bx + 166, topY + 34, 62, 42);
-      ctx.strokeStyle = theme.wallStroke;
-      ctx.lineWidth = 2;
-      ctx.strokeRect(bx + 32, topY + 34, 62, 42);
-      ctx.strokeRect(bx + 166, topY + 34, 62, 42);
-
-      if (idx % 2 === 0) {
-        const clkX = bx + 130, clkY = topY + 55;
-        ctx.fillStyle = '#ffffff';
-        ctx.beginPath();
-        ctx.arc(clkX, clkY, 15, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = '#334155';
-        ctx.lineWidth = 2.5;
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(clkX, clkY);
-        ctx.lineTo(clkX, clkY - 9);
-        ctx.moveTo(clkX, clkY);
-        ctx.lineTo(clkX + 7, clkY + 2);
-        ctx.stroke();
-      }
-    }
-
-    // Glowing School Banners & Classroom Signs
+    // Glowing Landmark Banners (aligned with world zones; compact pill style over real Haixing BG)
     for (const s of signs) {
       if (s.x + s.w < camX - 60 || s.x > camX + CANVAS_W + 60) continue;
       ctx.save();
-      ctx.fillStyle = theme.signBg;
+      const sy = starfishBg ? Math.max(82, s.y - 36) : s.y;
+      ctx.fillStyle = starfishBg ? 'rgba(15, 23, 42, 0.80)' : theme.signBg;
       ctx.strokeStyle = s.color;
-      ctx.lineWidth = 3;
+      ctx.lineWidth = 2.5;
       ctx.shadowColor = s.color;
       ctx.shadowBlur = stage.key === 'starfish' ? 8 : 15;
       ctx.beginPath();
-      ctx.roundRect(s.x, s.y, s.w, s.h, 7);
+      ctx.roundRect(s.x, sy, s.w, s.h - 4, 8);
       ctx.fill();
       ctx.stroke();
       ctx.shadowBlur = 0;
       ctx.fillStyle = '#ffffff';
-      ctx.font = '800 20px "Noto Sans TC", sans-serif';
+      ctx.font = '800 17px "Noto Sans TC", sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(s.text, s.x + s.w / 2, s.y + s.h / 2 + 1);
+      ctx.fillText(s.text, s.x + s.w / 2, sy + (s.h - 4) / 2 + 1);
       ctx.restore();
     }
 
-    // 4. Campus Walkway & Lamps along Upper Depth Boundary (y = 310..347)
-    ctx.fillStyle = theme.sidewalk;
+    // Campus Sidewalk with Dynamic 2.5D Perspective Tile Slant (y = 310..347)
+    const walkGrad = ctx.createLinearGradient(0, 310, 0, 340);
+    if (starfishBg) {
+      walkGrad.addColorStop(0, '#cbd5e1');
+      walkGrad.addColorStop(1, '#94a3b8');
+    } else {
+      walkGrad.addColorStop(0, theme.sidewalk);
+      walkGrad.addColorStop(1, theme.curb);
+    }
+    ctx.fillStyle = walkGrad;
     ctx.fillRect(0, 310, STAGE_W, 28);
-    ctx.strokeStyle = 'rgba(15, 10, 28, 0.28)';
+    ctx.strokeStyle = 'rgba(15, 23, 42, 0.28)';
     ctx.lineWidth = 2;
+    const screenCenterWorldX = camX + CANVAS_W * 0.5;
     for (let sx = 0; sx < STAGE_W; sx += 76) {
+      if (sx < camX - 90 || sx > camX + CANVAS_W + 90) continue;
+      // True 1-point perspective slant pointing toward horizon center!
+      const slant = Math.max(-36, Math.min(36, (sx - screenCenterWorldX) * 0.085));
       ctx.beginPath();
       ctx.moveTo(sx, 310);
-      ctx.lineTo(sx - 18, 338);
+      ctx.lineTo(sx + slant, 338);
       ctx.stroke();
     }
-    ctx.fillStyle = theme.curb;
+    ctx.fillStyle = starfishBg ? '#64748b' : theme.curb;
     ctx.fillRect(0, 338, STAGE_W, 9);
 
-    // Campus Lamps
-    for (let lx = 180; lx < STAGE_W; lx += 380) {
-      if (lx < camX - 120 || lx > camX + CANVAS_W + 120) continue;
+    // Roadside Lamps (1.00x world depth anchors — spaced cleanly so they never clutter Haixing gate)
+    for (let lx = 260; lx < STAGE_W; lx += 460) {
+      if (lx < camX - 140 || lx > camX + CANVAS_W + 140) continue;
       ctx.fillStyle = '#1e293b';
       ctx.fillRect(lx - 4, 152, 8, 166);
       ctx.fillRect(lx - 4, 152, 30, 6);
       ctx.fillStyle = '#fef08a';
       ctx.beginPath();
-      ctx.arc(lx + 24, 162, 8, 0, Math.PI * 2);
+      ctx.arc(lx + 24, 162, 7.5, 0, Math.PI * 2);
       ctx.fill();
 
       const cone = ctx.createRadialGradient(lx + 24, 168, 6, lx + 24, 340, 175);
@@ -4458,45 +4583,69 @@
       ctx.fill();
     }
 
-    // 5. Playable 2.5D School Courtyard / Track Ground (y = 347..512)
+    // Playable 2.5D Street / Track Ground (y = 347..512)
     const road = ctx.createLinearGradient(0, 347, 0, CANVAS_H);
-    road.addColorStop(0, theme.road[0]);
-    road.addColorStop(0.55, theme.road[1]);
-    road.addColorStop(1, theme.road[2]);
+    if (starfishBg) {
+      // Sunlit Hualien campus street asphalt matching the real Haixing photos!
+      road.addColorStop(0, '#5b6577');
+      road.addColorStop(0.55, '#475162');
+      road.addColorStop(1, '#333b4a');
+    } else {
+      road.addColorStop(0, theme.road[0]);
+      road.addColorStop(0.55, theme.road[1]);
+      road.addColorStop(1, theme.road[2]);
+    }
     ctx.fillStyle = road;
     ctx.fillRect(0, 347, STAGE_W, CANVAS_H - 347);
 
-    // Subtle ground highlights / snow patches
+    // Subtle 1-point perspective road expansion lines for crisp depth sensation
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.07)';
+    ctx.lineWidth = 2;
+    for (let rx = 0; rx < STAGE_W; rx += 180) {
+      if (rx < camX - 240 || rx > camX + CANVAS_W + 240) continue;
+      const topX = rx;
+      const botX = rx + (rx - screenCenterWorldX) * 0.42;
+      ctx.beginPath();
+      ctx.moveTo(topX, 347);
+      ctx.lineTo(botX, CANVAS_H);
+      ctx.stroke();
+    }
+
+    // Ground sunlight pools / reflections
     for (let px = 310; px < STAGE_W; px += 520) {
       if (px < camX - 140 || px > camX + CANVAS_W + 140) continue;
-      ctx.fillStyle = theme.puddleA;
+      ctx.fillStyle = starfishBg ? 'rgba(254, 249, 195, 0.08)' : theme.puddleA;
       ctx.beginPath();
       ctx.ellipse(px, 430, 74, 14, 0, 0, Math.PI * 2);
       ctx.fill();
-      ctx.fillStyle = theme.puddleB;
+      ctx.fillStyle = starfishBg ? 'rgba(125, 211, 252, 0.07)' : theme.puddleB;
       ctx.beginPath();
       ctx.ellipse(px + 20, 432, 38, 7, 0, 0, Math.PI * 2);
       ctx.fill();
     }
 
-    // Track / Court Lane Markings
-    ctx.fillStyle = theme.laneMark;
-    if (stage.key === 'starfish') {
-      // Crisp continuous running track lanes for 海星國小!
-      ctx.fillRect(0, 388, STAGE_W, 3);
-      ctx.fillRect(0, 436, STAGE_W, 3);
-      ctx.fillRect(0, 484, STAGE_W, 3);
+    // Street / Track Lane Markings
+    if (starfishBg) {
+      // Crisp white roadside edge line + warm yellow center dashes (real Taiwanese campus street!)
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.58)';
+      ctx.fillRect(0, 355, STAGE_W, 3);
+      ctx.fillStyle = 'rgba(250, 204, 21, 0.72)';
+      for (let dx = 30; dx < STAGE_W; dx += 140) {
+        ctx.fillRect(dx, 422, 74, 6);
+      }
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.42)';
+      ctx.fillRect(0, 492, STAGE_W, 3);
     } else {
+      ctx.fillStyle = theme.laneMark;
       for (let dx = 40; dx < STAGE_W; dx += 130) {
         ctx.fillRect(dx, 418, 66, 7);
       }
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
+      ctx.fillRect(0, 496, STAGE_W, 3);
     }
-
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
-    ctx.fillRect(0, 496, STAGE_W, 3);
     ctx.restore();
 
-    // Gentle falling winter snowflakes for STAGE 3 冬花國小!
+    // Gentle mid-layer falling snowflakes for STAGE 3 冬花國小!
     if (stage.key === 'donghua') {
       ctx.save();
       ctx.fillStyle = 'rgba(241, 245, 249, 0.78)';
@@ -4510,6 +4659,71 @@
       }
       ctx.restore();
     }
+  }
+
+  // --------------------------------------------------------------------------
+  // LAYER 5 (1.38x FAST FOREGROUND DEPTH-OF-FIELD / 景深虛化前景層)
+  // Scrolls 38% FASTER than the player/camera for vivid 2.5D perspective depth!
+  // --------------------------------------------------------------------------
+  function drawForegroundParallax(ctx, camX) {
+    const stage = getCurrentStage();
+    const fgScroll = camX * 1.38;
+
+    ctx.save();
+    // 1. Out-of-focus foreground foliage/bush silhouettes sweeping rapidly past the bottom rim
+    const bushStep = 560;
+    const firstBush = Math.floor((fgScroll - 220) / bushStep) * bushStep;
+    const bushMain = stage.key === 'starfish'
+      ? 'rgba(12, 46, 28, 0.72)'
+      : (stage.key === 'aqiang' ? 'rgba(38, 14, 14, 0.72)' : 'rgba(18, 16, 46, 0.74)');
+    const bushEdge = stage.key === 'starfish'
+      ? 'rgba(34, 128, 72, 0.30)'
+      : (stage.key === 'aqiang' ? 'rgba(234, 88, 12, 0.24)' : 'rgba(147, 197, 253, 0.26)');
+
+    for (let bx = firstBush; bx < fgScroll + CANVAS_W + 260; bx += bushStep) {
+      const sx = bx - fgScroll;
+      const variant = Math.abs(Math.round(bx / bushStep)) % 3;
+      // Soft outer bokeh halo (mimics shallow camera depth-of-field blur without slow canvas filters!)
+      ctx.fillStyle = bushEdge;
+      ctx.beginPath();
+      ctx.ellipse(sx, CANVAS_H + 10, 96 + variant * 16, 42 + variant * 6, 0, Math.PI, Math.PI * 2);
+      ctx.ellipse(sx + 62, CANVAS_H + 12, 68, 34, 0, Math.PI, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = bushMain;
+      ctx.beginPath();
+      ctx.ellipse(sx, CANVAS_H + 12, 82 + variant * 14, 32 + variant * 5, 0, Math.PI, Math.PI * 2);
+      ctx.ellipse(sx + 56, CANVAS_H + 14, 54, 24, 0, Math.PI, Math.PI * 2);
+      ctx.fill();
+
+      // Occasional blurred roadside palm frond overhang at top edge (1.38x speed!)
+      if (variant === 0) {
+        const tx = sx + 180;
+        ctx.fillStyle = bushEdge;
+        ctx.beginPath();
+        ctx.ellipse(tx, -6, 108, 28, 0.14, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = bushMain;
+        ctx.beginPath();
+        ctx.ellipse(tx, -10, 90, 20, 0.14, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    // 2. Fast-moving foreground optical bokeh dust / sunlit motes / snow (1.48x speed!)
+    const moteCol = stage.key === 'starfish'
+      ? 'rgba(254, 249, 195, 0.34)'
+      : (stage.key === 'aqiang' ? 'rgba(253, 186, 116, 0.34)' : 'rgba(224, 242, 254, 0.42)');
+    ctx.fillStyle = moteCol;
+    for (let i = 0; i < 16; i++) {
+      const mx = (((i * 193 - camX * 1.48 + game.time * (28 + (i % 4) * 9)) % (CANVAS_W + 120)) + (CANVAS_W + 120)) % (CANVAS_W + 120) - 60;
+      const my = 42 + ((i * 73 + Math.sin(game.time * 1.6 + i) * 18) % (CANVAS_H - 70));
+      const r = 4.5 + (i % 3) * 3.2;
+      ctx.beginPath();
+      ctx.arc(mx, my, r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
   }
 
   // --------------------------------------------------------------------------
@@ -5594,6 +5808,9 @@
       }
 
       ctx.restore();
+
+      // LAYER 5 (1.38x): Fast Foreground Depth-of-Field Foliage & Bokeh Motes!
+      drawForegroundParallax(ctx, game.camX);
 
       // Comic Impact Frame speed-line flash overlay
       drawImpactFrameOverlay(ctx);
