@@ -7,7 +7,7 @@
 - 智慧電視全螢幕模式：https://snell0804.github.io/SchoolFight-TV/?tv=1
 
 ## 📺 Android TV / Panasonic TV 專用 APK 下載（v1.0.2 · 173 KB）
-- **直接下載最新版 APK**：https://github.com/snell0804/SchoolFight-TV/releases/latest/download/SchoolFight-TV.apk
+- **直接下載最新版 APK**：https://github.com/snell0804/SchoolFight-TV/raw/main/SchoolFight-TV.apk
 - 相容系統：Android 5.0–15（API 21–34）、v1+v2+v3 三重簽章
 - 電視端只需安裝一次，開啟即自動全螢幕載入最新版網頁遊戲，並支援藍牙手把與 PWA 離線快取。
 
