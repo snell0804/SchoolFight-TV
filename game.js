@@ -272,15 +272,15 @@
   // ==========================================================================
   // 2. CHARACTER ACTION STUDIO CONFIG & MULTI-FRAME SPRITE BANK (300x264)
   // ==========================================================================
-  const STORAGE_KEY = 'schoolfight_studio_v10';
+  const STORAGE_KEY = 'schoolfight_studio_v12';
 
   const HERO_ROSTER = [
     {
       id: 'kuromi',
       name: '呆呆伶',
       hudName: '呆呆伶',
-      badge: '😈 海星魔杖使',
-      subtitle: '徒手三連拳 · ↑+重攻 龍捲旋風腳 · 能量砲十連發',
+      badge: '😈 Star Fish 魔杖使',
+      subtitle: '徒手三連拳 · 寒冰重擊 · ↑+重攻 龍捲旋風腳 · 能量砲十連發',
       accent: '#f43f8e',
       accentLight: '#f9a8d4',
       accentDark: '#581c87',
@@ -291,8 +291,8 @@
       specialLabel: '能量砲',
       specialShout: '能量砲十連發!!',
       specialSub: 'MEGA CANNON BLAST!!',
-      heavyShout: '魔杖重擊!!',
-      heavySub: 'WAND CRUSH!!',
+      heavyShout: '寒冰重擊!!',
+      heavySub: 'FROST GLACIER CRUSH!!',
       dashLightShout: '浪子踢球!!',
       dashLightSub: 'ROGUE SHOOT!!',
       dashHeavyShout: '星杖衝刺斬!!',
@@ -300,7 +300,7 @@
       tornadoShout: '龍捲旋風腳!!',
       tornadoSub: 'TORNADO HURRICANE KICK!!',
       sparkColor: '#e879f9',
-      heavySparkColor: '#facc15',
+      heavySparkColor: '#38bdf8',
       sheets: {
         idle: 'idle',
         walk: 'walk',
@@ -321,7 +321,7 @@
       name: '超級帆',
       hudName: '超級帆',
       badge: '🦊 烈焰拳鬥士',
-      subtitle: '五連閃電拳 · ↑+重攻 烈焰龍捲旋風腳 · 百拳連擊',
+      subtitle: '五連閃電拳 · 烈焰流星錘 · ↑+重攻 烈焰龍捲腳 · 百拳連擊',
       accent: '#f97316',
       accentLight: '#fde047',
       accentDark: '#7c2d12',
@@ -332,8 +332,8 @@
       specialLabel: '百拳連擊',
       specialShout: '赤焰百拳連擊!!',
       specialSub: '100-FIST FLAME RUSH!!',
-      heavyShout: '烈焰猛撞!!',
-      heavySub: 'FLAME IMPACT!!',
+      heavyShout: '烈焰流星錘!!',
+      heavySub: 'METEOR FLAME SLAM!!',
       dashLightShout: '閃電踢球!!',
       dashLightSub: 'THUNDER SHOOT!!',
       dashHeavyShout: '赤焰衝刺撞擊!!',
@@ -358,8 +358,6 @@
       },
       fallbacks: {
         dash: 'rp_run',
-        attack: 'rp_dashAttack',
-        dashLightAttack: 'rp_lightAttack',
         hurt: 'rp_idle',
       },
     },
@@ -382,16 +380,47 @@
     { key: 'special', file: 'assets/special_sheet.webp', cols: 5, rows: 2, anchorX: 136, anchorY: 242 },
     { key: 'hurt', file: 'assets/hurt_sheet.webp', cols: 5, rows: 2, anchorX: 136, anchorY: 242 },
     { key: 'victory', file: 'assets/victory_sheet.webp', cols: 5, rows: 2, anchorX: 136, anchorY: 242 },
-    // Hero 2: 超級帆 (10-Frame Hand-Drawn HD Sprite Sheets)
+    // Hero 2: 超級帆 (10-Frame Hand-Drawn HD Sprite Sheets — 100% Distinct Heavy / Dash-Light / Dash-Heavy!)
     { key: 'rp_idle', file: 'assets/rp_idle_sheet.webp', cols: 5, rows: 2, anchorX: 136, anchorY: 242 },
     { key: 'rp_walk', file: 'assets/rp_walk_sheet.webp', cols: 5, rows: 2, anchorX: 136, anchorY: 242 },
     { key: 'rp_run', file: 'assets/rp_run_sheet.webp', cols: 5, rows: 2, anchorX: 136, anchorY: 242 },
     { key: 'rp_dash', file: 'assets/rp_dash_sheet.webp', cols: 5, rows: 2, anchorX: 136, anchorY: 242 },
     { key: 'rp_lightAttack', file: 'assets/rp_lightAttack_sheet.webp', cols: 5, rows: 2, anchorX: 136, anchorY: 242 },
+    { key: 'rp_attack', file: 'assets/rp_attack_sheet.webp', cols: 5, rows: 2, anchorX: 136, anchorY: 242 },
+    { key: 'rp_dashLightAttack', file: 'assets/rp_dashLightAttack_sheet.webp', cols: 5, rows: 2, anchorX: 136, anchorY: 242 },
     { key: 'rp_dashAttack', file: 'assets/rp_dashAttack_sheet.webp', cols: 5, rows: 2, anchorX: 136, anchorY: 242 },
     { key: 'rp_tornadoKick', file: 'assets/rp_tornadoKick_sheet.webp', cols: 5, rows: 2, anchorX: 136, anchorY: 242 },
     { key: 'rp_special', file: 'assets/rp_special_sheet.webp', cols: 5, rows: 2, anchorX: 136, anchorY: 242 },
     { key: 'rp_victory', file: 'assets/rp_victory_sheet.webp', cols: 5, rows: 2, anchorX: 136, anchorY: 242 },
+    // Wave 3 Brand-New Unique Monsters + Donghua Martial Grandmaster Final Boss (2x Hero Size!)
+    { key: 'enemy_kangaroo_move', file: 'assets/enemy_kangaroo_move_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
+    { key: 'enemy_kangaroo_attack', file: 'assets/enemy_kangaroo_attack_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
+    { key: 'enemy_kangaroo_hurt', file: 'assets/enemy_kangaroo_hurt_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
+    { key: 'enemy_kangaroo_ko', file: 'assets/enemy_kangaroo_ko_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
+    { key: 'enemy_zebra_move', file: 'assets/enemy_zebra_move_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
+    { key: 'enemy_zebra_attack', file: 'assets/enemy_zebra_attack_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
+    { key: 'enemy_zebra_hurt', file: 'assets/enemy_zebra_hurt_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
+    { key: 'enemy_zebra_ko', file: 'assets/enemy_zebra_ko_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
+    { key: 'enemy_koala_move', file: 'assets/enemy_koala_move_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
+    { key: 'enemy_koala_attack', file: 'assets/enemy_koala_attack_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
+    { key: 'enemy_koala_hurt', file: 'assets/enemy_koala_hurt_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
+    { key: 'enemy_koala_ko', file: 'assets/enemy_koala_ko_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
+    { key: 'enemy_capybara_move', file: 'assets/enemy_capybara_move_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
+    { key: 'enemy_capybara_attack', file: 'assets/enemy_capybara_attack_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
+    { key: 'enemy_capybara_hurt', file: 'assets/enemy_capybara_hurt_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
+    { key: 'enemy_capybara_ko', file: 'assets/enemy_capybara_ko_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
+    { key: 'enemy_cactus_move', file: 'assets/enemy_cactus_move_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
+    { key: 'enemy_cactus_attack', file: 'assets/enemy_cactus_attack_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
+    { key: 'enemy_cactus_hurt', file: 'assets/enemy_cactus_hurt_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
+    { key: 'enemy_cactus_ko', file: 'assets/enemy_cactus_ko_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
+    { key: 'enemy_wizard_ghost_move', file: 'assets/enemy_wizard_ghost_move_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
+    { key: 'enemy_wizard_ghost_attack', file: 'assets/enemy_wizard_ghost_attack_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
+    { key: 'enemy_wizard_ghost_hurt', file: 'assets/enemy_wizard_ghost_hurt_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
+    { key: 'enemy_wizard_ghost_ko', file: 'assets/enemy_wizard_ghost_ko_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
+    { key: 'enemy_donghua_boss_move', file: 'assets/enemy_donghua_boss_move_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 242 },
+    { key: 'enemy_donghua_boss_attack', file: 'assets/enemy_donghua_boss_attack_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 242 },
+    { key: 'enemy_donghua_boss_hurt', file: 'assets/enemy_donghua_boss_hurt_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 242 },
+    { key: 'enemy_donghua_boss_ko', file: 'assets/enemy_donghua_boss_ko_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 242 },
     // Wave 2 Monsters: Full 10-Frame Move + Attack + Hurt + KO Sheets
     { key: 'enemy_pengking_move', file: 'assets/enemy_pengking_move_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
     { key: 'enemy_pengking_attack', file: 'assets/enemy_pengking_attack_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
@@ -441,9 +470,9 @@
       { id: 'run', label: '跑步動畫 (Run)', triggerDesc: '連按兩次 AA / DD / ←← / →→', sheetKey: 'run', fallbackSheet: null, fps: 17, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
       { id: 'dash', label: '瞬間衝刺・閃身步 (Dash)', triggerDesc: '喊出「閃身步」並瞬間突進一大段距離', sheetKey: 'dash', fallbackSheet: 'run', fps: 25, cols: 5, rows: 2, key: 'ShiftLeft', altKeys: ['ShiftRight'], rebindable: true },
       { id: 'lightAttack', label: '輕攻擊・揮拳連擊 (Light)', triggerDesc: '徒手三段拳擊（直拳→勾拳→上勾拳）', sheetKey: 'lightAttack', fallbackSheet: 'attack', fps: 17, cols: 5, rows: 2, key: 'Numpad4', altKeys: ['KeyJ', 'KeyZ'], rebindable: true },
-      { id: 'heavyAttack', label: '重攻擊・魔杖重擊 (Heavy)', triggerDesc: '強力魔杖重砸與擊飛＋美漫打擊框', sheetKey: 'attack', fallbackSheet: null, fps: 14, cols: 5, rows: 2, key: 'Numpad5', altKeys: ['KeyU', 'KeyC'], rebindable: true },
-      { id: 'dashLightAttack', label: '衝刺輕攻擊・浪子踢球 (Dash Light)', triggerDesc: '跑步中 按 輕攻擊 發動！踢出能量足球', sheetKey: 'dashLightAttack', fallbackSheet: 'lightAttack', fps: 17, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
-      { id: 'dashAttack', label: '衝刺重攻擊・星杖衝刺斬 (Dash Heavy)', triggerDesc: '跑步中 按 重攻擊 發動！', sheetKey: 'dashAttack', fallbackSheet: 'attack', fps: 18, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
+      { id: 'heavyAttack', label: '重攻擊・寒冰重擊 (Heavy)', triggerDesc: '獨立 10 幀冰川尖刺爆發與暴風雪重砸＋擊飛', sheetKey: 'attack', fallbackSheet: null, fps: 14, cols: 5, rows: 2, key: 'Numpad5', altKeys: ['KeyU', 'KeyC'], rebindable: true },
+      { id: 'dashLightAttack', label: '衝刺輕攻擊・浪子踢球 (Dash Light)', triggerDesc: '獨立 10 幀！跑步中 按 輕攻擊 發動，踢出能量足球', sheetKey: 'dashLightAttack', fallbackSheet: null, fps: 17, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
+      { id: 'dashAttack', label: '衝刺重攻擊・星杖衝刺斬 (Dash Heavy)', triggerDesc: '獨立 10 幀！跑步中 按 重攻擊 發動星光衝刺斬', sheetKey: 'dashAttack', fallbackSheet: null, fps: 18, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
       { id: 'tornadoKick', label: '特殊招式・龍捲旋風腳 (Tornado Kick)', triggerDesc: '按住 ↑ 再按 重攻擊（W+Num5 / 手把 ↑+重攻）發動！多段旋風擊飛浮空可空中追打', sheetKey: 'tornadoKick', fallbackSheet: 'dashAttack', fps: 15, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
       { id: 'special', label: '能量砲十連發 (Special)', triggerDesc: '霸體集氣・全螢幕十連擊光砲＋美漫衝擊幀', sheetKey: 'special', fallbackSheet: null, fps: 12, cols: 5, rows: 2, key: 'Numpad0', altKeys: ['KeyL', 'KeyX'], rebindable: true },
       { id: 'jump', label: '跳躍 (Jump)', triggerDesc: '原地／移動跳躍（空中可揮杖追打）', sheetKey: 'jump', fallbackSheet: 'run', fps: 12, cols: 5, rows: 2, key: 'Space', altKeys: ['KeyK'], rebindable: true },
@@ -459,7 +488,9 @@
       { id: 'rp_run', label: '奔跑動畫 (Run)', triggerDesc: '連按兩次 AA / DD / ←← / →→', sheetKey: 'rp_run', fallbackSheet: null, fps: 17, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
       { id: 'rp_dash', label: '瞬間衝刺・蒼藍音爆閃身步 (Dash)', triggerDesc: '10 幀極速蒼藍音爆破風瞬間突進（Shift 觸發）', sheetKey: 'rp_dash', fallbackSheet: null, fps: 24, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
       { id: 'rp_lightAttack', label: '輕攻擊・五連閃電連擊 (Light)', triggerDesc: '金色閃電高速連拳（共用輕攻鍵）', sheetKey: 'rp_lightAttack', fallbackSheet: null, fps: 18, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
-      { id: 'rp_dashAttack', label: '重攻／衝刺撞擊 (Heavy & Dash)', triggerDesc: '赤焰高速衝刺撞擊＋爆裂火花（共用重攻鍵）', sheetKey: 'rp_dashAttack', fallbackSheet: null, fps: 18, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
+      { id: 'rp_attack', label: '重攻擊・烈焰流星錘 (Heavy)', triggerDesc: '獨立 10 幀！雙拳躍起高舉火焰重砸裂地衝擊（共用重攻鍵）', sheetKey: 'rp_attack', fallbackSheet: null, fps: 14, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
+      { id: 'rp_dashLightAttack', label: '衝刺輕攻擊・閃電踢球 (Dash Light)', triggerDesc: '獨立 10 幀！跑步中 按 輕攻鍵 發動雷電抽射足球', sheetKey: 'rp_dashLightAttack', fallbackSheet: null, fps: 17, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
+      { id: 'rp_dashAttack', label: '衝刺重攻擊・赤焰衝刺撞擊 (Dash Heavy)', triggerDesc: '獨立 10 幀！跑步中 按 重攻鍵 發動赤焰高速撞擊', sheetKey: 'rp_dashAttack', fallbackSheet: null, fps: 18, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
       { id: 'rp_tornadoKick', label: '特殊招式・烈焰龍捲旋風腳 (Tornado Kick)', triggerDesc: '按住 ↑ 再按 重攻擊（W+Num5 / 手把 ↑+重攻）發動！烈焰旋風打浮空可空中追打', sheetKey: 'rp_tornadoKick', fallbackSheet: 'rp_dashAttack', fps: 15, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
       { id: 'rp_special', label: '必殺技・赤焰百拳連擊 (Special)', triggerDesc: '霸體狂暴 10 連擊烈焰百烈拳（共用必殺鍵）', sheetKey: 'rp_special', fallbackSheet: null, fps: 14, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
       { id: 'rp_hurt', label: '受傷／受擊 (Hurt)', triggerDesc: '可上傳獨立 10 幀受傷精靈表', sheetKey: 'rp_hurt', fallbackSheet: 'rp_idle', fps: 14, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
@@ -488,6 +519,13 @@
     return [
       { id: 'kuromi', name: '😈 呆呆伶（主角 1）', actions: createDefaultHeroActions() },
       { id: 'redpanda', name: '🦊 超級帆（主角 2）', actions: createDefaultRedPandaActions() },
+      createEnemyCharProfile('enemy_donghua_boss', '🥋 冬花武聖大宗師（冬花 FINAL BOSS・2倍巨型）', 'enemy_donghua_boss', '「武」字黃金正拳＋太極震地氣勁', '三連黃金氣功波＋流星飛躍碎地斬', true),
+      createEnemyCharProfile('enemy_kangaroo', '🥊 拳擊袋鼠（彈跳拳擊怪）', 'enemy_kangaroo', '極速三連刺拳連擊', '彈簧飛躍重勾拳衝刺', true),
+      createEnemyCharProfile('enemy_zebra', '🛹 滑板斑馬（龐克滑板怪）', 'enemy_zebra', '霓虹滑板極速衝刺斬', '巨型粉紅泡泡糖波浪炸彈', true),
+      createEnemyCharProfile('enemy_koala', '🎧 電競無尾熊（賽博DJ怪）', 'enemy_koala', '霓虹耳機重低音震盪環 (AOE)', '全息電玩青藍衝擊波', true),
+      createEnemyCharProfile('enemy_capybara', '🍊 佛系水豚君（霸體坦克怪）', 'enemy_capybara', '佛系肚皮震地壓頂衝擊', '淡定吐草飛葉三連扇', true),
+      createEnemyCharProfile('enemy_cactus', '🌵 針刺仙人掌（條紋針刺怪）', 'enemy_cactus', '旋風縮球萬針爆衝斬', '巨型仙人掌棒＋三向金針齊射', true),
+      createEnemyCharProfile('enemy_wizard_ghost', '🧙‍♂️ 星空巫師幽靈（星辰法師怪）', 'enemy_wizard_ghost', '星辰爆裂新星震波 (AOE)', '黑洞傳送門流星雨彈幕', true),
       createEnemyCharProfile('enemy_pengking', '👑 王者企鵝（海洋敵人）', 'enemy_pengking', '10 幀王者滑冰飛撲猛撞（含蓄力金光與急煞）', null, true),
       createEnemyCharProfile('enemy_pengice', '❄️ 冰雪企鵝（海洋敵人）', 'enemy_pengice', '10 幀寒冰滑衝＋冰錐爆發震波', null, true),
       createEnemyCharProfile('enemy_rabbit', '🐰 兔兔怪（5色共用模組）', 'enemy_rabbit', '10 幀極速跳躍撲咬突進（支援雪白/粉櫻/奶茶/芋紫/薄荷 5 亮色自動變色）', null, true),
@@ -1287,6 +1325,7 @@
   // 4. GAME STATE, 3 SCHOOL STAGES, WAVES, ENTITIES & COMBAT
   // ==========================================================================
   const ALL_RANDOM_MONSTER_POOL = [
+    'kangaroo', 'zebra', 'koala', 'capybara', 'cactus', 'wizard_ghost',
     'penguin_king', 'penguin_ice', 'rabbit', 'ghost', 'sheep',
     'pig', 'slime', 'mushroom', 'puffer', 'star',
   ];
@@ -1295,15 +1334,15 @@
     {
       id: 1,
       key: 'starfish',
-      name: 'STAGE 1 · 海星國小',
-      shortName: '海星國小',
-      themeBadge: '🌊 海洋生物大軍',
+      name: 'STAGE 1 · Star Fish 國小',
+      shortName: 'Star Fish 國小',
+      themeBadge: '🌊 海洋與奇幻軍團',
       icon: '⭐',
       accent: '#38bdf8',
-      bossWarnName: '海星國小 宇宙海星體育股長 登場！',
-      clearTitle: 'STAGE 1 CLEAR!! 制霸海星國小！',
+      bossWarnName: 'Star Fish 國小 宇宙海星體育股長 登場！',
+      clearTitle: 'STAGE 1 CLEAR!! 制霸 Star Fish 國小！',
       signs: [
-        { x: 180, y: 122, w: 156, h: 40, text: '海星國小大門', color: '#38bdf8' },
+        { x: 180, y: 122, w: 168, h: 40, text: 'Star Fish 國小', color: '#38bdf8' },
         { x: 640, y: 120, w: 142, h: 38, text: '主教學大樓', color: '#facc15' },
         { x: 1180, y: 124, w: 148, h: 40, text: '綠藤椰林道', color: '#22c55e' },
         { x: 1680, y: 120, w: 148, h: 40, text: '紅磚壁畫牆', color: '#f43f8e' },
@@ -1314,24 +1353,24 @@
       zones: [
         {
           id: 1,
-          name: '海星國小 · 海洋校門口',
+          name: 'Star Fish 國小 · 海洋校門口',
           triggerX: 280,
           lockCamX: 0,
           spawns: [
             { type: 'penguin_ice', side: 1, z: 394, delay: 0.15 },
-            { type: 'slime', side: 1, z: 444, delay: 0.55 },
+            { type: 'capybara', side: 1, z: 448, delay: 0.55 },
             { type: 'puffer', side: -1, z: 422, delay: 1.45 },
             { type: 'penguin_king', side: 1, z: 406, delay: 2.35 },
           ],
         },
         {
           id: 2,
-          name: '海星國小 · 水族福利社走廊',
+          name: 'Star Fish 國小 · 水族福利社走廊',
           triggerX: 1360,
           lockCamX: 1080,
           spawns: [
             { type: 'puffer', side: 1, z: 404, delay: 0.2 },
-            { type: 'penguin_king', side: 1, z: 456, delay: 0.65 },
+            { type: 'wizard_ghost', side: 1, z: 456, delay: 0.65 },
             { type: 'star', side: -1, z: 388, delay: 1.5 },
             { type: 'penguin_ice', side: -1, z: 448, delay: 2.3 },
             { type: 'slime', side: 1, z: 416, delay: 3.1 },
@@ -1339,14 +1378,14 @@
         },
         {
           id: 3,
-          name: '海星國小 · 海洋大操場 BOSS 戰',
+          name: 'Star Fish 國小 · 海洋大操場 BOSS 戰',
           triggerX: 2760,
           lockCamX: STAGE_W - CANVAS_W,
           isBoss: true,
           spawns: [
-            { type: 'boss', side: 1, z: 425, delay: 1.1, customName: '⭐ 海星國小 宇宙海星體育股長', hpMult: 0.72 },
+            { type: 'boss', side: 1, z: 425, delay: 1.1, customName: '⭐ Star Fish 國小 宇宙海星體育股長', hpMult: 0.72 },
             { type: 'penguin_king', side: -1, z: 385, delay: 3.6 },
-            { type: 'puffer', side: 1, z: 465, delay: 7.4 },
+            { type: 'wizard_ghost', side: 1, z: 465, delay: 7.4 },
             { type: 'penguin_ice', side: -1, z: 432, delay: 11.2 },
           ],
         },
@@ -1357,56 +1396,56 @@
       key: 'aqiang',
       name: 'STAGE 2 · 阿強國小',
       shortName: '阿強國小',
-      themeBadge: '🎲 全怪隨機大亂鬥',
+      themeBadge: '🎲 新怪大亂鬥（袋鼠・斑馬・無尾熊・水豚・仙人掌）',
       icon: '🔥',
       accent: '#f97316',
       bossWarnName: '阿強國小 暴走鐵拳教官 降臨！',
       clearTitle: 'STAGE 2 CLEAR!! 制霸阿強國小！',
       signs: [
         { x: 220, y: 142, w: 164, h: 44, text: '阿強國小', color: '#f97316' },
-        { x: 640, y: 128, w: 148, h: 38, text: '隨機大亂鬥', color: '#ef4444' },
-        { x: 1180, y: 144, w: 156, h: 42, text: '營養午餐部', color: '#facc15' },
-        { x: 1660, y: 132, w: 154, h: 40, text: '阿強籃球場', color: '#fb923c' },
-        { x: 2180, y: 138, w: 164, h: 42, text: '夕陽司令台', color: '#f43f5e' },
-        { x: 2760, y: 128, w: 174, h: 44, text: '武鬥體育館', color: '#f97316' },
+        { x: 640, y: 128, w: 148, h: 38, text: '小吃部街角', color: '#ef4444' },
+        { x: 1180, y: 144, w: 156, h: 42, text: '彩虹圍欄道', color: '#facc15' },
+        { x: 1660, y: 132, w: 154, h: 40, text: '阿強國小大門', color: '#fb923c' },
+        { x: 2180, y: 138, w: 164, h: 42, text: '永興街角口', color: '#f43f5e' },
+        { x: 2760, y: 128, w: 174, h: 44, text: '美術館廣場', color: '#f97316' },
         { x: 3250, y: 142, w: 150, h: 40, text: '強者對決', color: '#ef4444' },
       ],
       zones: [
         {
           id: 1,
-          name: '阿強國小 · 隨機熱血前庭',
+          name: '阿強國小 · 永興路新怪大亂鬥',
           triggerX: 280,
           lockCamX: 0,
           spawns: [
-            { type: 'random', pool: ALL_RANDOM_MONSTER_POOL, side: 1, z: 404, delay: 0.15 },
-            { type: 'random', pool: ALL_RANDOM_MONSTER_POOL, side: 1, z: 458, delay: 0.55 },
-            { type: 'random', pool: ALL_RANDOM_MONSTER_POOL, side: -1, z: 390, delay: 1.4 },
-            { type: 'random', pool: ALL_RANDOM_MONSTER_POOL, side: 1, z: 446, delay: 2.2 },
+            { type: 'kangaroo', side: 1, z: 402, delay: 0.15 },
+            { type: 'zebra', side: 1, z: 458, delay: 0.55 },
+            { type: 'koala', side: -1, z: 390, delay: 1.4 },
+            { type: 'capybara', side: 1, z: 446, delay: 2.2 },
           ],
         },
         {
           id: 2,
-          name: '阿強國小 · 隨機夕陽籃球場',
+          name: '阿強國小 · 彩虹校門廣場',
           triggerX: 1360,
           lockCamX: 1080,
           spawns: [
-            { type: 'random', pool: ALL_RANDOM_MONSTER_POOL, side: 1, z: 388, delay: 0.2 },
-            { type: 'random', pool: ALL_RANDOM_MONSTER_POOL, side: 1, z: 454, delay: 0.65 },
-            { type: 'random', pool: ALL_RANDOM_MONSTER_POOL, side: -1, z: 422, delay: 1.45 },
+            { type: 'cactus', side: 1, z: 392, delay: 0.2 },
+            { type: 'wizard_ghost', side: 1, z: 454, delay: 0.65 },
+            { type: 'kangaroo', side: -1, z: 422, delay: 1.45 },
             { type: 'random', pool: ALL_RANDOM_MONSTER_POOL, side: 1, z: 402, delay: 2.3 },
             { type: 'random', pool: ALL_RANDOM_MONSTER_POOL, side: -1, z: 462, delay: 3.1 },
           ],
         },
         {
           id: 3,
-          name: '阿強國小 · 武鬥司令台 BOSS 戰',
+          name: '阿強國小 · 美術館廣場 BOSS 戰',
           triggerX: 2760,
           lockCamX: STAGE_W - CANVAS_W,
           isBoss: true,
           spawns: [
             { type: 'boss', side: 1, z: 425, delay: 1.1, customName: '🔥 阿強國小 暴走鐵拳教官', hpMult: 0.9 },
-            { type: 'random', pool: ALL_RANDOM_MONSTER_POOL, side: -1, z: 382, delay: 3.5 },
-            { type: 'random', pool: ALL_RANDOM_MONSTER_POOL, side: 1, z: 468, delay: 7.2 },
+            { type: 'zebra', side: -1, z: 382, delay: 3.5 },
+            { type: 'cactus', side: 1, z: 468, delay: 7.2 },
             { type: 'random', pool: ALL_RANDOM_MONSTER_POOL, side: -1, z: 430, delay: 11.0 },
           ],
         },
@@ -1417,10 +1456,10 @@
       key: 'donghua',
       name: 'STAGE 3 · 冬花國小',
       shortName: '冬花國小',
-      themeBadge: '🌿 草原動物軍團（綿羊・豬・兔）',
+      themeBadge: '🥋 武聖終極決戰（2倍巨型宗師 BOSS）',
       icon: '❄️',
       accent: '#c084fc',
-      bossWarnName: '冬花國小 冰晶宇宙大校長 降臨！',
+      bossWarnName: '🥋 冬花國小 武聖大宗師 霸氣降臨！',
       clearTitle: 'ALL CLEAR!! 稱霸三校大亂鬥！',
       signs: [
         { x: 220, y: 142, w: 164, h: 44, text: '冬花國小', color: '#c084fc' },
@@ -1428,7 +1467,7 @@
         { x: 1180, y: 144, w: 154, h: 42, text: '雪見音樂廳', color: '#f472b6' },
         { x: 1660, y: 132, w: 154, h: 40, text: '可愛動物區', color: '#67e8f9' },
         { x: 2180, y: 138, w: 164, h: 42, text: '冬花大禮堂', color: '#a855f7' },
-        { x: 2760, y: 128, w: 174, h: 44, text: '校長室廣場', color: '#f43f8e' },
+        { x: 2760, y: 128, w: 174, h: 44, text: '武道宗師殿', color: '#facc15' },
         { x: 3250, y: 142, w: 156, h: 40, text: 'FINAL BOSS', color: '#facc15' },
       ],
       zones: [
@@ -1439,9 +1478,9 @@
           lockCamX: 0,
           spawns: [
             { type: 'sheep', side: 1, z: 390, delay: 0.15 },
-            { type: 'rabbit', side: 1, z: 454, delay: 0.5 },
-            { type: 'pig', side: -1, z: 420, delay: 1.3 },
-            { type: 'rabbit', side: 1, z: 402, delay: 2.1 },
+            { type: 'kangaroo', side: 1, z: 454, delay: 0.5 },
+            { type: 'cactus', side: -1, z: 420, delay: 1.3 },
+            { type: 'koala', side: 1, z: 402, delay: 2.1 },
           ],
         },
         {
@@ -1450,25 +1489,24 @@
           triggerX: 1360,
           lockCamX: 1080,
           spawns: [
-            { type: 'sheep', side: 1, z: 398, delay: 0.2 },
-            { type: 'pig', side: -1, z: 454, delay: 0.6 },
+            { type: 'zebra', side: 1, z: 398, delay: 0.2 },
+            { type: 'capybara', side: -1, z: 454, delay: 0.6 },
             { type: 'rabbit', side: 1, z: 430, delay: 1.35 },
-            { type: 'sheep', side: -1, z: 386, delay: 2.1 },
-            { type: 'ghost', side: 1, z: 462, delay: 2.9 },
+            { type: 'wizard_ghost', side: -1, z: 386, delay: 2.1 },
+            { type: 'pig', side: 1, z: 462, delay: 2.9 },
           ],
         },
         {
           id: 3,
-          name: '冬花國小 · 校長室終極決戰',
+          name: '冬花國小 · 武聖大宗師終極決戰',
           triggerX: 2760,
           lockCamX: STAGE_W - CANVAS_W,
           isBoss: true,
           spawns: [
-            { type: 'boss', side: 1, z: 425, delay: 1.2, customName: '❄️ 冬花國小 冰晶宇宙大校長', hpMult: 1.12 },
-            { type: 'sheep', side: -1, z: 382, delay: 3.6 },
-            { type: 'rabbit', side: 1, z: 466, delay: 7.0 },
-            { type: 'pig', side: -1, z: 422, delay: 10.6 },
-            { type: 'ghost', side: 1, z: 396, delay: 14.0 },
+            { type: 'donghua_boss', side: 1, z: 428, delay: 1.2, customName: '🥋 冬花武聖大宗師', hpMult: 1.0 },
+            { type: 'kangaroo', side: -1, z: 382, delay: 4.5 },
+            { type: 'wizard_ghost', side: 1, z: 466, delay: 8.5 },
+            { type: 'cactus', side: -1, z: 422, delay: 12.5 },
           ],
         },
       ],
@@ -1842,59 +1880,86 @@
     }
   }
 
-  // Enemy Ranged Attack Projectiles (Style B: Cosmic Star Shot & Aqua Hydro Bolt)
+  // Enemy Ranged Attack Projectiles (Star, Water, Spore, Ghost Orb + 6 New Signature Projectiles!)
   class EnemyProjectile {
     constructor(x, z, facing, kind = 'star', dmg = 14, vz = 0, color = null) {
       this.id = nextEntityId++;
       this.x = x;
       this.z = z;
-      this.jumpY = 66;
+      this.baseJumpY = kind === 'martial_chi' ? 78 : 66;
+      this.jumpY = this.baseJumpY;
       this.facing = facing;
-      this.kind = kind; // 'star' | 'water' | 'spore' | 'ghost_orb'
-      this.color = color || (kind === 'ghost_orb' ? '#c084fc' : null);
+      this.kind = kind; // star | water | spore | ghost_orb | bubblegum | holo_wave | zen_leaf | cactus_needle | cosmic_meteor | martial_chi
+      this.color = color || (
+        kind === 'bubblegum' ? '#f472b6'
+          : (kind === 'holo_wave' ? '#38bdf8'
+            : (kind === 'zen_leaf' ? '#4ade80'
+              : (kind === 'cactus_needle' ? '#facc15'
+                : (kind === 'cosmic_meteor' ? '#a855f7'
+                  : (kind === 'martial_chi' ? '#facc15' : (kind === 'ghost_orb' ? '#c084fc' : null))))))
+      );
       this.dmg = dmg;
-      this.vx = facing * (kind === 'star' ? 445 : (kind === 'spore' ? 340 : (kind === 'ghost_orb' ? 360 : 405)));
+      const spdMap = {
+        star: 445,
+        water: 405,
+        spore: 340,
+        ghost_orb: 360,
+        bubblegum: 295,
+        holo_wave: 485,
+        zen_leaf: 350,
+        cactus_needle: 510,
+        cosmic_meteor: 455,
+        martial_chi: 525,
+      };
+      this.vx = facing * (spdMap[kind] || 405);
       this.vz = vz;
       this.rot = 0;
-      this.life = kind === 'spore' ? 1.55 : 2.1;
+      this.age = 0;
+      this.life = kind === 'spore' ? 1.55 : (kind === 'bubblegum' ? 1.85 : 2.15);
       this.dead = false;
     }
 
     update(dt) {
+      this.age += dt;
       this.life -= dt;
       if (this.life <= 0) {
+        if (this.kind === 'bubblegum') {
+          spawnParticles(this.x, this.z - this.jumpY, '#f472b6', 14, 190, 6);
+        }
         this.dead = true;
         return;
       }
       this.x += this.vx * dt;
       this.z = Math.max(Z_MIN, Math.min(Z_MAX, this.z + this.vz * dt));
-      this.rot += this.facing * dt * (this.kind === 'star' ? 14 : (this.kind === 'spore' ? 10 : 9));
+      if (this.kind === 'bubblegum') {
+        // Wavy floating bubblegum bob!
+        this.jumpY = this.baseJumpY + Math.sin(this.age * 9) * 20;
+      }
+      this.rot += this.facing * dt * (this.kind === 'star' || this.kind === 'zen_leaf' ? 14 : (this.kind === 'spore' ? 10 : 9));
 
+      const pCol = this.color || (this.kind === 'star' ? '#fb7185' : (this.kind === 'spore' ? '#fb923c' : '#38bdf8'));
       if (Math.random() < 0.55) {
-        spawnParticles(
-          this.x - this.facing * 12,
-          this.z - this.jumpY,
-          this.kind === 'ghost_orb' ? (this.color || '#c084fc') : (this.kind === 'star' ? '#fb7185' : (this.kind === 'spore' ? '#fb923c' : '#38bdf8')),
-          1,
-          75,
-          4
-        );
+        spawnParticles(this.x - this.facing * 12, this.z - this.jumpY, pCol, 1, 75, 4);
       }
 
+      const hitR = this.kind === 'martial_chi' ? 58 : (this.kind === 'bubblegum' ? 46 : 42);
       const p = game.player;
       if (
         p &&
-        Math.abs(p.x - this.x) < 42 &&
-        Math.abs(p.z - this.z) <= 30 &&
-        p.jumpY < 58
+        Math.abs(p.x - this.x) < hitR &&
+        Math.abs(p.z - this.z) <= (this.kind === 'martial_chi' ? 38 : 30) &&
+        p.jumpY < (this.kind === 'martial_chi' ? 88 : 58)
       ) {
-        p.takeDamage(this.dmg, this.facing, false);
-        spawnSlashSparks(this.x, this.z - this.jumpY, this.facing, this.kind === 'ghost_orb' ? (this.color || '#c084fc') : (this.kind === 'star' ? '#fb7185' : (this.kind === 'spore' ? '#f97316' : '#38bdf8')));
+        p.takeDamage(this.dmg, this.facing, this.kind === 'martial_chi' || this.kind === 'bubblegum');
+        spawnSlashSparks(this.x, this.z - this.jumpY, this.facing, pCol);
+        if (this.kind === 'bubblegum') {
+          spawnParticles(this.x, this.z - this.jumpY, '#f472b6', 16, 210, 6);
+        }
         this.dead = true;
         return;
       }
 
-      if (this.x < game.camX - 100 || this.x > game.camX + CANVAS_W + 100) {
+      if (this.x < game.camX - 120 || this.x > game.camX + CANVAS_W + 120) {
         this.dead = true;
       }
     }
@@ -1906,12 +1971,124 @@
       // Ground shadow
       ctx.fillStyle = 'rgba(8, 5, 18, 0.4)';
       ctx.beginPath();
-      ctx.ellipse(this.x, this.z + 2, 18, 6, 0, 0, Math.PI * 2);
+      ctx.ellipse(this.x, this.z + 2, this.kind === 'martial_chi' ? 28 : 18, 6, 0, 0, Math.PI * 2);
       ctx.fill();
 
       const py = this.z - this.jumpY;
 
-      if (this.kind === 'ghost_orb') {
+      if (this.kind === 'martial_chi') {
+        // Giant Golden-Ink Tai-Chi Crescent Energy Wave (冬花武聖大宗師 黃金氣功波!)
+        ctx.translate(Math.round(this.x), Math.round(py));
+        ctx.scale(this.facing, 1);
+        const aura = ctx.createRadialGradient(0, 0, 8, 0, 0, 56);
+        aura.addColorStop(0, 'rgba(254, 249, 195, 0.92)');
+        aura.addColorStop(0.55, 'rgba(250, 204, 21, 0.55)');
+        aura.addColorStop(1, 'rgba(234, 88, 12, 0)');
+        ctx.fillStyle = aura;
+        ctx.beginPath(); ctx.arc(0, 0, 56, 0, Math.PI * 2); ctx.fill();
+
+        const cg = ctx.createLinearGradient(-22, -48, 30, 48);
+        cg.addColorStop(0, '#fef9c3');
+        cg.addColorStop(0.5, '#facc15');
+        cg.addColorStop(1, '#ea580c');
+        ctx.fillStyle = cg;
+        ctx.strokeStyle = '#1a1026';
+        ctx.lineWidth = 3.5;
+        ctx.beginPath();
+        ctx.moveTo(-18, -48);
+        ctx.quadraticCurveTo(42, 0, -18, 48);
+        ctx.quadraticCurveTo(14, 0, -18, -48);
+        ctx.closePath();
+        ctx.fill(); ctx.stroke();
+
+        // Calligraphy 「武」 stamp floating in center of wave!
+        ctx.fillStyle = '#1a1026';
+        ctx.font = '900 22px "Noto Sans TC", serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('武', 6, 0);
+      } else if (this.kind === 'bubblegum') {
+        // Giant Glossy Pink Bubblegum Bomb (龐克滑板斑馬 泡泡糖炸彈!)
+        const pulse = 1 + Math.sin(this.age * 16) * 0.10;
+        ctx.translate(Math.round(this.x), Math.round(py));
+        const g = ctx.createRadialGradient(-6, -6, 3, 0, 0, 22 * pulse);
+        g.addColorStop(0, '#fbcfe8');
+        g.addColorStop(0.55, '#f472b6');
+        g.addColorStop(1, '#db2777');
+        ctx.fillStyle = g;
+        ctx.strokeStyle = '#3a2449';
+        ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.arc(0, 0, 19 * pulse, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = 'rgba(255,255,255,0.78)';
+        ctx.beginPath(); ctx.ellipse(-6, -6, 6, 3.5, -0.5, 0, Math.PI * 2); ctx.fill();
+      } else if (this.kind === 'holo_wave') {
+        // Piercing Cyan-Purple Holographic Digital Wave (電競無尾熊 全息衝擊波!)
+        ctx.translate(Math.round(this.x), Math.round(py));
+        ctx.scale(this.facing, 1);
+        ctx.strokeStyle = '#c084fc';
+        ctx.lineWidth = 8;
+        ctx.beginPath(); ctx.arc(-10, 0, 26, -0.95, 0.95); ctx.stroke();
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 5;
+        ctx.beginPath(); ctx.arc(-4, 0, 28, -0.9, 0.9); ctx.stroke();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2.2;
+        ctx.beginPath(); ctx.arc(0, 0, 26, -0.75, 0.75); ctx.stroke();
+      } else if (this.kind === 'zen_leaf') {
+        // Spinning Emerald Zen Grass Leaf Blade (佛系水豚君 淡定飛葉!)
+        ctx.translate(Math.round(this.x), Math.round(py));
+        ctx.rotate(this.rot);
+        ctx.fillStyle = '#4ade80';
+        ctx.strokeStyle = '#14532d';
+        ctx.lineWidth = 2.6;
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 17, 7.5, 0, 0, Math.PI * 2);
+        ctx.fill(); ctx.stroke();
+        ctx.strokeStyle = '#dcfce7';
+        ctx.lineWidth = 1.6;
+        ctx.beginPath(); ctx.moveTo(-12, 0); ctx.lineTo(12, 0); ctx.stroke();
+      } else if (this.kind === 'cactus_needle') {
+        // High-Speed Golden Cactus Spike (針刺仙人掌 萬針齊射!)
+        ctx.translate(Math.round(this.x), Math.round(py));
+        ctx.scale(this.facing, 1);
+        ctx.fillStyle = '#fef08a';
+        ctx.strokeStyle = '#365314';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(22, 0);
+        ctx.lineTo(-14, -7);
+        ctx.lineTo(-8, 0);
+        ctx.lineTo(-14, 7);
+        ctx.closePath();
+        ctx.fill(); ctx.stroke();
+      } else if (this.kind === 'cosmic_meteor') {
+        // Blazing Cosmic Shooting Meteor Star (星空巫師幽靈 流星雨彈幕!)
+        const trail = ctx.createLinearGradient(this.x, py, this.x - this.facing * 90, py);
+        trail.addColorStop(0, '#38bdf8');
+        trail.addColorStop(0.45, 'rgba(168, 85, 247, 0.75)');
+        trail.addColorStop(1, 'rgba(88, 28, 135, 0)');
+        ctx.fillStyle = trail;
+        ctx.beginPath();
+        ctx.moveTo(this.x, py - 13);
+        ctx.lineTo(this.x - this.facing * 90, py);
+        ctx.lineTo(this.x, py + 13);
+        ctx.closePath();
+        ctx.fill();
+        ctx.translate(Math.round(this.x), Math.round(py));
+        ctx.rotate(this.rot);
+        ctx.fillStyle = '#fef08a';
+        ctx.strokeStyle = '#312e81';
+        ctx.lineWidth = 2.6;
+        ctx.beginPath();
+        for (let i = 0; i < 10; i++) {
+          const r = i % 2 === 0 ? 15 : 6.5;
+          const a = (i * Math.PI) / 5;
+          if (i === 0) ctx.moveTo(Math.cos(a)*r, Math.sin(a)*r);
+          else ctx.lineTo(Math.cos(a)*r, Math.sin(a)*r);
+        }
+        ctx.closePath();
+        ctx.fill(); ctx.stroke();
+      } else if (this.kind === 'ghost_orb') {
         // Spectral Ghost Will-o'-Wisp Fireball (鬼火彈!)
         const orbCol = this.color || '#c084fc';
         const trail = ctx.createLinearGradient(this.x, py, this.x - this.facing * 82, py);
@@ -2621,7 +2798,8 @@
         return;
       }
 
-      const fps = StudioState.getFps('dashLightAttack', 17);
+      const isRp = this.hero.id === 'redpanda';
+      const fps = StudioState.getFps(isRp ? 'rp_dashLightAttack' : 'dashLightAttack', 17);
       const totalDur = 10 / fps;
       const progress = Math.min(0.999, this.stateTime / totalDur);
       this.frame = Math.floor(progress * 10);
@@ -2640,13 +2818,13 @@
         this.performMeleeHitbox(148, 22, false, 180);
       }
 
-      // Frame 4: Launch blazing Gothic Energy Soccer Ball + Comic Impact Frame!
+      // Frame 4: Launch blazing Energy Soccer Ball + Comic Impact Frame!
       if (this.frame >= 4 && !this.ballLaunched) {
         this.ballLaunched = true;
         game.projectiles.push(new SoccerBall(this.x + this.facing * 68, this.z, this.facing));
         sfx.playHit(true);
         addShake(7, 0.14);
-        triggerImpactFrame('#f0abfc', 0.055);
+        triggerImpactFrame(isRp ? '#fde047' : '#f0abfc', 0.055);
       }
 
       if (this.stateTime >= totalDur) {
@@ -2656,7 +2834,7 @@
     }
 
     /**
-     * 100% Image-faithful 10-frame Magic Star Wand Dash Attack (星杖衝刺斬)
+     * 100% Image-faithful 10-frame Dash Heavy Attack (星杖衝刺斬 / 赤焰衝刺撞擊)
      */
     updateDashAttack(dt, wantSpecial) {
       this.stateTime += dt;
@@ -2665,7 +2843,7 @@
         return;
       }
 
-      const fps = StudioState.getFps('dashAttack', 18);
+      const fps = StudioState.getFps(this.hero.id === 'redpanda' ? 'rp_dashAttack' : 'dashAttack', 18);
       const totalDur = 10 / fps;
       const progress = Math.min(0.999, this.stateTime / totalDur);
       this.frame = Math.floor(progress * 10);
@@ -2730,8 +2908,9 @@
         else if (wantLight && !this.comboQueued) this.comboQueued = 'light';
       }
 
-      const lightFps = StudioState.getFps('lightAttack', 17);
-      const heavyFps = StudioState.getFps('heavyAttack', 14);
+      const isRp = this.hero.id === 'redpanda';
+      const lightFps = StudioState.getFps(isRp ? 'rp_lightAttack' : 'lightAttack', 17);
+      const heavyFps = StudioState.getFps(isRp ? 'rp_attack' : 'heavyAttack', 14);
 
       if (this.state === 'light1') {
         // Stage 1: Snappy Straight Jab [0, 1, 2]
@@ -3095,6 +3274,138 @@
   let nextEntityId = 1;
 
   const ENEMY_CONFIGS = {
+    donghua_boss: {
+      name: '🥋 冬花武聖大宗師',
+      spritePrefix: 'enemy_donghua_boss',
+      attackMode: 'donghua_boss',
+      hasHurt: true,
+      projKind: 'martial_chi',
+      hp: 760,
+      speedX: 148,
+      speedZ: 96,
+      reach: 215,
+      dmg: 26,
+      score: 4500,
+      scale: 2.02, // 2x Hero Size — Towering Final Boss!
+      windup: 0.46,
+      attackDur: 0.82,
+      cooldown: 1.05,
+      armor: true,
+      isBoss: true,
+    },
+    kangaroo: {
+      name: '🥊 拳擊袋鼠',
+      spritePrefix: 'enemy_kangaroo',
+      attackMode: 'dual_unique',
+      hasHurt: true,
+      hp: 128,
+      speedX: 210,
+      speedZ: 122,
+      reach: 138,
+      dmg: 16,
+      score: 480,
+      scale: 1.04,
+      windup: 0.34,
+      attackDur: 0.62,
+      cooldown: 0.96,
+      armor: false,
+      rangedChance: 0.52,
+    },
+    zebra: {
+      name: '🛹 滑板斑馬',
+      spritePrefix: 'enemy_zebra',
+      attackMode: 'dual_unique',
+      hasHurt: true,
+      projKind: 'bubblegum',
+      hp: 120,
+      speedX: 245,
+      speedZ: 134,
+      reach: 142,
+      dmg: 17,
+      score: 500,
+      scale: 1.04,
+      windup: 0.36,
+      attackDur: 0.64,
+      cooldown: 1.02,
+      armor: false,
+      rangedChance: 0.58,
+    },
+    koala: {
+      name: '🎧 電競無尾熊',
+      spritePrefix: 'enemy_koala',
+      attackMode: 'dual_unique',
+      hasHurt: true,
+      projKind: 'holo_wave',
+      hp: 118,
+      speedX: 158,
+      speedZ: 116,
+      reach: 146,
+      dmg: 15,
+      score: 520,
+      scale: 1.02,
+      windup: 0.42,
+      attackDur: 0.66,
+      cooldown: 1.12,
+      armor: false,
+      rangedChance: 0.72,
+    },
+    capybara: {
+      name: '🍊 佛系水豚君',
+      spritePrefix: 'enemy_capybara',
+      attackMode: 'dual_unique',
+      hasHurt: true,
+      projKind: 'zen_leaf',
+      hp: 182,
+      speedX: 118,
+      speedZ: 88,
+      reach: 152,
+      dmg: 21,
+      score: 560,
+      scale: 1.08,
+      windup: 0.48,
+      attackDur: 0.72,
+      cooldown: 1.24,
+      armor: true,
+      rangedChance: 0.50,
+    },
+    cactus: {
+      name: '🌵 針刺仙人掌',
+      spritePrefix: 'enemy_cactus',
+      attackMode: 'dual_unique',
+      hasHurt: true,
+      projKind: 'cactus_needle',
+      hp: 134,
+      speedX: 186,
+      speedZ: 112,
+      reach: 146,
+      dmg: 18,
+      score: 520,
+      scale: 1.05,
+      windup: 0.38,
+      attackDur: 0.66,
+      cooldown: 1.05,
+      armor: false,
+      rangedChance: 0.55,
+    },
+    wizard_ghost: {
+      name: '🧙‍♂️ 星空巫師幽靈',
+      spritePrefix: 'enemy_wizard_ghost',
+      attackMode: 'dual_unique',
+      hasHurt: true,
+      projKind: 'cosmic_meteor',
+      hp: 126,
+      speedX: 168,
+      speedZ: 120,
+      reach: 152,
+      dmg: 18,
+      score: 560,
+      scale: 1.06,
+      windup: 0.44,
+      attackDur: 0.70,
+      cooldown: 1.18,
+      armor: false,
+      rangedChance: 0.74,
+    },
     penguin_king: {
       name: '王者企鵝',
       spritePrefix: 'enemy_pengking',
@@ -3598,6 +3909,12 @@
             // Windup crouch / charge across frames 0 -> 1 -> 2
             this.frame = Math.min(2, Math.floor(prog * 3));
           }
+        } else if (this.cfg.attackMode === 'donghua_boss') {
+          // Grandmaster gathers golden Tai-Chi chi aura across frames 0 -> 1 -> 2!
+          this.frame = Math.min(2, Math.floor(prog * 3));
+          if (Math.random() < 0.45) {
+            spawnParticles(this.x + (Math.random() - 0.5) * 90, this.z - 60 - Math.random() * 120, '#facc15', 1, 90, 6);
+          }
         } else {
           this.frame = this.attackStyle === 'A' ? Math.floor(prog * 2) : 5 + Math.floor(prog * 2);
         }
@@ -3606,9 +3923,82 @@
           this.state = 'attack';
           this.stateTime = 0;
           this.didHitPlayer = false;
+          this.didHitPlayer2 = false;
           this.projFired = false;
 
-          if (this.cfg.attackMode === 'full10') {
+          if (this.cfg.attackMode === 'donghua_boss') {
+            // 4 Distinct High-Power Martial Arts Grandmaster Moves!
+            const move = this.bossMove || 'wu_punch';
+            if (move === 'wu_punch') {
+              this.dashVel = this.facing * 650;
+              spawnComicBubble(this.x, this.z - 290, '武・破空正拳!!', { accent: '#facc15', sub: 'GOLDEN WU FIST!!', style: 'super' });
+              spawnParticles(this.x - this.facing * 40, this.z - 45, '#facc15', 18, 260, 8);
+            } else if (move === 'taichi_nova') {
+              this.dashVel = 0;
+              spawnComicBubble(this.x, this.z - 290, '太極氣勁震地!!', { accent: '#fde047', sub: 'TAI-CHI NOVA!!', style: 'super' });
+              spawnParticles(this.x, this.z - 80, '#fef08a', 20, 280, 8);
+            } else if (move === 'chi_wave') {
+              this.dashVel = -this.facing * 60;
+              spawnComicBubble(this.x, this.z - 290, '武聖三連氣功波!!', { accent: '#fb923c', sub: 'MARTIAL CHI WAVE!!', style: 'super' });
+            } else {
+              // meteor_slam: Leaps high into the sky and crashes down!
+              this.dashVel = this.facing * 390;
+              this.vy = 450;
+              this.jumpY = 6;
+              spawnComicBubble(this.x, this.z - 290, '宗師流星碎地斬!!', { accent: '#f97316', sub: 'GRANDMASTER SLAM!!', style: 'super' });
+              spawnParticles(this.x, this.z - 20, '#facc15', 16, 230, 7);
+            }
+            sfx.playSwing(3);
+          } else if (this.cfg.attackMode === 'dual_unique') {
+            // Each of the 6 new monsters launches its OWN unique signature motion!
+            if (this.type === 'kangaroo') {
+              if (this.attackStyle === 'A') {
+                // Mode A: Snappy forward boxing step-in 1-2-3 flurry!
+                this.dashVel = this.facing * 260;
+              } else {
+                // Mode B: Spring-loaded high Kangaroo Jump-Uppercut Leap!
+                this.dashVel = this.facing * 470;
+                this.vy = 340;
+                this.jumpY = 4;
+                spawnParticles(this.x, this.z - 12, '#facc15', 10, 180, 6);
+              }
+            } else if (this.type === 'zebra') {
+              if (this.attackStyle === 'A') {
+                // Mode A: High-Speed Neon Skateboard Grind Charge!
+                this.dashVel = this.facing * 610;
+                spawnParticles(this.x - this.facing * 24, this.z - 14, '#f472b6', 12, 210, 6);
+              } else {
+                // Mode B: Recoil pop launching giant Pink Bubblegum Bomb!
+                this.dashVel = -this.facing * 75;
+              }
+            } else if (this.type === 'koala') {
+              // Mode A: Headphone Bass Drop AOE (stationary) | Mode B: Hologram Wave Shot
+              this.dashVel = this.attackStyle === 'A' ? 0 : -this.facing * 50;
+            } else if (this.type === 'capybara') {
+              if (this.attackStyle === 'A') {
+                // Mode A: Zen Belly-Flop Quake Jump Slam!
+                this.dashVel = this.facing * 240;
+                this.vy = 310;
+                this.jumpY = 4;
+              } else {
+                // Mode B: Calm Zen Exhale Leaf Fan
+                this.dashVel = 0;
+              }
+            } else if (this.type === 'cactus') {
+              if (this.attackStyle === 'A') {
+                // Mode A: Needle Barrage Spin-Dash!
+                this.dashVel = this.facing * 560;
+                spawnParticles(this.x - this.facing * 20, this.z - 32, '#bef264', 12, 200, 6);
+              } else {
+                // Mode B: Giant Cactus Club + 3-Way Golden Needle Fan!
+                this.dashVel = -this.facing * 60;
+              }
+            } else if (this.type === 'wizard_ghost') {
+              // Mode A: Starburst Nova AOE | Mode B: Astral Portal Meteor Shower!
+              this.dashVel = this.attackStyle === 'A' ? 0 : -this.facing * 70;
+            }
+            sfx.playSwing(this.attackStyle === 'A' ? 2 : 1);
+          } else if (this.cfg.attackMode === 'full10') {
             if (this.type === 'pig' || this.type === 'sheep') {
               // Close-range blazing boar / furious sheep horn ramming dash!
               this.dashVel = this.facing * (this.type === 'sheep' ? 560 : 590);
@@ -3661,7 +4051,195 @@
         this.x += this.dashVel * dt;
         this.dashVel *= Math.pow(0.08, dt);
 
-        if (this.cfg.attackMode === 'full10') {
+        if (this.cfg.attackMode === 'donghua_boss') {
+          const dur = this.cfg.attackDur || 0.82;
+          const prog = Math.min(0.99, this.stateTime / dur);
+          const enraged = this.hp < this.maxHp * 0.5;
+          const move = this.bossMove || 'wu_punch';
+          // Sweep across frames 3 -> 9 showcasing 「武」 impact, giant arc, and master guard!
+          this.frame = Math.min(9, 3 + Math.floor(prog * 7));
+
+          if (move === 'wu_punch') {
+            if (this.frame >= 4 && this.frame <= 6 && Math.random() < 0.7) {
+              spawnParticles(this.x + this.facing * 60, this.z - 110, '#facc15', 3, 220, 7);
+            }
+            if (!this.didHitPlayer && this.frame >= 4 && this.frame <= 6) {
+              const hitDx = (p.x - this.x) * this.facing;
+              if (hitDx >= -40 && hitDx <= 235 && Math.abs(p.z - this.z) <= 50 && p.jumpY < 110) {
+                this.didHitPlayer = true;
+                addShake(10, 0.22);
+                triggerImpactFrame('#fde047', 0.06);
+                p.takeDamage(this.cfg.dmg, this.facing, true);
+              }
+            }
+          } else if (move === 'taichi_nova') {
+            if (!this.projFired && this.frame >= 5) {
+              this.projFired = true;
+              addShake(11, 0.24);
+              spawnParticles(this.x, this.z - 70, '#fef08a', 26, 320, 8);
+              spawnParticles(this.x, this.z - 40, '#1e293b', 16, 260, 7);
+              // 360-degree Tai-Chi Nova shockwave hits heroes on BOTH sides!
+              if (Math.hypot(p.x - this.x, (p.z - this.z) * 2.1) <= 215 && p.jumpY < 90) {
+                p.takeDamage(this.cfg.dmg, p.x >= this.x ? 1 : -1, true);
+              }
+            }
+          } else if (move === 'chi_wave') {
+            if (!this.projFired && this.frame >= 5) {
+              this.projFired = true;
+              const px = this.x + this.facing * 92;
+              const fanVz = enraged ? [-86, -42, 0, 42, 86] : [-58, 0, 58];
+              for (const vz of fanVz) {
+                game.projectiles.push(new EnemyProjectile(px, this.z, this.facing, 'martial_chi', 22, vz));
+              }
+              addShake(7, 0.16);
+              spawnParticles(px, this.z - 80, '#facc15', 18, 250, 7);
+            }
+          } else if (move === 'meteor_slam') {
+            if (!this.projFired && this.jumpY <= 4 && this.stateTime > 0.22) {
+              this.projFired = true;
+              addShake(13, 0.28);
+              triggerImpactFrame('#fb923c', 0.065);
+              spawnParticles(this.x, this.z - 16, '#facc15', 28, 340, 8);
+              spawnParticles(this.x, this.z - 12, '#cbd5e1', 18, 260, 7);
+              if (Math.hypot(p.x - this.x, (p.z - this.z) * 2.0) <= 205 && p.jumpY < 72) {
+                p.takeDamage(this.cfg.dmg + 4, p.x >= this.x ? 1 : -1, true);
+              }
+              // Dual ground chi tremors shooting left & right!
+              game.projectiles.push(new EnemyProjectile(this.x + 56, this.z, 1, 'martial_chi', 18, 0));
+              game.projectiles.push(new EnemyProjectile(this.x - 56, this.z, -1, 'martial_chi', 18, 0));
+            }
+          }
+
+          if (this.stateTime >= dur) {
+            this.state = 'approach';
+            this.attackCd = enraged ? 0.78 : this.cfg.cooldown;
+            if (Math.random() < 0.5) this.strafeSide *= -1;
+          }
+        } else if (this.cfg.attackMode === 'dual_unique') {
+          const dur = this.cfg.attackDur || 0.64;
+          const prog = Math.min(0.99, this.stateTime / dur);
+          this.frame = this.attackStyle === 'A'
+            ? Math.min(4, 2 + Math.floor(prog * 3))
+            : Math.min(9, 7 + Math.floor(prog * 3));
+
+          if (this.type === 'kangaroo') {
+            if (this.attackStyle === 'A') {
+              // Rapid 1-2-3 Boxing Punch Flurry (2 crisp hit windows!)
+              const hitDx = (p.x - this.x) * this.facing;
+              if (!this.didHitPlayer && this.frame === 2 && hitDx >= -18 && hitDx <= this.cfg.reach && Math.abs(p.z - this.z) <= 34 && p.jumpY < 60) {
+                this.didHitPlayer = true;
+                p.takeDamage(Math.round(this.cfg.dmg * 0.65), this.facing, false);
+              }
+              if (!this.didHitPlayer2 && this.frame === 4 && hitDx >= -18 && hitDx <= this.cfg.reach + 14 && Math.abs(p.z - this.z) <= 34 && p.jumpY < 60) {
+                this.didHitPlayer2 = true;
+                p.takeDamage(this.cfg.dmg, this.facing, true);
+              }
+            } else if (!this.didHitPlayer && (this.frame === 7 || this.frame === 8)) {
+              const hitDx = (p.x - this.x) * this.facing;
+              if (hitDx >= -24 && hitDx <= this.cfg.reach + 24 && Math.abs(p.z - this.z) <= 38 && p.jumpY < 85) {
+                this.didHitPlayer = true;
+                p.takeDamage(this.cfg.dmg + 4, this.facing, true);
+              }
+            }
+          } else if (this.type === 'zebra') {
+            if (this.attackStyle === 'A') {
+              if (Math.random() < 0.65) spawnParticles(this.x - this.facing * 24, this.z - 16, '#f472b6', 2, 160, 5);
+              if (!this.didHitPlayer && (this.frame === 2 || this.frame === 3)) {
+                const hitDx = (p.x - this.x) * this.facing;
+                if (hitDx >= -24 && hitDx <= this.cfg.reach + 14 && Math.abs(p.z - this.z) <= 36 && p.jumpY < 60) {
+                  this.didHitPlayer = true;
+                  p.takeDamage(this.cfg.dmg, this.facing, true);
+                }
+              }
+            } else if (!this.projFired && this.frame >= 7) {
+              this.projFired = true;
+              const px = this.x + this.facing * 48;
+              game.projectiles.push(new EnemyProjectile(px, this.z, this.facing, 'bubblegum', this.cfg.dmg, 0));
+              spawnParticles(px, this.z - 64, '#f472b6', 12, 175, 5);
+            }
+          } else if (this.type === 'koala') {
+            if (this.attackStyle === 'A') {
+              // Neon Headphones BASS DROP 360° AOE Ring!
+              if (!this.projFired && this.frame >= 2) {
+                this.projFired = true;
+                addShake(6, 0.16);
+                spawnParticles(this.x, this.z - 55, '#c084fc', 18, 240, 6);
+                spawnParticles(this.x, this.z - 55, '#38bdf8', 12, 220, 5);
+                if (Math.hypot(p.x - this.x, (p.z - this.z) * 2.1) <= 155 && p.jumpY < 72) {
+                  p.takeDamage(this.cfg.dmg + 2, p.x >= this.x ? 1 : -1, true);
+                }
+              }
+            } else if (!this.projFired && this.frame >= 7) {
+              this.projFired = true;
+              const px = this.x + this.facing * 48;
+              game.projectiles.push(new EnemyProjectile(px, this.z, this.facing, 'holo_wave', this.cfg.dmg, -26));
+              game.projectiles.push(new EnemyProjectile(px, this.z, this.facing, 'holo_wave', this.cfg.dmg, 26));
+              spawnParticles(px, this.z - 66, '#38bdf8', 10, 170, 5);
+            }
+          } else if (this.type === 'capybara') {
+            if (this.attackStyle === 'A') {
+              // Zen Belly-Flop Ground Tremor AOE!
+              if (!this.projFired && this.jumpY <= 4 && this.stateTime > 0.16) {
+                this.projFired = true;
+                addShake(8, 0.18);
+                spawnParticles(this.x, this.z - 12, '#facc15', 18, 250, 7);
+                if (Math.hypot(p.x - this.x, (p.z - this.z) * 2.0) <= 160 && p.jumpY < 56) {
+                  p.takeDamage(this.cfg.dmg, p.x >= this.x ? 1 : -1, true);
+                }
+              }
+            } else if (!this.projFired && this.frame >= 7) {
+              this.projFired = true;
+              const px = this.x + this.facing * 44;
+              for (const vz of [-46, 0, 46]) {
+                game.projectiles.push(new EnemyProjectile(px, this.z, this.facing, 'zen_leaf', 13, vz));
+              }
+              spawnParticles(px, this.z - 62, '#4ade80', 10, 160, 5);
+            }
+          } else if (this.type === 'cactus') {
+            if (this.attackStyle === 'A') {
+              if (Math.random() < 0.6) spawnParticles(this.x, this.z - 34, '#facc15', 2, 170, 5);
+              if (!this.didHitPlayer && (this.frame === 3 || this.frame === 4)) {
+                const hitDx = (p.x - this.x) * this.facing;
+                if (hitDx >= -24 && hitDx <= this.cfg.reach + 16 && Math.abs(p.z - this.z) <= 38 && p.jumpY < 62) {
+                  this.didHitPlayer = true;
+                  p.takeDamage(this.cfg.dmg, this.facing, true);
+                }
+              }
+            } else if (!this.projFired && this.frame >= 7) {
+              this.projFired = true;
+              const px = this.x + this.facing * 48;
+              for (const vz of [-48, 0, 48]) {
+                game.projectiles.push(new EnemyProjectile(px, this.z, this.facing, 'cactus_needle', 14, vz));
+              }
+              spawnParticles(px, this.z - 58, '#bef264', 12, 180, 5);
+            }
+          } else if (this.type === 'wizard_ghost') {
+            if (this.attackStyle === 'A') {
+              // Cosmic Starburst Nova AOE!
+              if (!this.projFired && this.frame >= 2) {
+                this.projFired = true;
+                addShake(6, 0.16);
+                spawnParticles(this.x, this.z - 60, '#fef08a', 18, 250, 6);
+                spawnParticles(this.x, this.z - 60, '#a855f7', 14, 220, 6);
+                if (Math.hypot(p.x - this.x, (p.z - this.z) * 2.0) <= 155 && p.jumpY < 76) {
+                  p.takeDamage(this.cfg.dmg, p.x >= this.x ? 1 : -1, true);
+                }
+              }
+            } else if (!this.projFired && this.frame >= 7) {
+              this.projFired = true;
+              const px = this.x + this.facing * 52;
+              game.projectiles.push(new EnemyProjectile(px, this.z, this.facing, 'cosmic_meteor', this.cfg.dmg, -34));
+              game.projectiles.push(new EnemyProjectile(px, this.z, this.facing, 'cosmic_meteor', this.cfg.dmg, 34));
+              spawnParticles(px, this.z - 68, '#a855f7', 14, 190, 6);
+            }
+          }
+
+          if (this.stateTime >= dur) {
+            this.state = 'approach';
+            this.attackCd = this.cfg.cooldown;
+            if (Math.random() < 0.5) this.strafeSide *= -1;
+          }
+        } else if (this.cfg.attackMode === 'full10') {
           const dur = this.cfg.attackDur || 0.64;
           const prog = Math.min(0.99, this.stateTime / dur);
 
@@ -3815,16 +4393,25 @@
           }
         }
       } else {
-        // APPROACH / FLANK AI (Belt-scroller slot spacing!)
+        // APPROACH / FLANK AI (Belt-scroller slot spacing + Unique Per-Monster Locomotion!)
         this.facing = dx >= 0 ? 1 : -1;
 
-        // Check how many other enemies are already winding up/attacking
         const attackers = game.enemies.filter((e) => !e.dead && (e.state === 'windup' || e.state === 'attack')).length;
-        const desiredDist = this.type === 'ghost'
-          ? 275
-          : ((this.type === 'star' || this.type === 'puffer' || this.type === 'slime' || this.type === 'pig' || this.type === 'sheep' || this.type === 'penguin_king' || this.type === 'penguin_ice' || this.type === 'rabbit') ? 185 : (this.cfg.reach - 10));
+        const desiredDist = (this.type === 'koala' || this.type === 'wizard_ghost')
+          ? 295
+          : (this.type === 'ghost'
+            ? 275
+            : (this.type === 'donghua_boss'
+              ? 210
+              : (this.type === 'capybara'
+                ? 135
+                : ((this.type === 'star' || this.type === 'puffer' || this.type === 'slime' || this.type === 'pig' || this.type === 'sheep' || this.type === 'penguin_king' || this.type === 'penguin_ice' || this.type === 'rabbit' || this.type === 'zebra' || this.type === 'cactus') ? 195 : (this.cfg.reach - 10)))));
         const targetX = p.x + this.strafeSide * desiredDist;
-        const targetZ = Math.max(Z_MIN, Math.min(Z_MAX, p.z + (attackers >= 2 ? this.strafeOffsetZ * 1.8 : 0)));
+        let extraZ = (attackers >= 2 ? this.strafeOffsetZ * 1.8 : 0);
+        // Unique Locomotion: Skateboard Zebra weaves diagonally & Wizard Ghost glides figure-8!
+        if (this.type === 'zebra') extraZ += Math.sin(this.animTime * 4.2 + this.id) * 52;
+        else if (this.type === 'wizard_ghost') extraZ += Math.sin(this.animTime * 2.6 + this.id) * 38;
+        const targetZ = Math.max(Z_MIN, Math.min(Z_MAX, p.z + extraZ));
 
         const toX = targetX - this.x;
         const toZ = targetZ - this.z;
@@ -3832,11 +4419,22 @@
 
         if (distToTarget > 14) {
           this.isMoving = true;
-          const mx = (toX / distToTarget) * this.cfg.speedX;
+          const speedBoost = (this.type === 'cactus' && (Math.floor(this.animTime * 2) % 3 === 1)) ? 1.42 : 1.0;
+          const mx = (toX / distToTarget) * this.cfg.speedX * speedBoost;
           const mz = (toZ / distToTarget) * this.cfg.speedZ;
           this.x += mx * dt;
           this.z += mz * dt;
           this.frame = Math.floor(this.animTime * moveFps) % 10;
+
+          // Unique Locomotion: Boxing Kangaroo moves in springy parabolic hops!
+          if (this.type === 'kangaroo' && this.jumpY === 0) {
+            this.vy = 215;
+            this.jumpY = 2;
+          }
+          // Skateboard Zebra leaves subtle neon skate sparks while drifting!
+          if (this.type === 'zebra' && Math.random() < 0.25) {
+            spawnParticles(this.x - this.facing * 18, this.z - 6, '#f472b6', 1, 70, 3);
+          }
         } else {
           this.isMoving = false;
           const idleFps = this.cfg.idleSheet ? (StudioState.getAction(this.cfg.idleSheet)?.fps || 8) : moveFps * 0.7;
@@ -3857,9 +4455,38 @@
 
         // Trigger Attack!
         const absDx = Math.abs(dx);
-        const inRangeZ = Math.abs(dz) <= 32;
+        const inRangeZ = Math.abs(dz) <= (this.type === 'donghua_boss' ? 46 : 34);
         if (inRangeZ && this.attackCd <= 0 && (attackers < 2 || this.cfg.isBoss)) {
-          if (this.cfg.attackMode === 'full10') {
+          if (this.cfg.attackMode === 'donghua_boss') {
+            // Dynamic 4-move Martial Grandmaster Boss selector!
+            const r = Math.random();
+            if (absDx <= 185) {
+              this.bossMove = r < 0.45 ? 'taichi_nova' : (r < 0.80 ? 'wu_punch' : 'meteor_slam');
+            } else if (absDx <= 340) {
+              this.bossMove = r < 0.40 ? 'wu_punch' : (r < 0.72 ? 'meteor_slam' : 'chi_wave');
+            } else if (absDx <= 560) {
+              this.bossMove = r < 0.65 ? 'chi_wave' : 'meteor_slam';
+            } else {
+              this.bossMove = null;
+            }
+            if (this.bossMove) {
+              this.attackStyle = (this.bossMove === 'chi_wave') ? 'B' : 'A';
+              this.state = 'windup';
+              this.stateTime = 0;
+            }
+          } else if (this.cfg.attackMode === 'dual_unique') {
+            const closeDist = (this.type === 'koala' || this.type === 'wizard_ghost') ? 148 : 175;
+            const farDist = (this.type === 'kangaroo') ? 285 : 430;
+            if (absDx <= closeDist) {
+              this.attackStyle = 'A';
+              this.state = 'windup';
+              this.stateTime = 0;
+            } else if (absDx <= farDist && Math.random() < (this.cfg.rangedChance || 0.6)) {
+              this.attackStyle = 'B';
+              this.state = 'windup';
+              this.stateTime = 0;
+            }
+          } else if (this.cfg.attackMode === 'full10') {
             const triggerDist = this.type === 'ghost'
               ? 390
               : ((this.type === 'puffer' || this.type === 'slime' || this.type === 'pig' || this.type === 'sheep' || this.type === 'penguin_king' || this.type === 'penguin_ice' || this.type === 'rabbit') ? 255 : 210);
@@ -3912,15 +4539,25 @@
       ctx.ellipse(this.x, this.z + 2, 46 * shScale, 13 * shScale, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // Boss enraged crimson cosmic aura
-      if (this.cfg.isBoss && !this.dead && this.hp < this.maxHp * 0.5) {
-        const pulse = 1 + Math.sin(game.time * 14) * 0.1;
-        const grad = ctx.createRadialGradient(this.x, this.z - this.jumpY - 82 * sc, 16, this.x, this.z - this.jumpY - 82 * sc, 118 * sc * pulse);
-        grad.addColorStop(0, 'rgba(244, 63, 94, 0.45)');
-        grad.addColorStop(1, 'rgba(244, 63, 94, 0)');
+      // Boss golden martial / enraged crimson cosmic aura
+      if (this.cfg.isBoss && !this.dead && (this.hp < this.maxHp * 0.5 || this.type === 'donghua_boss')) {
+        const enraged = this.hp < this.maxHp * 0.5;
+        const pulse = 1 + Math.sin(game.time * (enraged ? 14 : 7)) * 0.1;
+        const auraR = (this.type === 'donghua_boss' ? 105 : 118) * sc * pulse;
+        const auraY = this.z - this.jumpY - 78 * sc;
+        const grad = ctx.createRadialGradient(this.x, auraY, 18, this.x, auraY, auraR);
+        if (enraged) {
+          grad.addColorStop(0, this.type === 'donghua_boss' ? 'rgba(250, 204, 21, 0.52)' : 'rgba(244, 63, 94, 0.45)');
+          grad.addColorStop(0.55, 'rgba(244, 63, 94, 0.28)');
+          grad.addColorStop(1, 'rgba(244, 63, 94, 0)');
+        } else {
+          grad.addColorStop(0, 'rgba(250, 204, 21, 0.34)');
+          grad.addColorStop(0.6, 'rgba(245, 158, 11, 0.14)');
+          grad.addColorStop(1, 'rgba(245, 158, 11, 0)');
+        }
         ctx.fillStyle = grad;
         ctx.beginPath();
-        ctx.arc(this.x, this.z - this.jumpY - 82 * sc, 118 * sc * pulse, 0, Math.PI * 2);
+        ctx.arc(this.x, auraY, auraR, 0, Math.PI * 2);
         ctx.fill();
       }
 
@@ -3954,17 +4591,24 @@
 
       ctx.restore();
 
-      // Telegraph indicator during windup: "!" (Melee) vs "⚡!" (Ranged Style B)
+      // Telegraph indicator during windup: "!" (Melee) vs "⚡!" (Ranged Style B) vs Boss martial callouts
       if (this.state === 'windup' && !this.dead && !this.cfg.windupSheet) {
-        const ty = this.z - this.jumpY - 154 * sc;
+        const ty = Math.max(94, this.z - this.jumpY - 154 * sc);
         const isRanged = this.attackStyle === 'B';
         ctx.save();
-        ctx.fillStyle = isRanged ? (this.cfg.projKind === 'star' ? '#fb7185' : '#38bdf8') : '#facc15';
+        let label = isRanged ? '⚡!' : '!';
+        let fillCol = isRanged ? (this.cfg.projKind === 'star' ? '#fb7185' : '#38bdf8') : '#facc15';
+        if (this.type === 'donghua_boss') {
+          if (this.bossMove === 'wu_punch') { label = '武!'; fillCol = '#fde047'; }
+          else if (this.bossMove === 'taichi_nova') { label = '震!'; fillCol = '#fb7185'; }
+          else if (this.bossMove === 'chi_wave') { label = '氣!'; fillCol = '#38bdf8'; }
+          else if (this.bossMove === 'meteor_slam') { label = '斬!'; fillCol = '#f97316'; }
+        }
+        ctx.fillStyle = fillCol;
         ctx.strokeStyle = '#0d0b14';
-        ctx.lineWidth = 4;
-        ctx.font = '900 26px sans-serif';
+        ctx.lineWidth = 5;
+        ctx.font = this.type === 'donghua_boss' ? '900 32px "Noto Sans TC", sans-serif' : '900 26px sans-serif';
         ctx.textAlign = 'center';
-        const label = isRanged ? '⚡!' : '!';
         ctx.strokeText(label, this.x, ty);
         ctx.fillText(label, this.x, ty);
         ctx.restore();
@@ -5221,13 +5865,13 @@
       ctx.lineWidth = 7;
       ctx.strokeStyle = '#090710';
       ctx.font = '900 35px "Noto Sans TC", sans-serif';
-      ctx.strokeText('海星國小 大亂鬥 · 選擇出戰主角', CANVAS_W / 2, 46);
+      ctx.strokeText('Star Fish 國小 大亂鬥 · 選擇出戰主角', CANVAS_W / 2, 46);
       const tGrad = ctx.createLinearGradient(0, 14, 0, 52);
       tGrad.addColorStop(0, '#ffffff');
       tGrad.addColorStop(0.55, '#fde047');
       tGrad.addColorStop(1, '#f43f8e');
       ctx.fillStyle = tGrad;
-      ctx.fillText('海星國小 大亂鬥 · 選擇出戰主角', CANVAS_W / 2, 46);
+      ctx.fillText('Star Fish 國小 大亂鬥 · 選擇出戰主角', CANVAS_W / 2, 46);
 
       ctx.font = '700 12.5px "Noto Sans TC", sans-serif';
       ctx.fillStyle = '#cbd5e1';
@@ -6241,17 +6885,29 @@
         const tag = document.createElement('span');
         tag.style.fontSize = '11px';
         tag.style.opacity = '0.85';
-        tag.textContent = act.id === 'dashLightAttack'
-          ? `觸發：跑步+${formatKeyCode(StudioState.getAction('lightAttack')?.key)}`
-          : (act.id === 'dashAttack'
-            ? `觸發：跑步+${formatKeyCode(StudioState.getAction('heavyAttack')?.key)}`
-            : (act.id === 'tornadoKick' || act.id === 'rp_tornadoKick'
-              ? `觸發：↑ + ${formatKeyCode(StudioState.getAction('heavyAttack')?.key)}`
-              : (act.id === 'victory' || act.id === 'rp_victory'
-                ? '觸發：戰鬥勝利結算'
-                : (act.id === 'run' || act.id === 'rp_run'
-                  ? '觸發：連按 AA / DD'
-                  : (act.id === 'walk' || act.id === 'rp_walk' ? '觸發：WASD' : '自動觸發')))));
+        const lightKey = formatKeyCode(StudioState.getAction('lightAttack')?.key);
+        const heavyKey = formatKeyCode(StudioState.getAction('heavyAttack')?.key);
+        const dashKey = formatKeyCode(StudioState.getAction('dash')?.key);
+        const spKey = formatKeyCode(StudioState.getAction('special')?.key);
+        tag.textContent = (act.id === 'dashLightAttack' || act.id === 'rp_dashLightAttack')
+          ? `觸發：跑步 + ${lightKey}（衝刺輕攻）`
+          : ((act.id === 'dashAttack' || act.id === 'rp_dashAttack')
+            ? `觸發：跑步 + ${heavyKey}（衝刺重攻）`
+            : (act.id === 'rp_attack'
+              ? `觸發：${heavyKey}（重攻擊）`
+              : (act.id === 'rp_lightAttack'
+                ? `觸發：${lightKey}（輕攻擊）`
+                : (act.id === 'rp_dash'
+                  ? `觸發：${dashKey}（閃身步）`
+                  : (act.id === 'rp_special'
+                    ? `觸發：${spKey}（必殺技）`
+                    : (act.id === 'tornadoKick' || act.id === 'rp_tornadoKick'
+                      ? `觸發：↑ + ${heavyKey}`
+                      : (act.id === 'victory' || act.id === 'rp_victory'
+                        ? '觸發：戰鬥勝利結算'
+                        : (act.id === 'run' || act.id === 'rp_run'
+                          ? '觸發：連按 AA / DD'
+                          : (act.id === 'walk' || act.id === 'rp_walk' ? '觸發：WASD' : '自動觸發')))))))));
         animCtrl.appendChild(tag);
       }
 
