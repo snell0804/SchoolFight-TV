@@ -135,31 +135,75 @@
       </div>
     </section>
 
-    <!-- ⚙️ Gear Settings Studio -->
-    <section id="gearStudio" class="gear-studio" aria-label="齒輪動作與按鍵設定區">
+    <!-- ⚙️ Professional Character, Monster Parameter & Frame Animation Studio -->
+    <section id="gearStudio" class="gear-studio" aria-label="角色連幀動畫與怪物參數設定工作台">
       <div class="studio-top">
-        <div>
-          <h2>⚙️ 齒輪設定區｜角色連幀動畫・按鍵綁定・微調與上傳</h2>
-          <p>檢視每個角色的逐幀動畫、微調播放速度 (FPS)、點擊按鍵立即改綁、上傳替換精靈表（自動去背＋無裁切谷底切格），或新增全新自訂動作！</p>
+        <div class="studio-title-wrap">
+          <div class="studio-title-row">
+            <h2>⚙️ 角色連幀動畫 ＆ 怪物戰鬥參數工作台</h2>
+            <span id="studioSummaryBadge" class="studio-summary-badge">載入中...</span>
+          </div>
+          <p>左側條列切換主角／BOSS／怪物（支援搜尋與分類篩選）；右側即時調整體型、HP、霸體與受擊硬直，並以專業條列管理 10～60+ 幀動畫與雲端覆寫。</p>
         </div>
         <div class="studio-actions">
-          <button id="btnExportAllZip" class="btn gear-btn" title="一鍵將所有主角、BOSS 與怪物的連續動畫精靈表打包成 ZIP 下載">📦 一鍵打包匯出全部角色動畫 (ZIP)</button>
-          <button id="btnResetConfig" class="btn" title="恢復所有按鍵與 FPS 預設值">↺ 恢復預設</button>
+          <button id="btnToggleCloudBar" class="btn" title="展開／收合 GitHub Pages 雲端覆寫 Token 與 PNG 上傳規格說明">☁️ 雲端直連設定</button>
+          <button id="btnExportAllZip" class="btn gear-btn" title="一鍵將所有主角、BOSS 與怪物的連續動畫精靈表與參數設定打包成 ZIP 下載">📦 一鍵匯出全部動畫 (ZIP)</button>
+          <button id="btnResetConfig" class="btn" title="恢復所有角色參數、按鍵與 FPS 預設值">↺ 全部恢復預設</button>
           <button id="btnCloseGear" class="btn">✕ 收合設定</button>
         </div>
       </div>
 
-      <div id="charTabs" class="char-tabs"></div>
+      <div id="cloudSyncStudioBar" class="cloud-studio-bar"></div>
 
-      <div id="spriteSlots" class="sprite-slots"></div>
+      <div class="studio-workspace">
+        <!-- Left Sidebar: Searchable & Categorized Character Roster List -->
+        <aside class="studio-sidebar" aria-label="角色與怪物條列清單">
+          <div class="roster-search-box">
+            <input id="charSearchInput" type="search" placeholder="🔍 搜尋角色 / 怪物名稱或 ID..." autocomplete="off" />
+          </div>
+          <div id="charCategoryTabs" class="roster-cat-tabs"></div>
+          <div id="charTabs" class="char-tabs roster-list" role="listbox" aria-label="角色清單"></div>
+          <div class="roster-footer">
+            <button id="btnAddCustomChar" class="btn roster-add-btn">＋ 新增自訂角色槽位</button>
+          </div>
+        </aside>
 
-      <div class="add-action-bar">
-        <strong>＋ 新增自訂動作：</strong>
-        <input id="newActName" type="text" placeholder="動作名稱（例：迴旋踢）" size="18" />
-        <label>欄 <input id="newActCols" type="number" value="5" min="1" max="16" style="width:46px" /></label>
-        <label>列 <input id="newActRows" type="number" value="2" min="1" max="8" style="width:46px" /></label>
-        <label>FPS <input id="newActFps" type="number" value="14" min="4" max="30" style="width:52px" /></label>
-        <button id="btnAddAction" class="btn gear-btn">建立動作槽位</button>
+        <!-- Right Main Area: Combat Parameter Inspector + Tabular Action Animation List -->
+        <div class="studio-main">
+          <div id="combatParamsPanel" class="combat-params-panel"></div>
+
+          <div class="action-list-panel">
+            <div class="action-list-toolbar">
+              <div class="action-list-title">
+                <strong id="actionListHeading">🎞️ 連續幀動畫動作清單</strong>
+                <span class="action-list-hint">支援 10～60+ 幀自動切格去背・防切割縮放・雲端直連覆寫</span>
+              </div>
+              <div class="view-mode-switch">
+                <button id="btnViewList" class="mini-btn active" title="專業條列式檢視（推薦，適合大量角色與動作快速管理）">☰ 條列式</button>
+                <button id="btnViewGrid" class="mini-btn" title="卡片網格檢視">⊞ 卡片式</button>
+              </div>
+            </div>
+
+            <div id="actionTableHead" class="action-table-head">
+              <span class="col-act">動作名稱 ／ 觸發與按鍵綁定</span>
+              <span class="col-prev">即時動畫預覽 ＆ 逐幀控制</span>
+              <span class="col-grid">精靈表規格 (欄×列 / 幀數)</span>
+              <span class="col-fps">播放速度 (FPS)</span>
+              <span class="col-ops">狀態 ＆ 檔案／雲端操作</span>
+            </div>
+
+            <div id="spriteSlots" class="sprite-slots list-mode"></div>
+
+            <div class="add-action-bar">
+              <strong>＋ 新增自訂動作：</strong>
+              <input id="newActName" type="text" placeholder="動作名稱（例：迴旋踢）" size="18" />
+              <label>欄 <input id="newActCols" type="number" value="5" min="1" max="32" style="width:46px" /></label>
+              <label>列 <input id="newActRows" type="number" value="2" min="1" max="24" style="width:46px" /></label>
+              <label>FPS <input id="newActFps" type="number" value="14" min="4" max="60" style="width:52px" /></label>
+              <button id="btnAddAction" class="btn gear-btn">建立動作槽位</button>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   </div>

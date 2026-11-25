@@ -507,18 +507,23 @@
     ];
   }
 
-  function createEnemyCharProfile(id, name, prefix, atkADesc, atkBDesc, hasHurt = false) {
+  let BASE_ENEMY_SNAPSHOT = null;
+
+  function createEnemyCharProfile(id, name, prefix, atkADesc, atkBDesc, hasHurt = false, opts = null) {
+    const fallbackPrefix = (opts && opts.fallbackPrefix) || null;
     const actions = [
-      { id: `${prefix}_move`, label: '移動動畫 (Move)', triggerDesc: '10 幀移動巡邏循環', sheetKey: `${prefix}_move`, fallbackSheet: null, fps: 12, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
-      { id: `${prefix}_attack`, label: atkBDesc ? '雙模式攻擊 (Attack A+B)' : '攻擊動畫 (Attack)', triggerDesc: atkBDesc ? `1-5幀：${atkADesc} ｜ 6-10幀：${atkBDesc}` : atkADesc, sheetKey: `${prefix}_attack`, fallbackSheet: null, fps: 14, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
+      { id: `${prefix}_move`, label: '移動動畫 (Move)', triggerDesc: '連續幀移動巡邏循環', sheetKey: `${prefix}_move`, fallbackSheet: fallbackPrefix ? `${fallbackPrefix}_move` : null, fps: 12, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
+      { id: `${prefix}_attack`, label: atkBDesc ? '雙模式攻擊 (Attack A+B)' : '攻擊動畫 (Attack)', triggerDesc: atkBDesc ? `前半幀：${atkADesc} ｜ 後半幀：${atkBDesc}` : atkADesc, sheetKey: `${prefix}_attack`, fallbackSheet: fallbackPrefix ? `${fallbackPrefix}_attack` : null, fps: 14, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
     ];
     if (hasHurt) {
-      actions.push({ id: `${prefix}_hurt`, label: '受傷動畫 (Hurt)', triggerDesc: '10 幀受擊硬直、踉蹌與回復動作', sheetKey: `${prefix}_hurt`, fallbackSheet: `${prefix}_ko`, fps: 14, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false });
+      actions.push({ id: `${prefix}_hurt`, label: '受傷動畫 (Hurt)', triggerDesc: '受擊硬直、踉蹌與回復動作', sheetKey: `${prefix}_hurt`, fallbackSheet: fallbackPrefix ? `${fallbackPrefix}_hurt` : `${prefix}_ko`, fps: 14, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false });
     }
-    actions.push({ id: `${prefix}_ko`, label: hasHurt ? '被打敗動畫 (KO)' : '受擊與被打倒 (Hurt / KO)', triggerDesc: '10 幀受擊飛退 → 翻滾墜地 → 暈眩倒地', sheetKey: `${prefix}_ko`, fallbackSheet: null, fps: 12, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false });
+    actions.push({ id: `${prefix}_ko`, label: hasHurt ? '被打敗動畫 (KO)' : '受擊與被打倒 (Hurt / KO)', triggerDesc: '受擊飛退 → 翻滾墜地 → 暈眩倒地', sheetKey: `${prefix}_ko`, fallbackSheet: fallbackPrefix ? `${fallbackPrefix}_ko` : null, fps: 12, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false });
     return {
       id,
       name,
+      role: (opts && opts.role) || 'monster',
+      enemyKey: (opts && opts.enemyKey) || id.replace(/^enemy_/, ''),
       builtinEnemy: true,
       actions,
     };
@@ -526,44 +531,54 @@
 
   function createDefaultCharacters() {
     return [
-      { id: 'kuromi', name: '😈 呆呆伶（主角 1）', actions: createDefaultHeroActions() },
-      { id: 'redpanda', name: '🦊 超級帆（主角 2）', actions: createDefaultRedPandaActions() },
-      createEnemyCharProfile('enemy_donghua_boss', '🥋 冬花武聖大宗師（冬花 FINAL BOSS・2倍巨型）', 'enemy_donghua_boss', '「武」字黃金正拳＋太極震地氣勁', '三連黃金氣功波＋流星飛躍碎地斬', true),
-      createEnemyCharProfile('enemy_zebra_rush', '🦓 暴衝斑馬怪（設定稿・5色變色）', 'enemy_zebra_rush', '轉身後腿雙蹄反踢（近身震退）', '蓄力蹬蹄破風頭槌猛衝（5色：墨白/灰/棕/白金/藍）', true),
-      createEnemyCharProfile('enemy_joey_kangaroo', '🦘 育兒袋鼠怪（設定稿・小袋鼠回力球・5色）', 'enemy_joey_kangaroo', '衝天翻滾墜地重踩震波 (AOE)', '投擲育兒袋小袋鼠回力球（飛出再折返・5色變色）', true),
-      createEnemyCharProfile('enemy_kangaroo', '🥊 拳擊袋鼠（彈跳拳擊怪）', 'enemy_kangaroo', '極速三連刺拳連擊', '彈簧飛躍重勾拳衝刺', true),
-      createEnemyCharProfile('enemy_zebra', '🛹 滑板斑馬（龐克滑板怪）', 'enemy_zebra', '霓虹滑板極速衝刺斬', '巨型粉紅泡泡糖波浪炸彈', true),
-      createEnemyCharProfile('enemy_koala', '🎧 電競無尾熊（賽博DJ怪）', 'enemy_koala', '霓虹耳機重低音震盪環 (AOE)', '全息電玩青藍衝擊波', true),
-      createEnemyCharProfile('enemy_capybara', '🍊 佛系水豚君（霸體坦克怪）', 'enemy_capybara', '佛系肚皮震地壓頂衝擊', '淡定吐草飛葉三連扇', true),
-      createEnemyCharProfile('enemy_cactus', '🌵 針刺仙人掌（條紋針刺怪）', 'enemy_cactus', '旋風縮球萬針爆衝斬', '巨型仙人掌棒＋三向金針齊射', true),
-      createEnemyCharProfile('enemy_wizard_ghost', '🧙‍♂️ 星空巫師幽靈（星辰法師怪）', 'enemy_wizard_ghost', '星辰爆裂新星震波 (AOE)', '黑洞傳送門流星雨彈幕', true),
-      createEnemyCharProfile('enemy_pengking', '👑 王者企鵝（海洋敵人）', 'enemy_pengking', '10 幀王者滑冰飛撲猛撞（含蓄力金光與急煞）', null, true),
-      createEnemyCharProfile('enemy_pengice', '❄️ 冰雪企鵝（海洋敵人）', 'enemy_pengice', '10 幀寒冰滑衝＋冰錐爆發震波', null, true),
-      createEnemyCharProfile('enemy_rabbit', '🐰 兔兔怪（5色共用模組）', 'enemy_rabbit', '10 幀極速跳躍撲咬突進（支援雪白/粉櫻/奶茶/芋紫/薄荷 5 亮色自動變色）', null, true),
-      createEnemyCharProfile('enemy_ghost', '👻 幽靈怪（5色共用模組）', 'enemy_ghost', '10 幀飄浮鬼火彈發射（支援蒼白/冰藍/紫焰/螢光綠/櫻粉 5 亮色變色）', null, true),
-      createEnemyCharProfile('enemy_sheep', '🐑 綿羊怪（5色共用模組）', 'enemy_sheep', '10 幀暴躁綿羊彎角衝刺猛撞（支援雲白/粉莓/黃金/天藍/薄荷 5 亮色變色）', null, true),
-      createEnemyCharProfile('enemy_pig', '🐗 暴怒豬豬怪（敵人）', 'enemy_pig', '10 幀近身衝刺攻擊：蹬蹄蓄力 → 躍起狂奔 → 極速猛撞 → 急煞', null),
+      { id: 'kuromi', name: '😈 呆呆伶（主角 1）', role: 'hero', heroId: 'kuromi', actions: createDefaultHeroActions() },
+      { id: 'redpanda', name: '🦊 超級帆（主角 2）', role: 'hero', heroId: 'redpanda', actions: createDefaultRedPandaActions() },
+      createEnemyCharProfile('enemy_donghua_boss', '🥋 冬花武聖大宗師（冬花 FINAL BOSS）', 'enemy_donghua_boss', '「武」字黃金正拳＋太極震地氣勁', '三連黃金氣功波＋流星飛躍碎地斬', true, { role: 'boss', enemyKey: 'donghua_boss' }),
+      createEnemyCharProfile('enemy_star_boss', '⭐ 宇宙海星大霸王（關卡 BOSS）', 'enemy_star_boss', '巨型迴旋霸體衝撞', '三向扇形宇宙星彈齊射', false, { role: 'boss', enemyKey: 'boss', fallbackPrefix: 'enemy_star' }),
+      createEnemyCharProfile('enemy_zebra_rush', '🦓 暴衝斑馬怪（設定稿・5色變色）', 'enemy_zebra_rush', '轉身後腿雙蹄反踢（近身震退）', '蓄力蹬蹄破風頭槌猛衝（5色：墨白/灰/棕/白金/藍）', true, { enemyKey: 'zebra_rush' }),
+      createEnemyCharProfile('enemy_joey_kangaroo', '🦘 育兒袋鼠怪（設定稿・小袋鼠回力球・5色）', 'enemy_joey_kangaroo', '衝天翻滾墜地重踩震波 (AOE)', '投擲育兒袋小袋鼠回力球（飛出再折返・5色變色）', true, { enemyKey: 'joey_kangaroo' }),
+      createEnemyCharProfile('enemy_kangaroo', '🥊 拳擊袋鼠（彈跳拳擊怪）', 'enemy_kangaroo', '極速三連刺拳連擊', '彈簧飛躍重勾拳衝刺', true, { enemyKey: 'kangaroo' }),
+      createEnemyCharProfile('enemy_zebra', '🛹 滑板斑馬（龐克滑板怪）', 'enemy_zebra', '霓虹滑板極速衝刺斬', '巨型粉紅泡泡糖波浪炸彈', true, { enemyKey: 'zebra' }),
+      createEnemyCharProfile('enemy_koala', '🎧 電競無尾熊（賽博DJ怪）', 'enemy_koala', '霓虹耳機重低音震盪環 (AOE)', '全息電玩青藍衝擊波', true, { enemyKey: 'koala' }),
+      createEnemyCharProfile('enemy_capybara', '🍊 佛系水豚君（霸體坦克怪）', 'enemy_capybara', '佛系肚皮震地壓頂衝擊', '淡定吐草飛葉三連扇', true, { enemyKey: 'capybara' }),
+      createEnemyCharProfile('enemy_cactus', '🌵 針刺仙人掌（條紋針刺怪）', 'enemy_cactus', '旋風縮球萬針爆衝斬', '巨型仙人掌棒＋三向金針齊射', true, { enemyKey: 'cactus' }),
+      createEnemyCharProfile('enemy_wizard_ghost', '🧙‍♂️ 星空巫師幽靈（星辰法師怪）', 'enemy_wizard_ghost', '星辰爆裂新星震波 (AOE)', '黑洞傳送門流星雨彈幕', true, { enemyKey: 'wizard_ghost' }),
+      createEnemyCharProfile('enemy_pengking', '👑 王者企鵝（海洋敵人）', 'enemy_pengking', '王者滑冰飛撲猛撞（含蓄力金光與急煞）', null, true, { enemyKey: 'penguin_king' }),
+      createEnemyCharProfile('enemy_pengice', '❄️ 冰雪企鵝（海洋敵人）', 'enemy_pengice', '寒冰滑衝＋冰錐爆發震波', null, true, { enemyKey: 'penguin_ice' }),
+      createEnemyCharProfile('enemy_rabbit', '🐰 兔兔怪（5色共用模組）', 'enemy_rabbit', '極速跳躍撲咬突進（支援雪白/粉櫻/奶茶/芋紫/薄荷 5 色）', null, true, { enemyKey: 'rabbit' }),
+      createEnemyCharProfile('enemy_ghost', '👻 幽靈怪（5色共用模組）', 'enemy_ghost', '飄浮鬼火彈發射（支援蒼白/冰藍/紫焰/螢光綠/櫻粉 5 色）', null, true, { enemyKey: 'ghost' }),
+      createEnemyCharProfile('enemy_sheep', '🐑 綿羊怪（5色共用模組）', 'enemy_sheep', '暴躁綿羊彎角衝刺猛撞（支援雲白/粉莓/黃金/天藍/薄荷 5 色）', null, true, { enemyKey: 'sheep' }),
+      createEnemyCharProfile('enemy_pig', '🐗 暴怒豬豬怪（敵人）', 'enemy_pig', '近身衝刺攻擊：蹬蹄蓄力 → 躍起狂奔 → 極速猛撞 → 急煞', null, false, { enemyKey: 'pig' }),
       {
         id: 'enemy_slime',
         name: '💧 藍色水滴史萊姆（敵人）',
+        role: 'monster',
+        enemyKey: 'slime',
         builtinEnemy: true,
         actions: [
-          { id: 'enemy_slime_idle', label: '夢幻待機 (Idle)', triggerDesc: '10 幀打盹水泡待機循環', sheetKey: 'enemy_slime_idle', fallbackSheet: null, fps: 8, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
-          { id: 'enemy_slime_move', label: '跳躍奔跑 (Move)', triggerDesc: '10 幀彈跳水花奔跑循環', sheetKey: 'enemy_slime_move', fallbackSheet: null, fps: 13, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
-          { id: 'enemy_slime_angry', label: '憤怒反應／蓄力 (Angry)', triggerDesc: '10 幀驚嚇「！」→ 冒煙生氣起手預告', sheetKey: 'enemy_slime_angry', fallbackSheet: null, fps: 14, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
-          { id: 'enemy_slime_attack', label: '果凍衝刺撞擊 (Attack)', triggerDesc: '10 幀高速水花衝刺 → 爆擊撞擊 → 煞車', sheetKey: 'enemy_slime_attack', fallbackSheet: null, fps: 16, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
-          { id: 'enemy_slime_ko', label: '受擊與融化倒地 (Hurt / KO)', triggerDesc: '10 幀受擊翻滾 → 墜地濺水 → 暈眩融化（倒地分裂）', sheetKey: 'enemy_slime_ko', fallbackSheet: null, fps: 12, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
+          { id: 'enemy_slime_idle', label: '夢幻待機 (Idle)', triggerDesc: '打盹水泡待機循環', sheetKey: 'enemy_slime_idle', fallbackSheet: null, fps: 8, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
+          { id: 'enemy_slime_move', label: '跳躍奔跑 (Move)', triggerDesc: '彈跳水花奔跑循環', sheetKey: 'enemy_slime_move', fallbackSheet: null, fps: 13, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
+          { id: 'enemy_slime_angry', label: '憤怒反應／蓄力 (Angry)', triggerDesc: '驚嚇「！」→ 冒煙生氣起手預告', sheetKey: 'enemy_slime_angry', fallbackSheet: null, fps: 14, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
+          { id: 'enemy_slime_attack', label: '果凍衝刺撞擊 (Attack)', triggerDesc: '高速水花衝刺 → 爆擊撞擊 → 煞車', sheetKey: 'enemy_slime_attack', fallbackSheet: null, fps: 16, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
+          { id: 'enemy_slime_ko', label: '受擊與融化倒地 (Hurt / KO)', triggerDesc: '受擊翻滾 → 墜地濺水 → 暈眩融化（倒地分裂）', sheetKey: 'enemy_slime_ko', fallbackSheet: null, fps: 12, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
         ],
       },
-      createEnemyCharProfile('enemy_mushroom', '🍄 蘑菇怪（敵人）', 'enemy_mushroom', '10 幀完整動作：蓄力金光 → 飛躍頭頂 → 重砸爆發孢子彈', null),
-      createEnemyCharProfile('enemy_puffer', '🐡 河豚怪（敵人）', 'enemy_puffer', '10 幀完整動作：吸氣膨脹霸體 → 尖刺水花衝刺 → 閃電撞擊', null),
-      createEnemyCharProfile('enemy_star', '⭐ 宇宙海星（敵人／BOSS）', 'enemy_star', '高速迴旋衝撞', '寶石念力星彈'),
+      createEnemyCharProfile('enemy_slime_mini', '💧 分裂小史萊姆（衍生小怪）', 'enemy_slime_mini', '迷你果凍跳躍撞擊', null, false, { enemyKey: 'slime_mini', fallbackPrefix: 'enemy_slime' }),
+      createEnemyCharProfile('enemy_mushroom', '🍄 蘑菇怪（敵人）', 'enemy_mushroom', '蓄力金光 → 飛躍頭頂 → 重砸爆發孢子彈', null, false, { enemyKey: 'mushroom' }),
+      createEnemyCharProfile('enemy_puffer', '🐡 河豚怪（敵人）', 'enemy_puffer', '吸氣膨脹霸體 → 尖刺水花衝刺 → 閃電撞擊', null, false, { enemyKey: 'puffer' }),
+      createEnemyCharProfile('enemy_star', '⭐ 宇宙海星（一般敵人）', 'enemy_star', '高速迴旋衝撞', '寶石念力星彈', false, { enemyKey: 'star' }),
     ];
   }
 
   const StudioState = {
     activeCharId: 'kuromi',
     characters: createDefaultCharacters(),
+    combatParams: {}, // charId -> { scale, hp, superArmor, armorHits, flinchOnHit, hitstunMult, knockbackMode, speedMult, dmgMult }
+    viewMode: 'list', // 'list' (default tabular pro view) | 'grid'
+    categoryFilter: 'all', // 'all' | 'hero' | 'boss' | 'monster' | 'custom'
+    searchQuery: '',
+    specExpanded: false,
+    previewVariants: {}, // charId -> variant index
     rebindingActionId: null,
     previewStates: {}, // actionId -> { playing: true, frame: 0 }
 
@@ -588,6 +603,146 @@
       return a ? a.fps : fallback;
     },
 
+    getDefaultCombatParams(charId) {
+      const ch = this.characters.find((c) => c.id === charId);
+      if (!ch || ch.role === 'hero') {
+        return {
+          scale: 1.0,
+          hp: 140,
+          superArmor: 'none', // 'none' | 'attack' | 'hits' | 'always'
+          armorHits: 3,
+          flinchOnHit: true,
+          hitstunMult: 1.0,
+          knockbackMode: 'normal', // 'normal' | 'resist' | 'immune'
+          speedMult: 1.0,
+          dmgMult: 1.0,
+        };
+      }
+      const snap = (BASE_ENEMY_SNAPSHOT && ch.enemyKey && BASE_ENEMY_SNAPSHOT[ch.enemyKey]) || null;
+      return {
+        scale: snap ? snap.scale : 1.0,
+        hp: snap ? snap.hp : 120,
+        superArmor: snap && snap.armor ? 'attack' : 'none',
+        armorHits: ch.role === 'boss' ? 4 : 3,
+        flinchOnHit: true,
+        hitstunMult: 1.0,
+        knockbackMode: 'normal',
+        speedMult: 1.0,
+        dmgMult: 1.0,
+      };
+    },
+
+    getCombatParams(charId) {
+      const def = this.getDefaultCombatParams(charId);
+      const ov = this.combatParams[charId];
+      if (!ov) return def;
+      return {
+        scale: typeof ov.scale === 'number' ? Math.max(0.35, Math.min(3.5, ov.scale)) : def.scale,
+        hp: typeof ov.hp === 'number' ? Math.max(10, Math.min(9999, Math.round(ov.hp))) : def.hp,
+        superArmor: ['none', 'attack', 'hits', 'always'].includes(ov.superArmor) ? ov.superArmor : def.superArmor,
+        armorHits: typeof ov.armorHits === 'number' ? Math.max(1, Math.min(30, Math.round(ov.armorHits))) : def.armorHits,
+        flinchOnHit: typeof ov.flinchOnHit === 'boolean' ? ov.flinchOnHit : def.flinchOnHit,
+        hitstunMult: typeof ov.hitstunMult === 'number' ? Math.max(0.2, Math.min(2.5, ov.hitstunMult)) : def.hitstunMult,
+        knockbackMode: ['normal', 'resist', 'immune'].includes(ov.knockbackMode) ? ov.knockbackMode : def.knockbackMode,
+        speedMult: typeof ov.speedMult === 'number' ? Math.max(0.3, Math.min(2.5, ov.speedMult)) : def.speedMult,
+        dmgMult: typeof ov.dmgMult === 'number' ? Math.max(0.3, Math.min(3.0, ov.dmgMult)) : def.dmgMult,
+      };
+    },
+
+    isCombatParamsModified(charId) {
+      const ov = this.combatParams[charId];
+      if (!ov) return false;
+      const def = this.getDefaultCombatParams(charId);
+      const cur = this.getCombatParams(charId);
+      return (
+        Math.abs(cur.scale - def.scale) > 0.005 ||
+        cur.hp !== def.hp ||
+        cur.superArmor !== def.superArmor ||
+        (cur.superArmor === 'hits' && cur.armorHits !== def.armorHits) ||
+        cur.flinchOnHit !== def.flinchOnHit ||
+        Math.abs(cur.hitstunMult - def.hitstunMult) > 0.01 ||
+        cur.knockbackMode !== def.knockbackMode ||
+        Math.abs(cur.speedMult - def.speedMult) > 0.01 ||
+        Math.abs(cur.dmgMult - def.dmgMult) > 0.01
+      );
+    },
+
+    setCombatParams(charId, patch) {
+      const cur = this.getCombatParams(charId);
+      this.combatParams[charId] = { ...cur, ...patch };
+      this.syncAllCombatParamsToRuntime();
+      this.save();
+    },
+
+    resetCombatParams(charId) {
+      delete this.combatParams[charId];
+      this.syncAllCombatParamsToRuntime();
+      this.save();
+    },
+
+    applyCombatParamsMap(paramsMap) {
+      if (!paramsMap || typeof paramsMap !== 'object') return;
+      for (const [cid, val] of Object.entries(paramsMap)) {
+        if (val && typeof val === 'object') {
+          this.combatParams[cid] = { ...this.getDefaultCombatParams(cid), ...val };
+        }
+      }
+      this.syncAllCombatParamsToRuntime();
+    },
+
+    syncAllCombatParamsToRuntime() {
+      if (!BASE_ENEMY_SNAPSHOT || typeof ENEMY_CONFIGS === 'undefined') return;
+      for (const ch of this.characters) {
+        if (ch.role === 'hero' && ch.heroId) {
+          const hpCfg = this.getCombatParams(ch.id);
+          if (typeof game !== 'undefined' && game && game.player && game.player.hero && game.player.hero.id === ch.heroId) {
+            const oldMax = game.player.maxHp || 140;
+            if (oldMax !== hpCfg.hp) {
+              const ratio = oldMax > 0 ? (game.player.hp / oldMax) : 1;
+              game.player.maxHp = hpCfg.hp;
+              game.player.hp = Math.max(1, Math.round(hpCfg.hp * ratio));
+              game.player.displayHp = game.player.hp;
+            }
+          }
+          continue;
+        }
+        if (!ch.enemyKey || !ENEMY_CONFIGS[ch.enemyKey] || !BASE_ENEMY_SNAPSHOT[ch.enemyKey]) continue;
+        const base = BASE_ENEMY_SNAPSHOT[ch.enemyKey];
+        const cfg = ENEMY_CONFIGS[ch.enemyKey];
+        const p = this.getCombatParams(ch.id);
+
+        cfg.scale = p.scale;
+        cfg.hp = p.hp;
+        cfg.speedX = Math.max(30, Math.round(base.speedX * p.speedMult));
+        cfg.speedZ = Math.max(24, Math.round(base.speedZ * p.speedMult));
+        cfg.dmg = Math.max(1, Math.round(base.dmg * p.dmgMult));
+        cfg.reach = Math.max(60, Math.round(base.reach * Math.max(0.65, Math.sqrt(p.scale / Math.max(0.4, base.scale)))));
+        cfg.armor = p.superArmor !== 'none';
+        cfg.superArmor = p.superArmor;
+        cfg.armorHits = p.armorHits;
+        cfg.flinchOnHit = p.flinchOnHit;
+        cfg.hitstunMult = p.hitstunMult;
+        cfg.knockbackMode = p.knockbackMode;
+
+        // Immediately sync any alive enemies of this type on the stage!
+        if (typeof game !== 'undefined' && game && Array.isArray(game.enemies)) {
+          for (const e of game.enemies) {
+            if (e.dead || e.type !== ch.enemyKey) continue;
+            const waveMult = e.waveHpMult || 1;
+            const targetMax = Math.max(1, Math.round(p.hp * waveMult));
+            if (e.maxHp !== targetMax) {
+              const ratio = e.maxHp > 0 ? (e.hp / e.maxHp) : 1;
+              e.maxHp = targetMax;
+              e.hp = Math.max(1, Math.round(targetMax * ratio));
+            }
+            if (p.superArmor === 'hits') {
+              e.armorShieldCount = p.armorHits;
+            }
+          }
+        }
+      }
+    },
+
     save() {
       try {
         const allOverrides = {};
@@ -605,11 +760,20 @@
             triggerDesc: a.triggerDesc,
           }));
         }
+        const savedParams = {};
+        for (const ch of this.characters) {
+          if (this.isCombatParamsModified(ch.id)) {
+            savedParams[ch.id] = this.getCombatParams(ch.id);
+          }
+        }
         const data = {
           allOverrides,
-          extraChars: this.characters.filter((c) => c.id !== 'kuromi' && c.id !== 'redpanda' && !c.builtinEnemy).map((c) => ({
+          combatParams: savedParams,
+          viewMode: this.viewMode,
+          extraChars: this.characters.filter((c) => c.role !== 'hero' && !c.builtinEnemy).map((c) => ({
             id: c.id,
             name: c.name,
+            role: 'custom',
             actions: c.actions.map((a) => ({ ...a })),
           })),
         };
@@ -654,12 +818,18 @@
     load() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return;
+        if (!raw) {
+          this.syncAllCombatParamsToRuntime();
+          return;
+        }
         const data = JSON.parse(raw);
+        if (data.viewMode === 'list' || data.viewMode === 'grid') {
+          this.viewMode = data.viewMode;
+        }
         if (Array.isArray(data.extraChars)) {
           for (const ec of data.extraChars) {
             if (!this.characters.some((c) => c.id === ec.id)) {
-              this.characters.push(ec);
+              this.characters.push({ ...ec, role: ec.role || 'custom' });
             }
           }
         }
@@ -668,13 +838,22 @@
         } else if (Array.isArray(data.heroOverrides)) {
           this.applyManifestMap({ kuromi: data.heroOverrides });
         }
-      } catch (_) {}
+        if (data.combatParams) {
+          this.applyCombatParamsMap(data.combatParams);
+        } else {
+          this.syncAllCombatParamsToRuntime();
+        }
+      } catch (_) {
+        this.syncAllCombatParamsToRuntime();
+      }
     },
 
     resetDefaults() {
       this.characters = createDefaultCharacters();
+      this.combatParams = {};
       this.activeCharId = 'kuromi';
       this.rebindingActionId = null;
+      this.syncAllCombatParamsToRuntime();
       try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
       CustomSpriteDB.clearAll().catch(() => {});
     },
@@ -708,6 +887,19 @@
           tx.objectStore(this.storeName).put({ sheetKey, ...record });
           tx.oncomplete = () => { db.close(); resolve(true); };
           tx.onerror = () => { db.close(); reject(tx.error); };
+        });
+      } catch (_) {
+        return false;
+      }
+    },
+    async deleteSheet(sheetKey) {
+      try {
+        const db = await this.open();
+        return await new Promise((resolve) => {
+          const tx = db.transaction(this.storeName, 'readwrite');
+          tx.objectStore(this.storeName).delete(sheetKey);
+          tx.oncomplete = () => { db.close(); resolve(true); };
+          tx.onerror = () => { db.close(); resolve(false); };
         });
       } catch (_) {
         return false;
@@ -818,7 +1010,11 @@
     buildCloudManifestObject(updatedSheetsMap = {}) {
       const sheetsMeta = { ...updatedSheetsMap };
       const allOverrides = {};
+      const combatParams = {};
       for (const ch of StudioState.characters) {
+        if (StudioState.isCombatParamsModified(ch.id)) {
+          combatParams[ch.id] = StudioState.getCombatParams(ch.id);
+        }
         allOverrides[ch.id] = ch.actions.map((a) => {
           const sh = SpriteBank.sheets[a.sheetKey];
           if (sh && sh.custom) {
@@ -851,7 +1047,22 @@
         updatedAt: Date.now(),
         sheets: sheetsMeta,
         allOverrides,
+        combatParams,
       };
+    },
+
+    async syncManifestOnly(commitNote = 'combat params & action config') {
+      let existingManifestSheets = {};
+      try {
+        const r = await fetch(`assets/cloud_manifest.json?_t=${Date.now()}`);
+        if (r.ok) {
+          const mj = await r.json();
+          if (mj && mj.sheets) existingManifestSheets = mj.sheets;
+        }
+      } catch (_) {}
+      const manifestObj = this.buildCloudManifestObject(existingManifestSheets);
+      const manifestB64 = btoa(unescape(encodeURIComponent(JSON.stringify(manifestObj, null, 2))));
+      await this.ghPutFile('assets/cloud_manifest.json', manifestB64, `chore(manifest): sync ${commitNote} via Studio`);
     },
 
     async uploadSheetToCloud(sheetKey, actLabel = '') {
@@ -874,7 +1085,7 @@
       const targetPath = `assets/${sheetKey}_sheet.${ext}`;
       await this.ghPutFile(targetPath, b64, `chore(sprite): update ${sheetKey} (${sheet.cols}x${sheet.rows}, ${sheet.frameCount}f) ${actLabel} via Gear Studio`);
 
-      // Also merge & push assets/cloud_manifest.json so 20~30 frame grid & FPS sync across all devices/TV!
+      // Also merge & push assets/cloud_manifest.json so 20~30 frame grid, FPS & monster params sync across all devices/TV!
       let existingManifestSheets = {};
       try {
         const r = await fetch(`assets/cloud_manifest.json?_t=${Date.now()}`);
@@ -926,8 +1137,45 @@
       return (sh && sh.frameCount >= 1) ? sh.frameCount : fallback;
     },
 
+    async reloadBuiltinSheet(sheetKey) {
+      await CustomSpriteDB.deleteSheet(sheetKey);
+      const def = DEFAULT_SHEETS_DEF.find((d) => d.key === sheetKey);
+      if (!def) {
+        delete this.sheets[sheetKey];
+        this.tintedCache = {};
+        return null;
+      }
+      const embedded = window.EMBEDDED_SPRITES || {};
+      const src = embedded[def.key] || def.file;
+      if (!src) {
+        delete this.sheets[sheetKey];
+        this.tintedCache = {};
+        return null;
+      }
+      try {
+        const img = await this.loadImage(src);
+        this.sheets[def.key] = {
+          img,
+          cols: def.cols,
+          rows: def.rows,
+          cellW: img.width / def.cols,
+          cellH: img.height / def.rows,
+          anchorX: def.anchorX,
+          anchorY: def.anchorY,
+          frameCount: def.cols * def.rows,
+          custom: false,
+        };
+        this.tintedCache = {};
+        if (sheetKey === 'idle' || sheetKey === 'rp_idle') this.buildPortrait();
+        return this.sheets[def.key];
+      } catch (_) {
+        delete this.sheets[sheetKey];
+        return null;
+      }
+    },
+
     async loadAll() {
-      // 1. Optional Cloud Manifest from GitHub Pages (applies cloud-overwritten 20~30f sheets & FPS!)
+      // 1. Optional Cloud Manifest from GitHub Pages (applies cloud-overwritten 20~30f sheets, FPS & monster params!)
       let cloudManifest = null;
       if (!window.EMBEDDED_SPRITES && (location.protocol === 'http:' || location.protocol === 'https:')) {
         try {
@@ -937,11 +1185,14 @@
             if (cloudManifest && cloudManifest.allOverrides) {
               StudioState.applyManifestMap(cloudManifest.allOverrides);
             }
+            if (cloudManifest && cloudManifest.combatParams) {
+              StudioState.applyCombatParamsMap(cloudManifest.combatParams);
+            }
           }
         } catch (_) {}
       }
 
-      // 2. Local browser overrides (FPS, keybinds, custom actions)
+      // 2. Local browser overrides (FPS, keybinds, custom actions & combat params)
       StudioState.load();
 
       const embedded = window.EMBEDDED_SPRITES || {};
@@ -3037,12 +3288,14 @@
       this.vx = 0;
       this.facing = 1;
 
-      this.hp = 140;
-      this.maxHp = 140;
-      this.displayHp = 140;
+      const initP = StudioState.getCombatParams(this.hero.id);
+      this.hp = initP.hp || 140;
+      this.maxHp = initP.hp || 140;
+      this.displayHp = this.maxHp;
       this.energy = 100; // Start full so user can fire Special right away!
       this.maxEnergy = 100;
       this.lives = 3;
+      this.armorShieldCount = initP.armorHits || 3;
 
       this.state = 'idle'; // idle | walk | run | dash | jump | light1 | light2 | heavy | dashAttack | airAttack | special | custom | hurt
       this.animTimer = 0;
@@ -3062,6 +3315,10 @@
       // Special 10-hit tracking
       this.cannonTicks = 0;
       this.cannonTickTimer = 0;
+    }
+
+    getCombatCfg() {
+      return StudioState.getCombatParams(this.hero ? this.hero.id : 'kuromi');
     }
 
     resolveSheet(slot) {
@@ -3252,18 +3509,44 @@
 
     takeDamage(dmg, knockDir, heavy = false) {
       if (this.invuln > 0 || this.state === 'special' || this.state === 'dash') return;
-      this.isRunning = false;
+      const pCfg = this.getCombatCfg();
       this.hp = Math.max(0, this.hp - dmg);
       this.energy = Math.min(this.maxEnergy, this.energy + 8);
       this.hurtFlash = 0.22;
       this.invuln = heavy ? 1.15 : 0.72;
-      this.state = 'hurt';
-      this.stateTime = 0;
-      this.vx = knockDir * (heavy ? 260 : 140);
-      if (heavy) {
-        this.vy = 260;
+
+      const isAttacking = ['light1', 'light2', 'light3', 'heavy', 'dashLightAttack', 'dashAttack', 'tornadoKick', 'airAttack', 'custom'].includes(this.state);
+      let armored = false;
+      if (this.hp > 0) {
+        if (pCfg.superArmor === 'always') {
+          armored = true;
+        } else if (pCfg.superArmor === 'attack' && isAttacking) {
+          armored = true;
+        } else if (pCfg.superArmor === 'hits') {
+          if (this.armorShieldCount > 1) {
+            this.armorShieldCount--;
+            armored = true;
+          } else {
+            this.armorShieldCount = pCfg.armorHits || 3;
+          }
+        }
       }
-      game.combo = 0;
+
+      if (!armored && pCfg.flinchOnHit !== false) {
+        this.isRunning = false;
+        this.state = 'hurt';
+        this.stateTime = 0;
+        if (pCfg.knockbackMode !== 'immune') {
+          this.vx = knockDir * (heavy ? 260 : 140) * (pCfg.knockbackMode === 'resist' ? 0.45 : 1);
+          if (heavy && pCfg.knockbackMode === 'normal') {
+            this.vy = 260;
+          }
+        }
+        game.combo = 0;
+      } else if (armored && this.hp > 0) {
+        addFloatText(this.x, this.z - 168, '🛡 霸體!', '#fde047', 18);
+      }
+
       sfx.playPlayerHurt();
       addShake(heavy ? 10 : 6, 0.2);
       if (typeof GamepadManager !== 'undefined') GamepadManager.rumble(heavy ? 0.72 : 0.35, 0.42, heavy ? 180 : 100);
@@ -3276,6 +3559,7 @@
           this.hp = this.maxHp;
           this.displayHp = this.maxHp;
           this.energy = this.maxEnergy;
+          this.armorShieldCount = pCfg.armorHits || 3;
           this.invuln = 2.2;
           addFloatText(this.x, this.z - 190, `1UP 復活! 剩餘生命 ${this.lives}`, '#4ade80', 22);
           spawnParticles(this.x, this.z - 90, '#f472b6', 24, 300, 7);
@@ -3346,7 +3630,7 @@
         const hurtSheet = SpriteBank.sheets[this.resolveSheet('hurt')];
         const fc = hurtSheet ? hurtSheet.frameCount : 10;
         const fps = StudioState.getFps(this.hero.id === 'redpanda' ? 'rp_hurt' : 'hurt', 15);
-        const totalDur = fc / fps;
+        const totalDur = (fc / fps) * (this.getCombatCfg().hitstunMult || 1.0);
         this.frame = Math.min(fc - 1, Math.floor((this.stateTime / totalDur) * fc));
         this.x += this.vx * dt;
         this.vx *= Math.pow(this.stateTime < totalDur * 0.5 ? 0.08 : 0.01, dt);
@@ -3432,8 +3716,9 @@
             this.isRunning = false;
           }
 
-          const speedX = this.isRunning ? (this.hero.runSpeed || 395) : (this.hero.walkSpeed || 215);
-          const speedZ = this.isRunning ? 225 : 155;
+          const spdMult = this.getCombatCfg().speedMult || 1.0;
+          const speedX = (this.isRunning ? (this.hero.runSpeed || 395) : (this.hero.walkSpeed || 215)) * spdMult;
+          const speedZ = (this.isRunning ? 225 : 155) * spdMult;
 
           const diag = (moveX !== 0 && moveZ !== 0) ? 0.86 : 1;
           this.x += moveX * speedX * diag * dt;
@@ -3970,14 +4255,19 @@
 
     performMeleeHitbox(reach, dmg, heavy, knockForce, hitSet = this.hitIds, opts = null) {
       let hitAny = false;
+      const pCfg = this.getCombatCfg();
+      const effDmg = Math.max(1, Math.round(dmg * (pCfg.dmgMult || 1)));
+      const effReach = reach * Math.max(0.75, pCfg.scale || 1);
       const sparkCol = heavy ? (this.hero.heavySparkColor || '#facc15') : (this.hero.sparkColor || '#e879f9');
-      const minDx = -(opts && opts.wideBack ? opts.wideBack : 30);
+      const minDx = -(opts && opts.wideBack ? opts.wideBack : 30) * Math.max(0.8, pCfg.scale || 1);
       for (const e of game.enemies) {
         if (e.dead || hitSet.has(e.id)) continue;
         const dx = (e.x - this.x) * this.facing;
-        if (dx >= minDx && dx <= reach && Math.abs(e.z - this.z) <= Z_HIT_MELEE + 12) {
+        const sizePadX = Math.max(0, ((e.cfg.scale || 1) - 1) * 44);
+        const sizePadZ = Math.max(0, ((e.cfg.scale || 1) - 1) * 18);
+        if (dx >= (minDx - sizePadX * 0.4) && dx <= (effReach + sizePadX) && Math.abs(e.z - this.z) <= Z_HIT_MELEE + 12 + sizePadZ) {
           hitSet.add(e.id);
-          e.takeHit(dmg, this.facing, heavy, knockForce, sparkCol, opts && opts.customWord ? opts.customWord : null, opts);
+          e.takeHit(effDmg, this.facing, heavy, knockForce, sparkCol, opts && opts.customWord ? opts.customWord : null, opts);
           this.energy = Math.min(this.maxEnergy, this.energy + (heavy ? 12 : 7));
           hitAny = true;
         }
@@ -3985,9 +4275,9 @@
       for (const prop of game.props) {
         if (prop.broken || hitSet.has(prop.id)) continue;
         const dx = (prop.x - this.x) * this.facing;
-        if (dx >= minDx && dx <= reach && Math.abs(prop.z - this.z) <= Z_HIT_MELEE) {
+        if (dx >= minDx && dx <= effReach && Math.abs(prop.z - this.z) <= Z_HIT_MELEE) {
           hitSet.add(prop.id);
-          prop.hit(dmg);
+          prop.hit(effDmg);
           hitAny = true;
         }
       }
@@ -4000,7 +4290,9 @@
     }
 
     draw(ctx) {
-      const shadowScale = Math.max(0.45, 1 - this.jumpY / 260);
+      const pCfg = this.getCombatCfg();
+      const pScale = pCfg.scale || 1.0;
+      const shadowScale = Math.max(0.45, 1 - this.jumpY / 260) * pScale;
       ctx.save();
       ctx.fillStyle = 'rgba(8, 5, 18, 0.52)';
       ctx.beginPath();
@@ -4054,8 +4346,8 @@
 
       const drawY = this.z - this.jumpY;
 
-      // 1:1 NATIVE PIXEL SCALE — 100% UNCLIPPED (300x264)!
-      SpriteBank.drawFrame(ctx, sheetKey, frameToDraw, this.x, drawY, this.facing, 1.0, this.hurtFlash > 0);
+      // Render Hero at configured scale (default 1.0 native 300x264)!
+      SpriteBank.drawFrame(ctx, sheetKey, frameToDraw, this.x, drawY, this.facing, pScale, this.hurtFlash > 0);
       ctx.restore();
     }
   }
@@ -4465,6 +4757,7 @@
     boss: {
       name: '宇宙海星大霸王・BOSS',
       spritePrefix: 'enemy_star',
+      customPrefix: 'enemy_star_boss',
       projKind: 'star',
       hp: 640,
       speedX: 160,
@@ -4480,6 +4773,21 @@
       isBoss: true,
     },
   };
+  ENEMY_CONFIGS.slime_mini.customPrefix = 'enemy_slime_mini';
+
+  BASE_ENEMY_SNAPSHOT = {};
+  for (const [eKey, eVal] of Object.entries(ENEMY_CONFIGS)) {
+    BASE_ENEMY_SNAPSHOT[eKey] = {
+      hp: eVal.hp,
+      scale: eVal.scale,
+      speedX: eVal.speedX,
+      speedZ: eVal.speedZ,
+      dmg: eVal.dmg,
+      reach: eVal.reach,
+      armor: !!eVal.armor,
+    };
+  }
+  StudioState.syncAllCombatParamsToRuntime();
 
   class Enemy {
     constructor(type, x, z, opts = null) {
@@ -4487,7 +4795,7 @@
       this.id = nextEntityId++;
       this.type = type;
       this.cfg = cfg;
-      // Pick color variant for shared-module monsters (Rabbit / Ghost / Sheep)
+      // Pick color variant for shared-module monsters (Rabbit / Ghost / Sheep / Zebra / Kangaroo)
       this.variant = null;
       if (cfg.colorVariants && cfg.colorVariants.length > 0) {
         if (opts && opts.variantId) {
@@ -4504,11 +4812,14 @@
       this.jumpY = 0;
       this.vx = 0;
       this.vy = 0;
-      this.facing = x > game.player.x ? -1 : 1;
+      this.facing = (typeof game !== 'undefined' && game && game.player && x > game.player.x) ? -1 : 1;
 
-      const scaledHp = Math.round(cfg.hp * ((opts && opts.hpMult) ? opts.hpMult : 1));
+      this.waveHpMult = (opts && opts.hpMult) ? opts.hpMult : 1;
+      const scaledHp = Math.max(1, Math.round(cfg.hp * this.waveHpMult));
       this.hp = scaledHp;
       this.maxHp = scaledHp;
+      this.armorShieldCount = cfg.armorHits || 3;
+      this.armorToastCd = 0;
       this.state = 'approach'; // approach | windup | attack | hurt | knocked | dead
       this.attackStyle = 'A'; // 'A' = melee rush/spin, 'B' = ranged shot (for dual5x2)
       this.stateTime = 0;
@@ -4528,6 +4839,18 @@
       this.airJuggleCount = 0;
     }
 
+    resolveEnemySheet(slot, fallbackSlot = null) {
+      const cp = this.cfg.customPrefix;
+      if (cp && SpriteBank.sheets[`${cp}_${slot}`]) return `${cp}_${slot}`;
+      const sp = this.cfg.spritePrefix;
+      if (SpriteBank.sheets[`${sp}_${slot}`]) return `${sp}_${slot}`;
+      if (fallbackSlot) {
+        if (cp && SpriteBank.sheets[`${cp}_${fallbackSlot}`]) return `${cp}_${fallbackSlot}`;
+        if (SpriteBank.sheets[`${sp}_${fallbackSlot}`]) return `${sp}_${fallbackSlot}`;
+      }
+      return `${sp}_${slot}`;
+    }
+
     takeHit(dmg, dir, heavy, knockForce, sparkColor = '#f472b6', customComicWord = null, opts = null) {
       if (this.dead) return;
       const launchAir = !!(opts && opts.launchAir);
@@ -4535,9 +4858,12 @@
       const isAirJuggle = wasAirborne && !launchAir;
       const finalDmg = isAirJuggle ? Math.round(dmg * 1.2) : dmg;
 
+      const armorMode = this.cfg.superArmor || (this.cfg.armor ? 'attack' : 'none');
+      const flinchOnHit = this.cfg.flinchOnHit !== false;
+      const kbMode = this.cfg.knockbackMode || 'normal';
+
       this.hp = Math.max(0, this.hp - finalDmg);
       this.hurtFlash = 0.14;
-      this.facing = -dir;
       game.lastHitEnemy = this;
       game.lastHitTimer = 3.5;
 
@@ -4555,9 +4881,6 @@
         isAirJuggle ? '#67e8f9' : (heavy || launchAir ? '#fde047' : '#ffffff'),
         heavy || isAirJuggle ? 24 : 19
       );
-      if (launchAir && !wasAirborne) {
-        addFloatText(this.x, hitY - 26, '▲ 浮空!!', '#e879f9', 20);
-      }
       spawnSlashSparks(this.x - dir * 18, this.z - this.jumpY - 80 * this.cfg.scale, dir, isAirJuggle ? '#67e8f9' : sparkColor);
 
       // American Comic-Book Hit Impact Bubble
@@ -4590,6 +4913,7 @@
       if (this.hp <= 0) {
         this.dead = true;
         this.state = 'dead';
+        this.facing = -dir;
         this.stateTime = 0;
         this.frame = 0;
         this.vx = dir * 290;
@@ -4618,10 +4942,39 @@
         return;
       }
 
-      // Armored foes resist light pokes mid-attack, UNLESS hit by Tornado Launch, heavy finisher, or already airborne!
-      if (this.cfg.armor && !launchAir && !wasAirborne && (this.state === 'attack' || (this.cfg.spikyCounter && this.state === 'windup')) && !heavy) {
-        this.vx = dir * 45;
+      // 1. SUPER ARMOR MODES ('always' | 'hits' | 'attack')
+      if (armorMode === 'always') {
+        if (this.armorToastCd <= 0) {
+          addFloatText(this.x, hitY - 22, '🛡 金霸體!', '#fde047', 17);
+          this.armorToastCd = 0.32;
+        }
+        spawnParticles(this.x, this.z - 65 * this.cfg.scale, '#facc15', 5, 130, 4);
+        if (kbMode !== 'immune') this.vx = dir * 18;
         return;
+      }
+
+      if (armorMode === 'hits') {
+        if (this.armorShieldCount > 1) {
+          this.armorShieldCount--;
+          addFloatText(this.x, hitY - 22, `🛡 霸體 (${this.armorShieldCount})`, '#38bdf8', 17);
+          spawnParticles(this.x, this.z - 65 * this.cfg.scale, '#38bdf8', 6, 150, 4);
+          if (kbMode !== 'immune') this.vx = dir * 22;
+          return;
+        } else if (this.armorShieldCount === 1) {
+          this.armorShieldCount = 0;
+          addFloatText(this.x, hitY - 28, '💥 破防!!', '#facc15', 22);
+          spawnParticles(this.x, this.z - 70 * this.cfg.scale, '#facc15', 14, 240, 6);
+        }
+      } else if (armorMode === 'attack') {
+        const inAttackPhase = (this.state === 'attack' || this.state === 'windup');
+        if (inAttackPhase && !wasAirborne && ((!heavy && !launchAir) || kbMode === 'immune')) {
+          if (this.armorToastCd <= 0) {
+            addFloatText(this.x, hitY - 22, '🛡 出招霸體', '#fde047', 16);
+            this.armorToastCd = 0.35;
+          }
+          if (kbMode !== 'immune') this.vx = dir * 35;
+          return;
+        }
       }
 
       if (this.cfg.spikyCounter && !heavy && !launchAir && !wasAirborne && this.state === 'approach' && this.attackCd <= 0.4 && Math.random() < 0.45) {
@@ -4632,8 +4985,25 @@
         return;
       }
 
-      if (launchAir) {
-        // 龍捲旋風腳浮空擊飛：高拋並保持在前方近距離，方便接其他招式空中追打！
+      // 2. FLINCH ON HIT ("受攻擊是否硬直") + KNOCKBACK RESISTANCE ("擊退/浮空抗性")
+      if (!flinchOnHit) {
+        // 受擊不硬直：動作不中斷，若允許微退則僅輕微位移，或若非抗擊飛且遭升龍浮空則依抗性處理
+        if (kbMode === 'immune' || (!launchAir && !heavy)) {
+          if (kbMode !== 'immune') this.x += dir * 4;
+          return;
+        }
+        if (kbMode === 'resist') {
+          this.vx = dir * Math.min(90, (knockForce || 80) * 0.35);
+          return;
+        }
+      }
+
+      this.facing = -dir;
+      const canLaunch = kbMode === 'normal';
+      const kbScale = kbMode === 'immune' ? 0 : (kbMode === 'resist' ? 0.42 : 1.0);
+
+      if (launchAir && canLaunch) {
+        addFloatText(this.x, hitY - 26, '▲ 浮空!!', '#e879f9', 20);
         this.state = 'knocked';
         this.isLaunched = true;
         this.stateTime = 0;
@@ -4641,8 +5011,7 @@
         this.vx = dir * Math.min(knockForce || 80, 95);
         this.vy = Math.max(this.vy, (opts && opts.launchVy) || 540);
         this.jumpY = Math.max(this.jumpY, 10);
-      } else if (wasAirborne) {
-        // 浮空追打 (Air Juggle follow-up)：任何招式命中浮空敵人皆可再次頂起追打！
+      } else if (wasAirborne && canLaunch) {
         this.airJuggleCount++;
         const decay = Math.max(0.45, 1 - this.airJuggleCount * 0.13);
         this.state = 'knocked';
@@ -4652,7 +5021,7 @@
         this.vx = dir * (heavy ? Math.min(knockForce, 175) : 72);
         this.vy = Math.max(this.vy, (heavy ? 430 : 350) * decay);
         this.jumpY = Math.max(this.jumpY, 12);
-      } else if (heavy) {
+      } else if (heavy && canLaunch) {
         this.state = 'knocked';
         this.isLaunched = false;
         this.stateTime = 0;
@@ -4660,11 +5029,11 @@
         this.vx = dir * knockForce;
         this.vy = 320;
         this.jumpY = 2;
-      } else {
+      } else if (flinchOnHit) {
         this.state = 'hurt';
         this.stateTime = 0;
         this.frame = 0;
-        this.vx = dir * knockForce;
+        this.vx = dir * (knockForce || 90) * kbScale;
       }
     }
 
@@ -4672,14 +5041,19 @@
       this.animTime += dt;
       if (this.hurtFlash > 0) this.hurtFlash -= dt;
       if (this.attackCd > 0) this.attackCd -= dt;
+      if (this.armorToastCd > 0) this.armorToastCd -= dt;
 
-      const prefix = this.cfg.spritePrefix;
-      const moveFps = StudioState.getAction(`${prefix}_move`)?.fps || 12;
-      const koFps = StudioState.getAction(`${prefix}_ko`)?.fps || 12;
-      const moveFc = SpriteBank.getFrameCount(`${prefix}_move`, 10);
-      const atkFc = SpriteBank.getFrameCount(`${prefix}_attack`, 10);
-      const hurtFc = SpriteBank.getFrameCount(`${prefix}_hurt`, 10);
-      const koFc = SpriteBank.getFrameCount(`${prefix}_ko`, 10);
+      const moveSheet = this.resolveEnemySheet('move');
+      const atkSheet = this.resolveEnemySheet('attack');
+      const hurtSheet = this.resolveEnemySheet('hurt');
+      const koSheet = this.resolveEnemySheet('ko');
+      const prefix = this.cfg.customPrefix || this.cfg.spritePrefix;
+      const moveFps = StudioState.getAction(`${prefix}_move`)?.fps || StudioState.getAction(`${this.cfg.spritePrefix}_move`)?.fps || 12;
+      const koFps = StudioState.getAction(`${prefix}_ko`)?.fps || StudioState.getAction(`${this.cfg.spritePrefix}_ko`)?.fps || 12;
+      const moveFc = SpriteBank.getFrameCount(moveSheet, 10);
+      const atkFc = SpriteBank.getFrameCount(atkSheet, 10);
+      const hurtFc = SpriteBank.getFrameCount(hurtSheet, 10);
+      const koFc = SpriteBank.getFrameCount(koSheet, 10);
       const halfFc = Math.max(2, Math.floor(atkFc / 2));
 
       // Airborne & knockback physics (slightly floatier apex gravity when launched for juicy air juggles!)
@@ -4719,25 +5093,28 @@
 
       if (this.state === 'hurt') {
         this.stateTime += dt;
-        const hurtDur = this.cfg.hasHurt ? 0.36 : 0.28;
-        if (this.cfg.hasHurt && SpriteBank.sheets[`${prefix}_hurt`]) {
+        const hurtDur = (this.cfg.hasHurt ? 0.36 : 0.28) * (this.cfg.hitstunMult || 1.0);
+        if (this.cfg.hasHurt && SpriteBank.sheets[hurtSheet]) {
           this.frame = Math.min(hurtFc - 1, Math.floor((this.stateTime / hurtDur) * hurtFc));
         } else {
-          this.frame = this.stateTime < 0.14 ? 0 : 1;
+          this.frame = this.stateTime < hurtDur * 0.5 ? 0 : 1;
         }
         this.x += this.vx * dt;
         this.vx *= Math.pow(0.02, dt);
         if (this.stateTime >= hurtDur) {
           this.state = 'approach';
+          this.armorShieldCount = this.cfg.armorHits || 3;
           this.attackCd = Math.max(this.attackCd, 0.35);
         }
       } else if (this.state === 'knocked') {
         this.stateTime += dt;
+        const knockDur = 0.72 * Math.max(0.6, Math.min(1.8, this.cfg.hitstunMult || 1.0));
         const knockStart = Math.min(koFc - 1, Math.floor(koFc * 0.2));
         const knockSpan = Math.max(1, Math.floor(koFc * 0.6));
-        this.frame = Math.min(koFc - 2, knockStart + Math.floor((this.stateTime / 0.72) * knockSpan));
-        if (this.jumpY === 0 && this.stateTime >= 0.72) {
+        this.frame = Math.min(koFc - 2, knockStart + Math.floor((this.stateTime / knockDur) * knockSpan));
+        if (this.jumpY === 0 && this.stateTime >= knockDur) {
           this.state = 'approach';
+          this.armorShieldCount = this.cfg.armorHits || 3;
           this.attackCd = 0.55;
         }
       } else if (this.state === 'windup') {
@@ -5440,7 +5817,12 @@
     draw(ctx) {
       if (this.deadFade <= 0) return;
       const sc = this.cfg.scale;
-      const prefix = this.cfg.spritePrefix;
+      const armorMode = this.cfg.superArmor || (this.cfg.armor ? 'attack' : 'none');
+      const armorActiveNow = !this.dead && (
+        armorMode === 'always' ||
+        (armorMode === 'hits' && this.armorShieldCount > 0) ||
+        (armorMode === 'attack' && (this.state === 'windup' || this.state === 'attack'))
+      );
 
       ctx.save();
       if (this.state === 'dead') {
@@ -5459,8 +5841,19 @@
       ctx.ellipse(this.x, this.z + 2, 46 * shScale, 13 * shScale, 0, 0, Math.PI * 2);
       ctx.fill();
 
+      // Active Super Armor Ring at Feet (Golden for always/attack, Cyan-Gold for Hit-Shield)
+      if (armorActiveNow) {
+        ctx.save();
+        ctx.strokeStyle = armorMode === 'hits' ? 'rgba(56, 189, 248, 0.85)' : 'rgba(250, 204, 21, 0.85)';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.ellipse(this.x, this.z + 2, 50 * shScale, 15 * shScale, 0, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+      }
+
       // Boss golden martial / enraged crimson cosmic aura
-      if (this.cfg.isBoss && !this.dead && (this.hp < this.maxHp * 0.5 || this.type === 'donghua_boss')) {
+      if (this.cfg.isBoss && !this.dead && (this.hp < this.maxHp * 0.5 || this.type === 'donghua_boss' || armorMode === 'always')) {
         const enraged = this.hp < this.maxHp * 0.5;
         const pulse = 1 + Math.sin(game.time * (enraged ? 14 : 7)) * 0.1;
         const auraR = (this.type === 'donghua_boss' ? 105 : 118) * sc * pulse;
@@ -5481,20 +5874,20 @@
         ctx.fill();
       }
 
-      // Select HD Sprite Sheet by state (dedicated 10f hurt sheet when available!)
+      // Select HD Sprite Sheet by state (dedicated hurt sheet & customPrefix when available!)
       let sheetKey = (!this.isMoving && this.cfg.idleSheet && SpriteBank.sheets[this.cfg.idleSheet])
         ? this.cfg.idleSheet
-        : `${prefix}_move`;
+        : this.resolveEnemySheet('move');
       if (this.state === 'windup') {
         sheetKey = (this.cfg.windupSheet && SpriteBank.sheets[this.cfg.windupSheet])
           ? this.cfg.windupSheet
-          : `${prefix}_attack`;
+          : this.resolveEnemySheet('attack');
       } else if (this.state === 'attack') {
-        sheetKey = `${prefix}_attack`;
+        sheetKey = this.resolveEnemySheet('attack');
       } else if (this.state === 'hurt') {
-        sheetKey = (this.cfg.hasHurt && SpriteBank.sheets[`${prefix}_hurt`]) ? `${prefix}_hurt` : `${prefix}_ko`;
+        sheetKey = this.cfg.hasHurt ? this.resolveEnemySheet('hurt', 'ko') : this.resolveEnemySheet('ko');
       } else if (this.state === 'knocked' || this.state === 'dead') {
-        sheetKey = `${prefix}_ko`;
+        sheetKey = this.resolveEnemySheet('ko');
       }
 
       SpriteBank.drawFrame(
@@ -5534,15 +5927,35 @@
         ctx.restore();
       }
 
-      // Mini HP bar overhead for damaged regular enemies
-      if (!this.dead && !this.cfg.isBoss && this.hp < this.maxHp) {
-        const bw = 68;
+      // Mini HP bar + Super Armor badge overhead for regular enemies
+      if (!this.dead && !this.cfg.isBoss && (this.hp < this.maxHp || armorMode === 'always' || armorMode === 'hits')) {
+        const bw = Math.round(68 * Math.max(0.85, Math.min(1.55, sc)));
         const bx = this.x - bw / 2;
         const by = this.z - this.jumpY - 156 * sc;
-        ctx.fillStyle = 'rgba(0,0,0,0.72)';
+        ctx.fillStyle = 'rgba(0,0,0,0.75)';
         ctx.fillRect(bx - 1, by - 1, bw + 2, 8);
+        if (armorActiveNow) {
+          ctx.strokeStyle = armorMode === 'hits' ? '#38bdf8' : '#fde047';
+          ctx.lineWidth = 1.5;
+          ctx.strokeRect(bx - 1.5, by - 1.5, bw + 3, 9);
+        }
         ctx.fillStyle = '#ef4444';
-        ctx.fillRect(bx, by, bw * (this.hp / this.maxHp), 6);
+        ctx.fillRect(bx, by, bw * Math.max(0, Math.min(1, this.hp / this.maxHp)), 6);
+        if (armorMode === 'hits' && this.armorShieldCount > 0) {
+          ctx.save();
+          ctx.font = '800 11px "Noto Sans TC", sans-serif';
+          ctx.fillStyle = '#7dd3fc';
+          ctx.textAlign = 'center';
+          ctx.fillText(`🛡×${this.armorShieldCount}`, this.x, by - 5);
+          ctx.restore();
+        } else if (armorMode === 'always') {
+          ctx.save();
+          ctx.font = '800 11px "Noto Sans TC", sans-serif';
+          ctx.fillStyle = '#fde047';
+          ctx.textAlign = 'center';
+          ctx.fillText('🛡霸體', this.x, by - 5);
+          ctx.restore();
+        }
       }
     }
   }
@@ -7822,7 +8235,14 @@
             pngFile: pngPath,
           };
           if (!charMap.has(ch.id)) {
-            const chRec = { id: ch.id, name: ch.name, folder, actions: [] };
+            const chRec = {
+              id: ch.id,
+              name: ch.name,
+              role: ch.role || 'monster',
+              combatParams: StudioState.getCombatParams(ch.id),
+              folder,
+              actions: [],
+            };
             charMap.set(ch.id, chRec);
             manifest.characters.push(chRec);
           }
@@ -7831,7 +8251,7 @@
       }
 
       const readme = [
-        '《Star Fish 國小 大亂鬥》全部角色連續動畫精靈表打包檔',
+        '《Star Fish 國小 大亂鬥》全部角色連續動畫精靈表與戰鬥參數打包檔',
         '======================================================',
         `匯出時間：${manifest.exportedAt}`,
         `角色總數：${manifest.totalCharacters} 位角色｜連續動畫精靈表總數：${manifest.totalAnimationSheets} 張`,
@@ -7842,7 +8262,7 @@
         '   ※ 您上傳任意高解析度圖片（如 1500×1056、2048×2048、2752×1536）皆可！',
         '   ※ 內建「🤖 智能辨識 v2」會自動偵測欄×列與總幀數、自動去背、谷底切格不裁切大特效，並自動等比縮放進 300×264 絕不爆框切割！',
         '3. AI 生圖小撇步：請使用單一純色深色背景（推薦 #0d1220 深藍黑）或透明 PNG，所有幀角色朝右、大小一致、格與格之間留些微空隙、不加文字標籤。',
-        '4. 雲端直接覆寫：於網頁「⚙️ 動作與按鍵設定」上方填入 GitHub Token 後，點各動作的「☁️ 雲端覆寫」即可直接更新 GitHub Pages 雲端！',
+        '4. 怪物參數與雲端覆寫：於網頁「⚙️ 角色連幀動畫＆怪物戰鬥參數工作台」調整體型、HP、霸體、受擊硬直或上傳 PNG 後，點「☁️ 雲端覆寫」即可同步至 GitHub Pages！',
       ].join('\n');
 
       zipFiles.unshift({ name: 'animations_manifest.json', data: JSON.stringify(manifest, null, 2) });
@@ -7868,48 +8288,595 @@
     }
   }
 
-  function renderGearStudio() {
+  let studioScalePreviewState = { canvas: null, charId: null, sheetKey: null, frame: 0 };
+  let studioControlsWired = false;
+
+  function formatArmorBrief(cp) {
+    if (cp.superArmor === 'always') return '🛡金霸體';
+    if (cp.superArmor === 'hits') return `🛡${cp.armorHits}擊霸體`;
+    if (cp.superArmor === 'attack') return '🛡出招霸體';
+    return cp.flinchOnHit === false ? '✖免硬直' : '一般受擊';
+  }
+
+  function formatRosterSubline(ch) {
+    const cp = StudioState.getCombatParams(ch.id);
+    return `${cp.scale.toFixed(2)}x · HP ${cp.hp} · ${formatArmorBrief(cp)} · ${ch.actions.length}招`;
+  }
+
+  function cleanCharTitle(rawName) {
+    return String(rawName || '').replace(/（.*?）/g, '').trim() || rawName;
+  }
+
+  function getCharPrimarySheetKey(ch) {
+    if (!ch || !ch.actions || ch.actions.length === 0) return null;
+    for (const a of ch.actions) {
+      if (SpriteBank.sheets[a.sheetKey]) return a.sheetKey;
+      if (a.fallbackSheet && SpriteBank.sheets[a.fallbackSheet]) return a.fallbackSheet;
+    }
+    return null;
+  }
+
+  function isCharAnyModified(ch) {
+    if (StudioState.isCombatParamsModified(ch.id)) return true;
+    return ch.actions.some((a) => {
+      const sh = SpriteBank.sheets[a.sheetKey];
+      return (sh && sh.custom) || a.custom;
+    });
+  }
+
+  function renderRosterSidebar() {
     const tabsEl = document.getElementById('charTabs');
+    const catEl = document.getElementById('charCategoryTabs');
+    const searchInput = document.getElementById('charSearchInput');
+    if (!tabsEl) return;
+
+    const prevScroll = tabsEl.scrollTop;
+    const allChars = StudioState.characters;
+    const counts = {
+      all: allChars.length,
+      hero: allChars.filter((c) => c.role === 'hero').length,
+      boss: allChars.filter((c) => c.role === 'boss').length,
+      monster: allChars.filter((c) => (c.role || 'monster') === 'monster' && c.builtinEnemy).length,
+      custom: allChars.filter((c) => c.role === 'custom' || (!c.builtinEnemy && c.role !== 'hero')).length,
+    };
+
+    if (catEl) {
+      catEl.innerHTML = '';
+      const cats = [
+        { id: 'all', label: `全部 (${counts.all})` },
+        { id: 'hero', label: `主角 (${counts.hero})` },
+        { id: 'boss', label: `BOSS (${counts.boss})` },
+        { id: 'monster', label: `怪物 (${counts.monster})` },
+      ];
+      if (counts.custom > 0 || StudioState.categoryFilter === 'custom') {
+        cats.push({ id: 'custom', label: `自訂 (${counts.custom})` });
+      }
+      for (const c of cats) {
+        const btn = document.createElement('button');
+        btn.className = `cat-pill ${StudioState.categoryFilter === c.id ? 'active' : ''}`;
+        btn.textContent = c.label;
+        btn.addEventListener('click', () => {
+          StudioState.categoryFilter = c.id;
+          renderRosterSidebar();
+        });
+        catEl.appendChild(btn);
+      }
+    }
+
+    if (searchInput && searchInput.value !== StudioState.searchQuery) {
+      searchInput.value = StudioState.searchQuery;
+    }
+
+    const q = (StudioState.searchQuery || '').trim().toLowerCase();
+    const filtered = allChars.filter((ch) => {
+      const chRole = ch.role || (ch.builtinEnemy ? 'monster' : 'custom');
+      if (StudioState.categoryFilter !== 'all' && chRole !== StudioState.categoryFilter) return false;
+      if (q) {
+        const hay = `${ch.name} ${ch.id} ${ch.enemyKey || ''}`.toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    });
+
+    tabsEl.innerHTML = '';
+    if (filtered.length === 0) {
+      const empty = document.createElement('div');
+      empty.style.cssText = 'padding:18px 10px;text-align:center;font-size:12px;color:#94a3b8;';
+      empty.textContent = '找不到符合條件的角色／怪物';
+      tabsEl.appendChild(empty);
+      return;
+    }
+
+    for (const ch of filtered) {
+      const chRole = ch.role || (ch.builtinEnemy ? 'monster' : 'custom');
+      const roleLabel = chRole === 'hero' ? '主角' : (chRole === 'boss' ? 'BOSS' : (chRole === 'monster' ? '怪物' : '自訂'));
+      const row = document.createElement('button');
+      row.type = 'button';
+      row.className = `roster-row char-tab ${ch.id === StudioState.activeCharId ? 'active' : ''}`;
+      row.dataset.charId = ch.id;
+
+      const thumb = document.createElement('div');
+      thumb.className = 'roster-thumb';
+      const tCanvas = document.createElement('canvas');
+      tCanvas.width = 76;
+      tCanvas.height = 76;
+      const pKey = getCharPrimarySheetKey(ch);
+      if (pKey && SpriteBank.sheets[pKey]) {
+        const sh = SpriteBank.sheets[pKey];
+        const tctx = tCanvas.getContext('2d');
+        const enemyCfg = ch.enemyKey ? ENEMY_CONFIGS[ch.enemyKey] : null;
+        const vIdx = StudioState.previewVariants[ch.id] || 0;
+        const variant = (enemyCfg && enemyCfg.colorVariants && enemyCfg.colorVariants[vIdx]) || null;
+        SpriteBank.drawFrame(tctx, pKey, 0, 38, 69, 1, Math.min(0.32, 68 / Math.max(120, sh.cellH)), false, variant);
+      }
+      thumb.appendChild(tCanvas);
+
+      const info = document.createElement('div');
+      info.className = 'roster-info';
+      const nameLine = document.createElement('div');
+      nameLine.className = 'roster-name-line';
+      nameLine.innerHTML = `<span class="role-tag ${chRole}">${roleLabel}</span><span class="roster-name" title="${ch.name}">${cleanCharTitle(ch.name)}</span>`;
+
+      const subLine = document.createElement('div');
+      subLine.className = 'roster-sub';
+      subLine.id = `roster_sub_${ch.id}`;
+      subLine.textContent = formatRosterSubline(ch);
+
+      info.appendChild(nameLine);
+      info.appendChild(subLine);
+
+      const modIndicator = document.createElement('div');
+      if (isCharAnyModified(ch)) {
+        const dot = document.createElement('span');
+        dot.className = 'roster-mod-dot';
+        dot.title = '已自訂戰鬥參數或動畫精靈表';
+        modIndicator.appendChild(dot);
+      }
+
+      row.appendChild(thumb);
+      row.appendChild(info);
+      row.appendChild(modIndicator);
+
+      row.addEventListener('click', () => {
+        StudioState.activeCharId = ch.id;
+        StudioState.rebindingActionId = null;
+        renderGearStudio();
+      });
+      tabsEl.appendChild(row);
+    }
+
+    tabsEl.scrollTop = prevScroll;
+  }
+
+  function wireStaticStudioControls() {
+    if (studioControlsWired) return;
+    studioControlsWired = true;
+
+    const searchInput = document.getElementById('charSearchInput');
+    if (searchInput) {
+      searchInput.addEventListener('input', () => {
+        StudioState.searchQuery = searchInput.value;
+        renderRosterSidebar();
+      });
+    }
+
+    const btnAddChar = document.getElementById('btnAddCustomChar');
+    if (btnAddChar) {
+      btnAddChar.addEventListener('click', () => {
+        const idx = StudioState.characters.length + 1;
+        const id = `char_${Date.now()}`;
+        StudioState.characters.push({
+          id,
+          name: `👤 自訂角色 ${idx}`,
+          role: 'custom',
+          actions: [
+            { id: `${id}_idle`, label: '待機動畫 (Idle)', triggerDesc: '靜止循環', sheetKey: `${id}_idle`, fallbackSheet: null, fps: 8, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
+            { id: `${id}_run`, label: '移動／跑步 (Run)', triggerDesc: '移動循環', sheetKey: `${id}_run`, fallbackSheet: null, fps: 14, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
+            { id: `${id}_atk`, label: '攻擊動作 (Attack)', triggerDesc: '攻擊序列', sheetKey: `${id}_atk`, fallbackSheet: null, fps: 16, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
+          ],
+        });
+        StudioState.categoryFilter = 'all';
+        StudioState.activeCharId = id;
+        StudioState.save();
+        renderGearStudio();
+      });
+    }
+
+    const btnViewList = document.getElementById('btnViewList');
+    const btnViewGrid = document.getElementById('btnViewGrid');
+    if (btnViewList) {
+      btnViewList.addEventListener('click', () => {
+        StudioState.viewMode = 'list';
+        StudioState.save();
+        renderGearStudio();
+      });
+    }
+    if (btnViewGrid) {
+      btnViewGrid.addEventListener('click', () => {
+        StudioState.viewMode = 'grid';
+        StudioState.save();
+        renderGearStudio();
+      });
+    }
+
+    const btnToggleCloud = document.getElementById('btnToggleCloudBar');
+    if (btnToggleCloud) {
+      btnToggleCloud.addEventListener('click', () => {
+        StudioState.specExpanded = !StudioState.specExpanded;
+        renderGearStudio();
+      });
+    }
+  }
+
+  function renderCombatParamsInspector(activeChar) {
+    const panel = document.getElementById('combatParamsPanel');
+    if (!panel || !activeChar) return;
+
+    const cp = StudioState.getCombatParams(activeChar.id);
+    const chRole = activeChar.role || (activeChar.builtinEnemy ? 'monster' : 'custom');
+    const roleText = chRole === 'hero' ? '主角參數' : (chRole === 'boss' ? 'BOSS 戰鬥參數' : '怪物戰鬥參數');
+    const enemyCfg = activeChar.enemyKey ? ENEMY_CONFIGS[activeChar.enemyKey] : null;
+    const variants = (enemyCfg && enemyCfg.colorVariants) || [];
+    const curVarIdx = StudioState.previewVariants[activeChar.id] || 0;
+
+    panel.innerHTML = `
+      <div class="params-header">
+        <div class="params-char-lead">
+          <div class="param-scale-stage" title="即時體型比例與霸體光環預覽（虛線為 1.0x 主角身高基準）">
+            <canvas id="paramScaleCanvas" width="216" height="172"></canvas>
+          </div>
+          <div class="params-title-block">
+            <h3>
+              <span class="role-tag ${chRole}">${roleText}</span>
+              <span>${activeChar.name}</span>
+              <code class="params-id-code">${activeChar.enemyKey || activeChar.id}</code>
+            </h3>
+            <div style="font-size:11.5px;color:#94a3b8;">
+              調整下方數值會<strong>立即套用至場上與新生成的角色／怪物</strong>，並自動儲存於本機（亦可一鍵覆寫至 GitHub 雲端）。
+            </div>
+            ${variants.length > 0 ? `<div id="paramVariantBar" class="variant-bar"><span>🎨 配色預覽：</span></div>` : ''}
+          </div>
+        </div>
+        <div class="params-header-btns">
+          ${activeChar.enemyKey ? `<button id="btnSpawnTestEnemy" class="mini-btn" style="border-color:rgba(74,222,128,0.6);color:#86efac;padding:5px 10px;" title="立即在上方遊戲畫面召喚一隻此怪物（套用目前最新體型/HP/霸體/硬直設定），直接出拳實測！">⚡ 場上召喚實測</button>` : ''}
+          <button id="btnSyncParamsCloud" class="mini-btn" style="border-color:rgba(56,189,248,0.6);color:#7dd3fc;padding:5px 10px;" title="將所有怪物戰鬥參數與 FPS 設定同步寫入 GitHub Pages 雲端">☁️ 同步參數至雲端</button>
+          <button id="btnResetCharParams" class="mini-btn" style="padding:5px 9px;" title="將此角色的戰鬥參數恢復為出廠預設值">↺ 重置此角參數</button>
+        </div>
+      </div>
+
+      <div class="params-grid">
+        <div class="param-cell">
+          <div class="param-cell-top">
+            <span>📏 體型大小 (Scale)</span>
+            <span id="lblParamScale" class="param-val-badge">${cp.scale.toFixed(2)}x</span>
+          </div>
+          <div class="param-ctrl-row">
+            <input id="rngParamScale" type="range" min="0.40" max="3.00" step="0.02" value="${cp.scale}" />
+            <input id="numParamScale" class="param-num" type="number" min="0.35" max="3.50" step="0.05" value="${cp.scale.toFixed(2)}" />
+          </div>
+        </div>
+
+        <div class="param-cell">
+          <div class="param-cell-top">
+            <span>❤️ 最大血量 (Max HP)</span>
+            <span id="lblParamHp" class="param-val-badge">HP ${cp.hp}</span>
+          </div>
+          <div class="param-ctrl-row">
+            <input id="rngParamHp" type="range" min="20" max="2000" step="5" value="${Math.min(2000, cp.hp)}" />
+            <input id="numParamHp" class="param-num" type="number" min="10" max="9999" step="5" value="${cp.hp}" />
+          </div>
+        </div>
+
+        <div class="param-cell">
+          <div class="param-cell-top">
+            <span>🛡️ 霸體設定 (Super Armor)</span>
+            <span id="lblParamArmor" class="param-val-badge">${formatArmorBrief(cp)}</span>
+          </div>
+          <div class="param-ctrl-row">
+            <select id="selParamArmor" class="param-select" style="flex:1;">
+              <option value="none" ${cp.superArmor === 'none' ? 'selected' : ''}>無霸體（正常受擊反應）</option>
+              <option value="attack" ${cp.superArmor === 'attack' ? 'selected' : ''}>出招霸體（蓄力/攻擊中不中斷）</option>
+              <option value="hits" ${cp.superArmor === 'hits' ? 'selected' : ''}>護盾霸體（承受 N 擊才破防）</option>
+              <option value="always" ${cp.superArmor === 'always' ? 'selected' : ''}>全程金霸體（常駐免疫打斷）</option>
+            </select>
+            <input id="numParamArmorHits" class="param-num" type="number" min="1" max="30" step="1" value="${cp.armorHits}" title="護盾霸體可承受幾次攻擊才破防" style="width:46px;display:${cp.superArmor === 'hits' ? 'block' : 'none'};" />
+          </div>
+        </div>
+
+        <div class="param-cell">
+          <div class="param-cell-top">
+            <span>⚡ 受攻擊是否硬直 (Flinch)</span>
+            <span id="lblParamFlinch" class="param-val-badge" style="color:${cp.flinchOnHit ? '#86efac' : '#fda4af'};">${cp.flinchOnHit ? '會硬直' : '不硬直'}</span>
+          </div>
+          <div class="flinch-toggle-group">
+            <button type="button" id="btnFlinchYes" class="flinch-btn on ${cp.flinchOnHit ? 'active' : ''}">✔ 受擊會硬直</button>
+            <button type="button" id="btnFlinchNo" class="flinch-btn off ${!cp.flinchOnHit ? 'active' : ''}">✖ 受擊不硬直</button>
+          </div>
+        </div>
+
+        <div class="param-cell">
+          <div class="param-cell-top">
+            <span>🌪️ 擊退／浮空抗性</span>
+            <span id="lblParamKb" class="param-val-badge">${cp.knockbackMode === 'immune' ? '不動如山' : (cp.knockbackMode === 'resist' ? '抗浮空' : '正常浮空')}</span>
+          </div>
+          <div class="param-ctrl-row">
+            <select id="selParamKb" class="param-select">
+              <option value="normal" ${cp.knockbackMode === 'normal' ? 'selected' : ''}>正常（可擊退／升龍可打浮空）</option>
+              <option value="resist" ${cp.knockbackMode === 'resist' ? 'selected' : ''}>重裝抗浮空（僅微退・不打飛空中）</option>
+              <option value="immune" ${cp.knockbackMode === 'immune' ? 'selected' : ''}>不動如山（完全免疫擊退與浮空）</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="param-cell">
+          <div class="param-cell-top">
+            <span>⏱️ 受擊硬直時長倍率</span>
+            <span id="lblParamStun" class="param-val-badge">${cp.hitstunMult.toFixed(2)}x</span>
+          </div>
+          <div class="param-ctrl-row">
+            <input id="rngParamStun" type="range" min="0.25" max="2.20" step="0.05" value="${cp.hitstunMult}" />
+          </div>
+        </div>
+
+        <div class="param-cell">
+          <div class="param-cell-top">
+            <span>👟 移動速度倍率</span>
+            <span id="lblParamSpd" class="param-val-badge">${cp.speedMult.toFixed(2)}x</span>
+          </div>
+          <div class="param-ctrl-row">
+            <input id="rngParamSpd" type="range" min="0.40" max="2.20" step="0.05" value="${cp.speedMult}" />
+          </div>
+        </div>
+
+        <div class="param-cell">
+          <div class="param-cell-top">
+            <span>⚔️ 攻擊傷害倍率</span>
+            <span id="lblParamDmg" class="param-val-badge">${cp.dmgMult.toFixed(2)}x</span>
+          </div>
+          <div class="param-ctrl-row">
+            <input id="rngParamDmg" type="range" min="0.40" max="2.50" step="0.05" value="${cp.dmgMult}" />
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Wire color variant chips if present
+    if (variants.length > 0) {
+      const vBar = document.getElementById('paramVariantBar');
+      variants.forEach((v, idx) => {
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = `variant-chip ${idx === curVarIdx ? 'active' : ''}`;
+        const swCol = v.rgb ? `rgb(${v.rgb[0]},${v.rgb[1]},${v.rgb[2]})` : '#fff';
+        chip.innerHTML = `<span class="variant-swatch" style="background:${swCol}"></span><span>${v.label}</span>`;
+        chip.addEventListener('click', () => {
+          StudioState.previewVariants[activeChar.id] = idx;
+          renderGearStudio();
+        });
+        vBar.appendChild(chip);
+      });
+    }
+
+    studioScalePreviewState = {
+      canvas: document.getElementById('paramScaleCanvas'),
+      charId: activeChar.id,
+      sheetKey: getCharPrimarySheetKey(activeChar),
+      frame: studioScalePreviewState.charId === activeChar.id ? studioScalePreviewState.frame : 0,
+    };
+
+    const refreshSidebarRowMeta = () => {
+      const subEl = document.getElementById(`roster_sub_${activeChar.id}`);
+      if (subEl) subEl.textContent = formatRosterSubline(activeChar);
+      const cur = StudioState.getCombatParams(activeChar.id);
+      const lblArmor = document.getElementById('lblParamArmor');
+      if (lblArmor) lblArmor.textContent = formatArmorBrief(cur);
+    };
+
+    // Scale controls
+    const rngScale = document.getElementById('rngParamScale');
+    const numScale = document.getElementById('numParamScale');
+    const lblScale = document.getElementById('lblParamScale');
+    const applyScale = (val) => {
+      const s = Math.max(0.35, Math.min(3.5, parseFloat(val) || 1.0));
+      StudioState.setCombatParams(activeChar.id, { scale: Math.round(s * 100) / 100 });
+      if (lblScale) lblScale.textContent = `${s.toFixed(2)}x`;
+      if (rngScale) rngScale.value = String(Math.min(3.0, s));
+      if (numScale) numScale.value = s.toFixed(2);
+      refreshSidebarRowMeta();
+    };
+    if (rngScale) rngScale.addEventListener('input', () => applyScale(rngScale.value));
+    if (numScale) numScale.addEventListener('change', () => applyScale(numScale.value));
+
+    // HP controls
+    const rngHp = document.getElementById('rngParamHp');
+    const numHp = document.getElementById('numParamHp');
+    const lblHp = document.getElementById('lblParamHp');
+    const applyHp = (val) => {
+      const h = Math.max(10, Math.min(9999, Math.round(parseFloat(val) || 100)));
+      StudioState.setCombatParams(activeChar.id, { hp: h });
+      if (lblHp) lblHp.textContent = `HP ${h}`;
+      if (rngHp) rngHp.value = String(Math.min(2000, h));
+      if (numHp) numHp.value = String(h);
+      refreshSidebarRowMeta();
+    };
+    if (rngHp) rngHp.addEventListener('input', () => applyHp(rngHp.value));
+    if (numHp) numHp.addEventListener('change', () => applyHp(numHp.value));
+
+    // Super Armor controls
+    const selArmor = document.getElementById('selParamArmor');
+    const numArmorHits = document.getElementById('numParamArmorHits');
+    if (selArmor) {
+      selArmor.addEventListener('change', () => {
+        const mode = selArmor.value;
+        StudioState.setCombatParams(activeChar.id, { superArmor: mode });
+        if (numArmorHits) numArmorHits.style.display = mode === 'hits' ? 'block' : 'none';
+        refreshSidebarRowMeta();
+      });
+    }
+    if (numArmorHits) {
+      numArmorHits.addEventListener('change', () => {
+        const hits = Math.max(1, Math.min(30, parseInt(numArmorHits.value, 10) || 3));
+        numArmorHits.value = String(hits);
+        StudioState.setCombatParams(activeChar.id, { armorHits: hits });
+        refreshSidebarRowMeta();
+      });
+    }
+
+    // Flinch on Hit segmented buttons
+    const btnFYes = document.getElementById('btnFlinchYes');
+    const btnFNo = document.getElementById('btnFlinchNo');
+    const lblFlinch = document.getElementById('lblParamFlinch');
+    const setFlinch = (flag) => {
+      StudioState.setCombatParams(activeChar.id, { flinchOnHit: flag });
+      if (btnFYes) btnFYes.classList.toggle('active', flag);
+      if (btnFNo) btnFNo.classList.toggle('active', !flag);
+      if (lblFlinch) {
+        lblFlinch.textContent = flag ? '會硬直' : '不硬直';
+        lblFlinch.style.color = flag ? '#86efac' : '#fda4af';
+      }
+      refreshSidebarRowMeta();
+    };
+    if (btnFYes) btnFYes.addEventListener('click', () => setFlinch(true));
+    if (btnFNo) btnFNo.addEventListener('click', () => setFlinch(false));
+
+    // Knockback Mode
+    const selKb = document.getElementById('selParamKb');
+    const lblKb = document.getElementById('lblParamKb');
+    if (selKb) {
+      selKb.addEventListener('change', () => {
+        const m = selKb.value;
+        StudioState.setCombatParams(activeChar.id, { knockbackMode: m });
+        if (lblKb) lblKb.textContent = m === 'immune' ? '不動如山' : (m === 'resist' ? '抗浮空' : '正常浮空');
+      });
+    }
+
+    // Hitstun / Speed / Damage Multipliers
+    const bindSimpleRange = (id, lblId, key) => {
+      const r = document.getElementById(id);
+      const l = document.getElementById(lblId);
+      if (!r) return;
+      r.addEventListener('input', () => {
+        const v = Math.round(parseFloat(r.value) * 100) / 100;
+        StudioState.setCombatParams(activeChar.id, { [key]: v });
+        if (l) l.textContent = `${v.toFixed(2)}x`;
+      });
+    };
+    bindSimpleRange('rngParamStun', 'lblParamStun', 'hitstunMult');
+    bindSimpleRange('rngParamSpd', 'lblParamSpd', 'speedMult');
+    bindSimpleRange('rngParamDmg', 'lblParamDmg', 'dmgMult');
+
+    // Live Spawn Test Monster button!
+    const btnSpawn = document.getElementById('btnSpawnTestEnemy');
+    if (btnSpawn && activeChar.enemyKey) {
+      btnSpawn.addEventListener('click', () => {
+        if (game.state === 'title' || game.state === 'gameover' || game.state === 'victory') {
+          startNewGame(game.stageIndex || 0);
+        }
+        const p = game.player;
+        const spawnX = Math.min(game.camMaxX + CANVAS_W - 90, p.x + 215);
+        const vObj = variants[curVarIdx] || null;
+        const testMob = new Enemy(activeChar.enemyKey, spawnX, p.z, vObj ? { variantId: vObj.id } : null);
+        game.enemies.push(testMob);
+        game.lastHitEnemy = testMob;
+        game.lastHitTimer = 5.0;
+        const curP = StudioState.getCombatParams(activeChar.id);
+        addFloatText(testMob.x, testMob.z - 155 * curP.scale, `⚡ 實測召喚 (${curP.scale.toFixed(2)}x · HP ${curP.hp})`, '#4ade80', 19);
+        const statusMsg = document.getElementById('cloudSyncStatusMsg');
+        if (statusMsg) {
+          statusMsg.style.color = '#4ade80';
+          statusMsg.textContent = `⚡ 已於上方遊戲畫面召喚【${cleanCharTitle(activeChar.name)}】(${curP.scale.toFixed(2)}x / HP ${curP.hp} / ${formatArmorBrief(curP)})！`;
+        }
+        document.getElementById('gameCanvas')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+    }
+
+    // Sync Combat Params to Cloud
+    const btnSyncCloud = document.getElementById('btnSyncParamsCloud');
+    if (btnSyncCloud) {
+      btnSyncCloud.addEventListener('click', async () => {
+        const statusMsg = document.getElementById('cloudSyncStatusMsg');
+        btnSyncCloud.disabled = true;
+        btnSyncCloud.textContent = '⏳ 同步中...';
+        try {
+          await CloudSyncManager.syncManifestOnly(`${cleanCharTitle(activeChar.name)} combat params`);
+          btnSyncCloud.textContent = '✅ 已同步雲端';
+          if (statusMsg) {
+            statusMsg.style.color = '#4ade80';
+            statusMsg.textContent = `✅ 已將怪物戰鬥參數與動作設定覆寫同步至雲端 cloud_manifest.json！`;
+          }
+        } catch (err) {
+          btnSyncCloud.textContent = '❌ 失敗';
+          if (statusMsg) {
+            statusMsg.style.color = '#f87171';
+            statusMsg.textContent = `❌ ${err.message}`;
+          }
+          document.getElementById('inpCloudToken')?.focus();
+        } finally {
+          setTimeout(() => {
+            btnSyncCloud.textContent = '☁️ 同步參數至雲端';
+            btnSyncCloud.disabled = false;
+          }, 2200);
+        }
+      });
+    }
+
+    // Reset Single Character Params
+    const btnResetChar = document.getElementById('btnResetCharParams');
+    if (btnResetChar) {
+      btnResetChar.addEventListener('click', () => {
+        StudioState.resetCombatParams(activeChar.id);
+        renderGearStudio();
+      });
+    }
+  }
+
+  function renderGearStudio() {
     const container = document.getElementById('spriteSlots');
     if (!container) return;
 
-    // 0. Inject / Sync Cloud Direct Overwrite + 10~60f Smart Upload Spec Bar above #charTabs!
-    const studioSec = document.getElementById('gearStudio');
-    if (studioSec && tabsEl) {
-      let cloudBar = document.getElementById('cloudSyncStudioBar');
-      if (!cloudBar) {
-        cloudBar = document.createElement('div');
-        cloudBar.id = 'cloudSyncStudioBar';
-        cloudBar.style.cssText = 'display:flex;flex-direction:column;gap:8px;padding:10px 12px;border-radius:10px;background:rgba(15,23,42,0.75);border:1px solid rgba(56,189,248,0.35);font-size:12px;color:#e2e8f0;';
-        studioSec.insertBefore(cloudBar, tabsEl);
-      }
+    wireStaticStudioControls();
+
+    // Update Summary Badge
+    const summaryBadge = document.getElementById('studioSummaryBadge');
+    if (summaryBadge) {
+      const totalActions = StudioState.characters.reduce((s, c) => s + c.actions.length, 0);
+      const customSheets = Object.values(SpriteBank.sheets).filter((v) => v && v.custom).length;
+      const customParams = StudioState.characters.filter((c) => StudioState.isCombatParamsModified(c.id)).length;
+      summaryBadge.textContent = `${StudioState.characters.length} 角色 · ${totalActions} 組動作 · 已自訂 ${customSheets + customParams} 項`;
+    }
+
+    // 0. Cloud Sync Bar + Expandable Upload Spec Drawer
+    const cloudBar = document.getElementById('cloudSyncStudioBar');
+    if (cloudBar) {
+      cloudBar.classList.toggle('collapsed', !StudioState.specExpanded);
       cloudBar.innerHTML = `
         <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;">
           <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;">
-            <strong style="color:#38bdf8;">☁️ 雲端直連覆寫 (GitHub Pages)</strong>
+            <strong style="color:#38bdf8;">☁️ 雲端直連覆寫</strong>
             <label style="display:inline-flex;align-items:center;gap:4px;">Repo
-              <input id="inpCloudRepo" type="text" value="${CloudSyncManager.repo}" style="width:175px;padding:3px 6px;border-radius:5px;background:#0f172a;color:#f8fafc;border:1px solid #334155;font-size:11px;font-family:monospace;" />
+              <input id="inpCloudRepo" type="text" value="${CloudSyncManager.repo}" style="width:168px;padding:3px 6px;border-radius:5px;background:#0f172a;color:#f8fafc;border:1px solid #334155;font-size:11px;font-family:monospace;" />
             </label>
             <label style="display:inline-flex;align-items:center;gap:4px;">Token
-              <input id="inpCloudToken" type="password" placeholder="貼上 GitHub Token (ghp_... 僅存本機)" value="${CloudSyncManager.token}" style="width:210px;padding:3px 6px;border-radius:5px;background:#0f172a;color:#f8fafc;border:1px solid #334155;font-size:11px;font-family:monospace;" />
+              <input id="inpCloudToken" type="password" placeholder="貼上 GitHub Token (ghp_... 僅存本機)" value="${CloudSyncManager.token}" style="width:198px;padding:3px 6px;border-radius:5px;background:#0f172a;color:#f8fafc;border:1px solid #334155;font-size:11px;font-family:monospace;" />
             </label>
             <label style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;" title="上傳任意尺寸 PNG 時自動偵測幾欄×幾列與有效總幀數（支援 10~60+ 幀）並自動去背與等比縮放！">
               <input id="chkSmartAutoGrid" type="checkbox" ${CloudSyncManager.smartAutoGrid ? 'checked' : ''} />
-              <span style="color:#fde047;font-weight:700;">🤖 智能辨識格數・去背・防切割縮放</span>
+              <span style="color:#fde047;font-weight:700;">🤖 智能辨識格數・去背・防切割</span>
             </label>
             <label style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;" title="勾選後，每次上傳 PNG 完會自動同步覆寫至 GitHub 雲端">
               <input id="chkCloudAuto" type="checkbox" ${CloudSyncManager.autoUpload ? 'checked' : ''} />
-              <span>上傳後自動覆寫雲端</span>
+              <span>上傳自動覆寫雲端</span>
             </label>
           </div>
-          <div style="display:flex;align-items:center;gap:6px;">
-            <button id="btnPushAllCustomCloud" class="mini-btn" style="border-color:#38bdf8;color:#38bdf8;">☁️ 同步所有修改至雲端</button>
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+            <button type="button" id="btnToggleSpecInline" class="mini-btn">${StudioState.specExpanded ? '📐 收合規格 ▴' : '📐 20~30幀上傳規格 ▾'}</button>
+            <button type="button" id="btnPushAllCustomCloud" class="mini-btn" style="border-color:#38bdf8;color:#38bdf8;">☁️ 同步所有修改至雲端</button>
             <span id="cloudSyncStatusMsg" style="font-size:11px;color:#94a3b8;">設定儲存於本機 IndexedDB，填 Token 可直接覆寫雲端</span>
           </div>
         </div>
-        <div style="font-size:11px;color:#cbd5e1;line-height:1.45;border-top:1px dashed rgba(148,163,184,0.25);padding-top:6px;">
-          📐 <strong style="color:#f8fafc;">PNG 動畫上傳最佳規格（支援 10 ~ 60 幀，不限 10 幀！）：</strong>
-          推薦排列 <code style="color:#38bdf8;">5×2 (10幀)</code>、<code style="color:#38bdf8;">5×4 (20幀)</code>、<code style="color:#38bdf8;">5×6 或 6×5 (30幀)</code>；單格標準 <code style="color:#fde047;">300×264 px</code>（或任意高解析度大圖，系統會<strong>自動偵測角色高度並等比縮放進 300×264</strong>，大爆炸特效絕不爆框或被切半！）。生圖建議：<strong>純色深藍黑背景 (#0d1220) 或透明 PNG、角色統一朝右、格間留少許空隙、勿壓文字</strong>。怪物雙攻擊表：前半幀＝近戰A、後半幀＝遠程/特技B（如 20 幀則 1-10 幀為 A、11-20 幀為 B）。
+        <div class="cloud-spec-drawer" style="font-size:11px;color:#cbd5e1;line-height:1.45;border-top:1px dashed rgba(148,163,184,0.25);padding-top:6px;">
+          📐 <strong style="color:#f8fafc;">PNG 動畫上傳最佳規格（支援 10 ~ 60+ 幀，不限 10 幀！）：</strong>
+          推薦排列 <code style="color:#38bdf8;">5×2 (10幀)</code>、<code style="color:#38bdf8;">5×4 (20幀)</code>、<code style="color:#38bdf8;">5×6 或 6×5 (30幀)</code>；單格標準 <code style="color:#fde047;">300×264 px</code>（上傳任意 2K/4K 大圖皆可，系統會<strong>自動偵測角色高度並等比縮放進 300×264</strong>，大爆炸特效絕不爆框切割！）。生圖建議：<strong>純色深藍黑背景 (#0d1220) 或透明 PNG、角色統一朝右、格間留少許空隙、勿壓文字</strong>。怪物雙攻擊表：前半幀＝近戰A、後半幀＝遠程/特技B。
         </div>
       `;
 
@@ -7917,13 +8884,15 @@
       const inpTok = document.getElementById('inpCloudToken');
       const chkAutoGrid = document.getElementById('chkSmartAutoGrid');
       const chkAutoUp = document.getElementById('chkCloudAuto');
+      const btnSpecIn = document.getElementById('btnToggleSpecInline');
       const btnPushAll = document.getElementById('btnPushAllCustomCloud');
       const statusMsg = document.getElementById('cloudSyncStatusMsg');
 
       if (inpRepo) inpRepo.addEventListener('change', () => { CloudSyncManager.repo = inpRepo.value.trim() || 'snell0804/SchoolFight-TV'; CloudSyncManager.saveConfig(); });
-      if (inpTok) inpTok.addEventListener('change', () => { CloudSyncManager.token = inpTok.value.trim(); CloudSyncManager.saveConfig(); if (statusMsg) statusMsg.textContent = CloudSyncManager.token ? '✅ Token 已記住（本機加密儲存）' : '尚未填入 Token'; });
+      if (inpTok) inpTok.addEventListener('change', () => { CloudSyncManager.token = inpTok.value.trim(); CloudSyncManager.saveConfig(); if (statusMsg) statusMsg.textContent = CloudSyncManager.token ? '✅ Token 已記住（本機儲存）' : '尚未填入 Token'; });
       if (chkAutoGrid) chkAutoGrid.addEventListener('change', () => { CloudSyncManager.smartAutoGrid = chkAutoGrid.checked; CloudSyncManager.saveConfig(); });
       if (chkAutoUp) chkAutoUp.addEventListener('change', () => { CloudSyncManager.autoUpload = chkAutoUp.checked; CloudSyncManager.saveConfig(); });
+      if (btnSpecIn) btnSpecIn.addEventListener('click', () => { StudioState.specExpanded = !StudioState.specExpanded; renderGearStudio(); });
       if (btnPushAll) {
         btnPushAll.addEventListener('click', async () => {
           try {
@@ -7933,15 +8902,11 @@
               if (statusMsg) statusMsg.textContent = `⏳ 正在覆寫雲端 (${i + 1}/${customKeys.length}): ${customKeys[i]}...`;
               await CloudSyncManager.uploadSheetToCloud(customKeys[i], 'batch');
             }
-            // Even if only FPS/keybinds changed, sync cloud_manifest.json!
-            if (customKeys.length === 0) {
-              const manifestObj = CloudSyncManager.buildCloudManifestObject({});
-              const manifestB64 = btoa(unescape(encodeURIComponent(JSON.stringify(manifestObj, null, 2))));
-              await CloudSyncManager.ghPutFile('assets/cloud_manifest.json', manifestB64, 'chore(manifest): sync FPS & action settings via Gear Studio');
-            }
-            if (statusMsg) { statusMsg.style.color = '#4ade80'; statusMsg.textContent = `✅ 雲端覆寫完成！GitHub Pages 約 30~60 秒自動生效`; }
+            await CloudSyncManager.syncManifestOnly('all combat params & action settings');
+            if (statusMsg) { statusMsg.style.color = '#4ade80'; statusMsg.textContent = `✅ 雲端覆寫完成！精靈表與怪物參數約 30~60 秒於 GitHub Pages 生效`; }
           } catch (err) {
             if (statusMsg) { statusMsg.style.color = '#f87171'; statusMsg.textContent = `❌ ${err.message}`; }
+            document.getElementById('inpCloudToken')?.focus();
           } finally {
             btnPushAll.disabled = false;
           }
@@ -7949,51 +8914,35 @@
       }
     }
 
-    // 1. Character Selector Tabs
-    if (tabsEl) {
-      tabsEl.innerHTML = '';
-      for (const ch of StudioState.characters) {
-        const tb = document.createElement('button');
-        tb.className = `char-tab ${ch.id === StudioState.activeCharId ? 'active' : ''}`;
-        tb.textContent = ch.name;
-        tb.addEventListener('click', () => {
-          StudioState.activeCharId = ch.id;
-          StudioState.rebindingActionId = null;
-          renderGearStudio();
-        });
-        tabsEl.appendChild(tb);
-      }
-      const addCharBtn = document.createElement('button');
-      addCharBtn.className = 'char-tab';
-      addCharBtn.textContent = '＋ 新增角色槽';
-      addCharBtn.addEventListener('click', () => {
-        const idx = StudioState.characters.length + 1;
-        const id = `char_${Date.now()}`;
-        StudioState.characters.push({
-          id,
-          name: `👤 自訂角色 ${idx}`,
-          actions: [
-            { id: `${id}_idle`, label: '待機動畫 (Idle)', triggerDesc: '靜止循環', sheetKey: `${id}_idle`, fallbackSheet: null, fps: 8, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
-            { id: `${id}_run`, label: '移動／跑步 (Run)', triggerDesc: '移動循環', sheetKey: `${id}_run`, fallbackSheet: null, fps: 14, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
-            { id: `${id}_atk`, label: '攻擊動作 (Attack)', triggerDesc: '攻擊序列', sheetKey: `${id}_atk`, fallbackSheet: null, fps: 16, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
-          ],
-        });
-        StudioState.activeCharId = id;
-        StudioState.save();
-        renderGearStudio();
-      });
-      tabsEl.appendChild(addCharBtn);
+    // 1. Render Left Searchable & Categorized Roster List
+    renderRosterSidebar();
+
+    // 2. Render Top Combat Parameters Inspector for Active Character
+    const activeChar = StudioState.getActiveChar();
+    renderCombatParamsInspector(activeChar);
+
+    // 3. View Mode Toggle State & Tabular Action List
+    const isListMode = StudioState.viewMode !== 'grid';
+    container.classList.toggle('list-mode', isListMode);
+    container.classList.toggle('grid-mode', !isListMode);
+    document.getElementById('btnViewList')?.classList.toggle('active', isListMode);
+    document.getElementById('btnViewGrid')?.classList.toggle('active', !isListMode);
+    document.getElementById('actionTableHead')?.classList.toggle('hidden', !isListMode);
+
+    const listHeading = document.getElementById('actionListHeading');
+    if (listHeading) {
+      listHeading.textContent = `🎞️ ${cleanCharTitle(activeChar.name)} — 連續幀動畫清單（共 ${activeChar.actions.length} 組）`;
     }
 
-    // 2. Action Cards for Active Character
     container.innerHTML = '';
     studioPreviewItems.length = 0;
 
-    const activeChar = StudioState.getActiveChar();
     const isEnemyChar = !!activeChar.builtinEnemy;
-    const isBossChar = activeChar.id === 'enemy_donghua_boss';
+    const isBossChar = activeChar.role === 'boss';
+    const enemyCfg = activeChar.enemyKey ? ENEMY_CONFIGS[activeChar.enemyKey] : null;
+    const activeVariant = (enemyCfg && enemyCfg.colorVariants && enemyCfg.colorVariants[StudioState.previewVariants[activeChar.id] || 0]) || null;
 
-    for (const act of activeChar.actions) {
+    activeChar.actions.forEach((act, idx) => {
       const ownSheet = SpriteBank.sheets[act.sheetKey];
       const fallbackSheet = act.fallbackSheet ? SpriteBank.sheets[act.fallbackSheet] : null;
       const effectiveSheetKey = ownSheet ? act.sheetKey : (fallbackSheet ? act.fallbackSheet : null);
@@ -8005,47 +8954,85 @@
       const pState = StudioState.previewStates[act.id];
 
       const card = document.createElement('div');
-      card.className = `slot-card ${ownSheet ? 'loaded' : ''}`;
+      card.className = `slot-card ${ownSheet ? (ownSheet.custom ? 'loaded custom-loaded' : 'loaded') : ''}`;
       card.id = `slot_card_${act.id}`;
 
-      const statusClass = ownSheet ? 'ready' : (fallbackSheet ? 'fallback' : 'empty');
-      const statusText = ownSheet
-        ? `${ownSheet.custom ? '✨自訂 ' : '已載入 '}${ownSheet.cols}×${ownSheet.rows} (${ownSheet.frameCount}幀)`
-        : (fallbackSheet ? '沿用備用表（可獨立上傳）' : '尚未上傳');
+      // Column 1: Action Index + Name + Trigger + Keybind
+      const colAct = document.createElement('div');
+      colAct.className = 'row-col-act';
 
       const head = document.createElement('div');
       head.className = 'slot-head';
-      head.innerHTML = `<span>${act.label}</span><span class="slot-status ${statusClass}">${statusText}</span>`;
+      head.innerHTML = `<span class="act-idx-badge">#${String(idx + 1).padStart(2, '0')}</span><span>${act.label}</span>`;
 
       const sub = document.createElement('div');
       sub.className = 'slot-sub';
       sub.textContent = act.triggerDesc || '';
+
+      const trigLine = document.createElement('div');
+      trigLine.className = 'act-trigger-line';
+      if (act.rebindable) {
+        const isListening = StudioState.rebindingActionId === act.id;
+        const keyBtn = document.createElement('button');
+        keyBtn.className = `keybind-btn ${isListening ? 'listening' : ''}`;
+        keyBtn.textContent = isListening ? '請按下新按鍵...' : `⌨ 按鍵：${formatKeyCode(act.key)}`;
+        keyBtn.title = '點擊後按下鍵盤任意鍵即可修改此動作按鍵';
+        keyBtn.addEventListener('click', () => {
+          StudioState.rebindingActionId = isListening ? null : act.id;
+          renderGearStudio();
+        });
+        trigLine.appendChild(keyBtn);
+      } else {
+        const tag = document.createElement('span');
+        tag.style.cssText = 'font-size:10.5px;color:#7dd3fc;opacity:0.9;';
+        const lightKey = formatKeyCode(StudioState.getAction('lightAttack')?.key);
+        const heavyKey = formatKeyCode(StudioState.getAction('heavyAttack')?.key);
+        const dashKey = formatKeyCode(StudioState.getAction('dash')?.key);
+        const spKey = formatKeyCode(StudioState.getAction('special')?.key);
+        tag.textContent = (act.id === 'dashLightAttack' || act.id === 'rp_dashLightAttack')
+          ? `觸發：跑步 + ${lightKey}`
+          : ((act.id === 'dashAttack' || act.id === 'rp_dashAttack')
+            ? `觸發：跑步 + ${heavyKey}`
+            : (act.id === 'rp_attack'
+              ? `觸發：${heavyKey}（升龍拳）`
+              : (act.id === 'rp_lightAttack'
+                ? `觸發：${lightKey}（輕攻）`
+                : (act.id === 'rp_dash'
+                  ? `觸發：${dashKey}（閃身步）`
+                  : (act.id === 'rp_special'
+                    ? `觸發：${spKey}（必殺技）`
+                    : (act.id === 'tornadoKick' || act.id === 'rp_tornadoKick'
+                      ? `觸發：↑ + ${heavyKey}`
+                      : (act.id === 'victory' || act.id === 'rp_victory'
+                        ? '觸發：勝利結算'
+                        : (act.id === 'run' || act.id === 'rp_run'
+                          ? '觸發：連按 AA / DD'
+                          : (act.id === 'walk' || act.id === 'rp_walk' ? '觸發：WASD / 方向鍵' : '觸發：AI / 狀態自動')))))))));
+        trigLine.appendChild(tag);
+      }
+      colAct.appendChild(head);
+      colAct.appendChild(sub);
+      colAct.appendChild(trigLine);
+
+      // Column 2: Live Checkerboard Preview + Frame Controls
+      const colPrev = document.createElement('div');
+      colPrev.className = 'row-col-prev';
 
       const prevWrap = document.createElement('div');
       prevWrap.className = 'slot-preview';
       const pCanvas = document.createElement('canvas');
       pCanvas.width = 300;
       pCanvas.height = 264;
+      prevWrap.appendChild(pCanvas);
+
+      const prevSide = document.createElement('div');
+      prevSide.className = 'prev-side-ctrl';
       const frameBadge = document.createElement('span');
       frameBadge.className = 'frame-badge';
-      frameBadge.textContent = effectiveSheet ? `1 / ${effectiveSheet.frameCount}` : '0 / 0';
-      prevWrap.appendChild(pCanvas);
-      prevWrap.appendChild(frameBadge);
-
-      studioPreviewItems.push({
-        act,
-        sheetKey: effectiveSheetKey,
-        canvas: pCanvas,
-        badge: frameBadge,
-        pState,
-      });
-
-      const animCtrl = document.createElement('div');
-      animCtrl.className = 'anim-controls';
+      frameBadge.textContent = effectiveSheet ? `F 1/${effectiveSheet.frameCount}` : '0 / 0';
 
       const stepGroup = document.createElement('div');
-      stepGroup.style.display = 'flex';
-      stepGroup.style.gap = '4px';
+      stepGroup.style.cssText = 'display:flex;gap:3px;';
 
       const btnPlay = document.createElement('button');
       btnPlay.className = 'mini-btn';
@@ -8081,54 +9068,66 @@
       stepGroup.appendChild(btnPlay);
       stepGroup.appendChild(btnPrev);
       stepGroup.appendChild(btnNext);
-      animCtrl.appendChild(stepGroup);
+      prevSide.appendChild(frameBadge);
+      prevSide.appendChild(stepGroup);
 
-      if (act.rebindable) {
-        const isListening = StudioState.rebindingActionId === act.id;
-        const keyBtn = document.createElement('button');
-        keyBtn.className = `keybind-btn ${isListening ? 'listening' : ''}`;
-        keyBtn.textContent = isListening ? '請按下新按鍵...' : `按鍵：${formatKeyCode(act.key)}`;
-        keyBtn.title = '點擊後按下鍵盤任意鍵即可修改此動作按鍵';
-        keyBtn.addEventListener('click', () => {
-          StudioState.rebindingActionId = isListening ? null : act.id;
-          renderGearStudio();
-        });
-        animCtrl.appendChild(keyBtn);
-      } else {
-        const tag = document.createElement('span');
-        tag.style.fontSize = '11px';
-        tag.style.opacity = '0.85';
-        const lightKey = formatKeyCode(StudioState.getAction('lightAttack')?.key);
-        const heavyKey = formatKeyCode(StudioState.getAction('heavyAttack')?.key);
-        const dashKey = formatKeyCode(StudioState.getAction('dash')?.key);
-        const spKey = formatKeyCode(StudioState.getAction('special')?.key);
-        tag.textContent = (act.id === 'dashLightAttack' || act.id === 'rp_dashLightAttack')
-          ? `觸發：跑步 + ${lightKey}（衝刺輕攻）`
-          : ((act.id === 'dashAttack' || act.id === 'rp_dashAttack')
-            ? `觸發：跑步 + ${heavyKey}（衝刺重攻）`
-            : (act.id === 'rp_attack'
-              ? `觸發：${heavyKey}（重攻擊・升龍拳）`
-              : (act.id === 'rp_lightAttack'
-                ? `觸發：${lightKey}（輕攻擊）`
-                : (act.id === 'rp_dash'
-                  ? `觸發：${dashKey}（閃身步）`
-                  : (act.id === 'rp_special'
-                    ? `觸發：${spKey}（必殺技）`
-                    : (act.id === 'tornadoKick' || act.id === 'rp_tornadoKick'
-                      ? `觸發：↑ + ${heavyKey}`
-                      : (act.id === 'victory' || act.id === 'rp_victory'
-                        ? '觸發：戰鬥勝利結算'
-                        : (act.id === 'run' || act.id === 'rp_run'
-                          ? '觸發：連按 AA / DD'
-                          : (act.id === 'walk' || act.id === 'rp_walk' ? '觸發：WASD' : '自動觸發')))))))));
-        animCtrl.appendChild(tag);
-      }
+      colPrev.appendChild(prevWrap);
+      colPrev.appendChild(prevSide);
 
-      // Live FPS Slider (4 ~ 60 FPS — ideal for 20~30 frame silky animations!)
-      const fpsRow = document.createElement('div');
-      fpsRow.className = 'fps-row';
+      studioPreviewItems.push({
+        act,
+        sheetKey: effectiveSheetKey,
+        canvas: pCanvas,
+        badge: frameBadge,
+        pState,
+        variant: activeVariant,
+      });
+
+      // Column 3: Grid Spec (Cols × Rows + FrameCount)
+      const colGrid = document.createElement('div');
+      colGrid.className = 'row-col-grid';
+      const gridWrapTop = document.createElement('div');
+      gridWrapTop.className = 'grid-inputs';
+      const inCols = document.createElement('input');
+      inCols.type = 'number';
+      inCols.min = '1';
+      inCols.max = '32';
+      inCols.value = String(ownSheet ? ownSheet.cols : (effectiveSheet ? effectiveSheet.cols : (act.cols || 5)));
+      inCols.title = '欄數 (Cols)';
+      const inRows = document.createElement('input');
+      inRows.type = 'number';
+      inRows.min = '1';
+      inRows.max = '24';
+      inRows.value = String(ownSheet ? ownSheet.rows : (effectiveSheet ? effectiveSheet.rows : (act.rows || 2)));
+      inRows.title = '列數 (Rows)';
+
+      const gridWrapBot = document.createElement('div');
+      gridWrapBot.className = 'grid-inputs';
+      const inFrames = document.createElement('input');
+      inFrames.type = 'number';
+      inFrames.min = '1';
+      inFrames.max = '512';
+      const curFc = ownSheet ? ownSheet.frameCount : (effectiveSheet ? effectiveSheet.frameCount : (act.frameCount || (act.cols || 5) * (act.rows || 2)));
+      inFrames.value = String(curFc);
+      inFrames.title = '有效總幀數（支援 10 ~ 60+ 幀連續動畫）';
+      inFrames.style.width = '46px';
+
+      gridWrapTop.appendChild(document.createTextNode('欄'));
+      gridWrapTop.appendChild(inCols);
+      gridWrapTop.appendChild(document.createTextNode('× 列'));
+      gridWrapTop.appendChild(inRows);
+      gridWrapBot.appendChild(document.createTextNode('總幀數'));
+      gridWrapBot.appendChild(inFrames);
+      gridWrapBot.appendChild(document.createTextNode('幀'));
+      colGrid.appendChild(gridWrapTop);
+      colGrid.appendChild(gridWrapBot);
+
+      // Column 4: Playback Speed (FPS)
+      const colFps = document.createElement('div');
+      colFps.className = 'row-col-fps';
       const fpsLabel = document.createElement('span');
-      fpsLabel.textContent = `速度 ${act.fps} FPS`;
+      fpsLabel.style.cssText = 'font-family:monospace;font-weight:700;color:#f8fafc;';
+      fpsLabel.textContent = `${act.fps} FPS`;
       const fpsRange = document.createElement('input');
       fpsRange.type = 'range';
       fpsRange.min = '4';
@@ -8137,41 +9136,23 @@
       fpsRange.value = String(act.fps);
       fpsRange.addEventListener('input', () => {
         act.fps = parseFloat(fpsRange.value);
-        fpsLabel.textContent = `速度 ${act.fps} FPS`;
+        fpsLabel.textContent = `${act.fps} FPS`;
         StudioState.save();
       });
-      fpsRow.appendChild(fpsLabel);
-      fpsRow.appendChild(fpsRange);
+      colFps.appendChild(fpsLabel);
+      colFps.appendChild(fpsRange);
 
-      // Unlimited Frame Grid (Cols × Rows + Exact FrameCount, 10 ~ 120+ frames!)
-      const actionsRow = document.createElement('div');
-      actionsRow.className = 'slot-actions';
-      actionsRow.style.flexWrap = 'wrap';
-      actionsRow.style.rowGap = '6px';
+      // Column 5: Status Badge + Upload / Cloud / Export / Revert Buttons
+      const colOps = document.createElement('div');
+      colOps.className = 'row-col-ops';
 
-      const gridWrap = document.createElement('div');
-      gridWrap.className = 'grid-inputs';
-      gridWrap.innerHTML = '<span>格</span>';
-      const inCols = document.createElement('input');
-      inCols.type = 'number';
-      inCols.min = '1';
-      inCols.max = '32';
-      inCols.value = String(ownSheet ? ownSheet.cols : (act.cols || 5));
-      inCols.title = '欄數 (Cols，如 5 或 6)';
-      const inRows = document.createElement('input');
-      inRows.type = 'number';
-      inRows.min = '1';
-      inRows.max = '24';
-      inRows.value = String(ownSheet ? ownSheet.rows : (act.rows || 2));
-      inRows.title = '列數 (Rows，如 2=10幀、4=20幀、6=30幀)';
-      const inFrames = document.createElement('input');
-      inFrames.type = 'number';
-      inFrames.min = '1';
-      inFrames.max = '512';
-      const curFc = ownSheet ? ownSheet.frameCount : (act.frameCount || (act.cols || 5) * (act.rows || 2));
-      inFrames.value = String(curFc);
-      inFrames.title = '有效總幀數（支援 10 / 20 / 30 / 60+ 幀連續動畫！）';
-      inFrames.style.width = '40px';
+      const statusClass = ownSheet ? 'ready' : (fallbackSheet ? 'fallback' : 'empty');
+      const statusText = ownSheet
+        ? `${ownSheet.custom ? '✨自訂 ' : '已載入 '}${ownSheet.cols}×${ownSheet.rows} (${ownSheet.frameCount}幀)`
+        : (fallbackSheet ? '沿用備用表（可獨立上傳）' : '尚未上傳');
+      const statusBadge = document.createElement('span');
+      statusBadge.className = `slot-status ${statusClass}`;
+      statusBadge.textContent = statusText;
 
       const syncGridLive = (autoMatchTotal = false) => {
         const cVal = Math.max(1, Math.min(32, parseInt(inCols.value, 10) || 5));
@@ -8192,26 +9173,16 @@
           sh.cellH = sh.img.height / rVal;
           sh.frameCount = fVal;
           SpriteBank.tintedCache = {};
-          const statusEl = head.querySelector('.slot-status');
-          if (statusEl) statusEl.textContent = `${sh.custom ? '✨自訂 ' : '已載入 '}${cVal}×${rVal} (${fVal}幀)`;
+          statusBadge.textContent = `${sh.custom ? '✨自訂 ' : '已載入 '}${cVal}×${rVal} (${fVal}幀)`;
         }
         StudioState.save();
       };
-
       inCols.addEventListener('change', () => syncGridLive(true));
       inRows.addEventListener('change', () => syncGridLive(true));
       inFrames.addEventListener('change', () => syncGridLive(false));
 
-      gridWrap.appendChild(inCols);
-      gridWrap.appendChild(document.createTextNode('×'));
-      gridWrap.appendChild(inRows);
-      gridWrap.appendChild(document.createTextNode(' 幀'));
-      gridWrap.appendChild(inFrames);
-
-      const rightBtns = document.createElement('div');
-      rightBtns.style.display = 'flex';
-      rightBtns.style.flexWrap = 'wrap';
-      rightBtns.style.gap = '4px';
+      const opsBtns = document.createElement('div');
+      opsBtns.className = 'ops-btn-group';
 
       const triggerDownload = (href, filename) => {
         const a = document.createElement('a');
@@ -8221,83 +9192,12 @@
         a.click();
         a.remove();
       };
-
       const safeBase = `${activeChar.id}_${act.id}`;
-
-      const btnCloudUp = document.createElement('button');
-      btnCloudUp.className = 'mini-btn';
-      btnCloudUp.style.borderColor = 'rgba(56,189,248,0.65)';
-      btnCloudUp.style.color = '#38bdf8';
-      btnCloudUp.textContent = '☁️ 雲端覆寫';
-      btnCloudUp.title = '直接將此動作目前的精靈表與幀數設定覆寫上傳至 GitHub 雲端 (snell0804/SchoolFight-TV)';
-      btnCloudUp.disabled = !effectiveSheet;
-      btnCloudUp.addEventListener('click', async () => {
-        const statusMsg = document.getElementById('cloudSyncStatusMsg');
-        btnCloudUp.disabled = true;
-        btnCloudUp.textContent = '⏳ 上傳中...';
-        try {
-          const targetKey = ownSheet ? act.sheetKey : effectiveSheetKey;
-          const path = await CloudSyncManager.uploadSheetToCloud(targetKey, act.label);
-          btnCloudUp.textContent = '✅ 已覆寫雲端';
-          if (statusMsg) {
-            statusMsg.style.color = '#4ade80';
-            statusMsg.textContent = `✅ 已成功覆寫雲端 ${path} (${effectiveSheet.frameCount}幀)！`;
-          }
-          setTimeout(() => { btnCloudUp.textContent = '☁️ 雲端覆寫'; btnCloudUp.disabled = false; }, 2400);
-        } catch (err) {
-          btnCloudUp.textContent = '❌ 失敗';
-          if (statusMsg) {
-            statusMsg.style.color = '#f87171';
-            statusMsg.textContent = `❌ ${err.message}`;
-          }
-          const inpTok = document.getElementById('inpCloudToken');
-          if (inpTok && !CloudSyncManager.token) inpTok.focus();
-          setTimeout(() => { btnCloudUp.textContent = '☁️ 雲端覆寫'; btnCloudUp.disabled = false; }, 2400);
-        }
-      });
-
-      const btnExpPng = document.createElement('button');
-      btnExpPng.className = 'mini-btn';
-      btnExpPng.textContent = '💾 匯出PNG';
-      btnExpPng.title = '匯出此動作的透明精靈表 PNG 檔';
-      btnExpPng.disabled = !effectiveSheet;
-      btnExpPng.addEventListener('click', () => {
-        if (!effectiveSheet) return;
-        const url = SpriteBank.exportSheetToDataUrl(effectiveSheet);
-        if (url) triggerDownload(url, `${safeBase}_${effectiveSheet.cols}x${effectiveSheet.rows}_${effectiveSheet.frameCount}f.png`);
-      });
-
-      const btnExpJson = document.createElement('button');
-      btnExpJson.className = 'mini-btn';
-      btnExpJson.textContent = '📦 JSON';
-      btnExpJson.title = '匯出完整動作檔（含精靈圖、欄列數、總幀數、FPS）';
-      btnExpJson.disabled = !effectiveSheet;
-      btnExpJson.addEventListener('click', () => {
-        if (!effectiveSheet) return;
-        const imgData = SpriteBank.exportSheetToDataUrl(effectiveSheet);
-        const payload = {
-          format: 'schoolfight_anim_v1',
-          characterId: activeChar.id,
-          actionId: act.id,
-          label: act.label,
-          cols: effectiveSheet.cols,
-          rows: effectiveSheet.rows,
-          frameCount: effectiveSheet.frameCount,
-          fps: act.fps,
-          anchorX: effectiveSheet.anchorX,
-          anchorY: effectiveSheet.anchorY,
-          imageDataUrl: imgData,
-        };
-        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-        const blobUrl = URL.createObjectURL(blob);
-        triggerDownload(blobUrl, `${safeBase}.anim.json`);
-        setTimeout(() => URL.revokeObjectURL(blobUrl), 2500);
-      });
 
       const uploadLabel = document.createElement('label');
       uploadLabel.className = 'upload-label';
       uploadLabel.textContent = '📤 上傳PNG';
-      uploadLabel.title = '上傳 PNG / WebP / JPG 精靈表（自動智能辨識 10~60+ 幀、去背、防切割縮放並永久保存本機；亦可直接覆寫雲端！）';
+      uploadLabel.title = '上傳 PNG / WebP / JPG 精靈表（自動智能辨識 10~60+ 幀、去背、防切割縮放並永久保存本機）';
       const fileInput = document.createElement('input');
       fileInput.type = 'file';
       fileInput.accept = 'image/png,image/webp,image/jpeg,.json,application/json';
@@ -8366,7 +9266,6 @@
               if (act.sheetKey === 'idle' || act.sheetKey === 'rp_idle') SpriteBank.buildPortrait();
               StudioState.save();
 
-              // Persist clean processed PNG to browser IndexedDB so refresh never loses it!
               const cleanDataUrl = SpriteBank.exportSheetToDataUrl(processed);
               await CustomSpriteDB.putSheet(act.sheetKey, {
                 dataUrl: cleanDataUrl,
@@ -8404,10 +9303,96 @@
       });
       uploadLabel.appendChild(fileInput);
 
-      rightBtns.appendChild(uploadLabel);
-      rightBtns.appendChild(btnCloudUp);
-      rightBtns.appendChild(btnExpPng);
-      rightBtns.appendChild(btnExpJson);
+      const btnCloudUp = document.createElement('button');
+      btnCloudUp.className = 'mini-btn';
+      btnCloudUp.style.borderColor = 'rgba(56,189,248,0.65)';
+      btnCloudUp.style.color = '#38bdf8';
+      btnCloudUp.textContent = '☁️ 雲端覆寫';
+      btnCloudUp.title = '直接將此動作目前的精靈表與幀數設定覆寫上傳至 GitHub 雲端 (snell0804/SchoolFight-TV)';
+      btnCloudUp.disabled = !effectiveSheet;
+      btnCloudUp.addEventListener('click', async () => {
+        const statusMsg = document.getElementById('cloudSyncStatusMsg');
+        btnCloudUp.disabled = true;
+        btnCloudUp.textContent = '⏳ 上傳中...';
+        try {
+          const targetKey = ownSheet ? act.sheetKey : effectiveSheetKey;
+          const path = await CloudSyncManager.uploadSheetToCloud(targetKey, act.label);
+          btnCloudUp.textContent = '✅ 已覆寫';
+          if (statusMsg) {
+            statusMsg.style.color = '#4ade80';
+            statusMsg.textContent = `✅ 已成功覆寫雲端 ${path} (${effectiveSheet.frameCount}幀)！`;
+          }
+          setTimeout(() => { btnCloudUp.textContent = '☁️ 雲端覆寫'; btnCloudUp.disabled = false; }, 2400);
+        } catch (err) {
+          btnCloudUp.textContent = '❌ 失敗';
+          if (statusMsg) {
+            statusMsg.style.color = '#f87171';
+            statusMsg.textContent = `❌ ${err.message}`;
+          }
+          const inpTok = document.getElementById('inpCloudToken');
+          if (inpTok && !CloudSyncManager.token) inpTok.focus();
+          setTimeout(() => { btnCloudUp.textContent = '☁️ 雲端覆寫'; btnCloudUp.disabled = false; }, 2400);
+        }
+      });
+
+      const btnExpPng = document.createElement('button');
+      btnExpPng.className = 'mini-btn';
+      btnExpPng.textContent = '💾 PNG';
+      btnExpPng.title = '匯出此動作的透明精靈表 PNG 檔';
+      btnExpPng.disabled = !effectiveSheet;
+      btnExpPng.addEventListener('click', () => {
+        if (!effectiveSheet) return;
+        const url = SpriteBank.exportSheetToDataUrl(effectiveSheet);
+        if (url) triggerDownload(url, `${safeBase}_${effectiveSheet.cols}x${effectiveSheet.rows}_${effectiveSheet.frameCount}f.png`);
+      });
+
+      const btnExpJson = document.createElement('button');
+      btnExpJson.className = 'mini-btn';
+      btnExpJson.textContent = '📦 JSON';
+      btnExpJson.title = '匯出完整動作檔（含精靈圖、欄列數、總幀數、FPS）';
+      btnExpJson.disabled = !effectiveSheet;
+      btnExpJson.addEventListener('click', () => {
+        if (!effectiveSheet) return;
+        const imgData = SpriteBank.exportSheetToDataUrl(effectiveSheet);
+        const payload = {
+          format: 'schoolfight_anim_v1',
+          characterId: activeChar.id,
+          actionId: act.id,
+          label: act.label,
+          cols: effectiveSheet.cols,
+          rows: effectiveSheet.rows,
+          frameCount: effectiveSheet.frameCount,
+          fps: act.fps,
+          anchorX: effectiveSheet.anchorX,
+          anchorY: effectiveSheet.anchorY,
+          imageDataUrl: imgData,
+        };
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+        const blobUrl = URL.createObjectURL(blob);
+        triggerDownload(blobUrl, `${safeBase}.anim.json`);
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 2500);
+      });
+
+      opsBtns.appendChild(uploadLabel);
+      opsBtns.appendChild(btnCloudUp);
+      opsBtns.appendChild(btnExpPng);
+      opsBtns.appendChild(btnExpJson);
+
+      if (ownSheet && ownSheet.custom && !act.custom) {
+        const revBtn = document.createElement('button');
+        revBtn.className = 'mini-btn';
+        revBtn.textContent = '↺';
+        revBtn.title = '移除本機自訂圖並還原此動作內建預設精靈表';
+        revBtn.addEventListener('click', async () => {
+          const restored = await SpriteBank.reloadBuiltinSheet(act.sheetKey);
+          act.cols = restored ? restored.cols : 5;
+          act.rows = restored ? restored.rows : 2;
+          act.frameCount = restored ? restored.frameCount : 10;
+          StudioState.save();
+          renderGearStudio();
+        });
+        opsBtns.appendChild(revBtn);
+      }
 
       if (act.custom) {
         const delBtn = document.createElement('button');
@@ -8416,28 +9401,84 @@
         delBtn.title = '刪除此自訂動作';
         delBtn.addEventListener('click', () => {
           activeChar.actions = activeChar.actions.filter((a) => a.id !== act.id);
+          CustomSpriteDB.deleteSheet(act.sheetKey).catch(() => {});
           StudioState.save();
           renderGearStudio();
         });
-        rightBtns.appendChild(delBtn);
+        opsBtns.appendChild(delBtn);
       }
 
-      actionsRow.appendChild(gridWrap);
-      actionsRow.appendChild(rightBtns);
+      colOps.appendChild(statusBadge);
+      colOps.appendChild(opsBtns);
 
-      card.appendChild(head);
-      card.appendChild(sub);
-      card.appendChild(prevWrap);
-      card.appendChild(animCtrl);
-      card.appendChild(fpsRow);
-      card.appendChild(actionsRow);
+      card.appendChild(colAct);
+      card.appendChild(colPrev);
+      card.appendChild(colGrid);
+      card.appendChild(colFps);
+      card.appendChild(colOps);
       container.appendChild(card);
-    }
+    });
   }
 
   function animateGearStudioPreviews(dt) {
     const studio = document.getElementById('gearStudio');
     if (!studio || !studio.classList.contains('open')) return;
+
+    // 1. Live Scale & Super-Armor Comparison Stage in Combat Params Inspector
+    if (studioScalePreviewState.canvas && studioScalePreviewState.charId) {
+      const sCanvas = studioScalePreviewState.canvas;
+      const sctx = sCanvas.getContext('2d');
+      sctx.clearRect(0, 0, sCanvas.width, sCanvas.height);
+
+      const ch = StudioState.getActiveChar();
+      const cp = StudioState.getCombatParams(ch.id);
+      const groundY = 152;
+      const ref1xTopY = groundY - Math.round(167 * 0.44);
+
+      // Ground floor line + 1.0x Hero Reference Height dashed line
+      sctx.strokeStyle = 'rgba(148, 163, 184, 0.35)';
+      sctx.lineWidth = 1.5;
+      sctx.beginPath();
+      sctx.moveTo(10, groundY + 1);
+      sctx.lineTo(sCanvas.width - 10, groundY + 1);
+      sctx.stroke();
+
+      sctx.save();
+      sctx.setLineDash([4, 4]);
+      sctx.strokeStyle = 'rgba(56, 189, 248, 0.55)';
+      sctx.beginPath();
+      sctx.moveTo(8, ref1xTopY);
+      sctx.lineTo(sCanvas.width - 8, ref1xTopY);
+      sctx.stroke();
+      sctx.fillStyle = 'rgba(125, 211, 252, 0.85)';
+      sctx.font = '700 13px monospace';
+      sctx.fillText('1.0x', 10, ref1xTopY - 4);
+      sctx.restore();
+
+      const sk = studioScalePreviewState.sheetKey;
+      const sh = sk ? SpriteBank.sheets[sk] : null;
+      if (sh) {
+        studioScalePreviewState.frame = (studioScalePreviewState.frame + dt * 10) % sh.frameCount;
+        const fIdx = Math.floor(studioScalePreviewState.frame) % sh.frameCount;
+        const visScale = 0.44 * Math.min(2.05, cp.scale);
+
+        if (cp.superArmor !== 'none') {
+          sctx.save();
+          sctx.strokeStyle = cp.superArmor === 'hits' ? 'rgba(56, 189, 248, 0.9)' : 'rgba(250, 204, 21, 0.9)';
+          sctx.lineWidth = 3;
+          sctx.beginPath();
+          sctx.ellipse(108, groundY, 34 * Math.min(1.6, cp.scale), 9 * Math.min(1.5, cp.scale), 0, 0, Math.PI * 2);
+          sctx.stroke();
+          sctx.restore();
+        }
+
+        const enemyCfg = ch.enemyKey ? ENEMY_CONFIGS[ch.enemyKey] : null;
+        const activeVar = (enemyCfg && enemyCfg.colorVariants && enemyCfg.colorVariants[StudioState.previewVariants[ch.id] || 0]) || null;
+        SpriteBank.drawFrame(sctx, sk, fIdx, 108, groundY, 1, visScale, false, activeVar);
+      }
+    }
+
+    // 2. Action List Row Previews
     for (const item of studioPreviewItems) {
       const pctx = item.canvas.getContext('2d');
       pctx.clearRect(0, 0, 300, 264);
@@ -8447,13 +9488,13 @@
           item.pState.frame = (item.pState.frame + dt * item.act.fps) % sheet.frameCount;
         }
         const fIdx = Math.floor(item.pState.frame) % sheet.frameCount;
-        SpriteBank.drawFrame(pctx, item.sheetKey, fIdx, sheet.anchorX, sheet.anchorY, 1, 1.0, false);
-        item.badge.textContent = `Frame ${fIdx + 1} / ${sheet.frameCount}`;
+        SpriteBank.drawFrame(pctx, item.sheetKey, fIdx, sheet.anchorX, sheet.anchorY, 1, 1.0, false, item.variant || null);
+        item.badge.textContent = `F ${fIdx + 1}/${sheet.frameCount}`;
       } else {
         pctx.fillStyle = '#64748b';
         pctx.font = '600 18px "Noto Sans TC", sans-serif';
         pctx.textAlign = 'center';
-        pctx.fillText('請點擊下方「上傳精靈表」', 150, 136);
+        pctx.fillText('尚未上傳精靈表', 150, 136);
         item.badge.textContent = '0 / 0';
       }
     }
