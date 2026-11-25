@@ -272,7 +272,7 @@
   // ==========================================================================
   // 2. CHARACTER ACTION STUDIO CONFIG & MULTI-FRAME SPRITE BANK (300x264)
   // ==========================================================================
-  const STORAGE_KEY = 'schoolfight_studio_v12';
+  const STORAGE_KEY = 'schoolfight_studio_v13';
 
   const HERO_ROSTER = [
     {
@@ -321,7 +321,7 @@
       name: '超級帆',
       hudName: '超級帆',
       badge: '🦊 烈焰拳鬥士',
-      subtitle: '五連閃電拳 · 烈焰流星錘 · ↑+重攻 烈焰龍捲腳 · 百拳連擊',
+      subtitle: '五連閃電拳 · 升龍拳(浮空) · ↑+重攻 烈焰龍捲腳 · 百拳連擊',
       accent: '#f97316',
       accentLight: '#fde047',
       accentDark: '#7c2d12',
@@ -332,8 +332,8 @@
       specialLabel: '百拳連擊',
       specialShout: '赤焰百拳連擊!!',
       specialSub: '100-FIST FLAME RUSH!!',
-      heavyShout: '烈焰流星錘!!',
-      heavySub: 'METEOR FLAME SLAM!!',
+      heavyShout: '升龍拳!!',
+      heavySub: 'SHORYUKEN!!',
       dashLightShout: '閃電踢球!!',
       dashLightSub: 'THUNDER SHOOT!!',
       dashHeavyShout: '赤焰衝刺撞擊!!',
@@ -341,7 +341,7 @@
       tornadoShout: '烈焰龍捲旋風腳!!',
       tornadoSub: 'BLAZING TORNADO KICK!!',
       sparkColor: '#facc15',
-      heavySparkColor: '#fb923c',
+      heavySparkColor: '#fde047',
       sheets: {
         idle: 'rp_idle',
         walk: 'rp_walk',
@@ -421,6 +421,15 @@
     { key: 'enemy_donghua_boss_attack', file: 'assets/enemy_donghua_boss_attack_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 242 },
     { key: 'enemy_donghua_boss_hurt', file: 'assets/enemy_donghua_boss_hurt_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 242 },
     { key: 'enemy_donghua_boss_ko', file: 'assets/enemy_donghua_boss_ko_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 242 },
+    // 斑馬怪 (Zebra Monster) & 袋鼠怪 (Kangaroo Monster) — built from the uploaded design sheets
+    { key: 'enemy_zebra_rush_move', file: 'assets/enemy_zebra_rush_move_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
+    { key: 'enemy_zebra_rush_attack', file: 'assets/enemy_zebra_rush_attack_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
+    { key: 'enemy_zebra_rush_hurt', file: 'assets/enemy_zebra_rush_hurt_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
+    { key: 'enemy_zebra_rush_ko', file: 'assets/enemy_zebra_rush_ko_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
+    { key: 'enemy_joey_kangaroo_move', file: 'assets/enemy_joey_kangaroo_move_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
+    { key: 'enemy_joey_kangaroo_attack', file: 'assets/enemy_joey_kangaroo_attack_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
+    { key: 'enemy_joey_kangaroo_hurt', file: 'assets/enemy_joey_kangaroo_hurt_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
+    { key: 'enemy_joey_kangaroo_ko', file: 'assets/enemy_joey_kangaroo_ko_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
     // Wave 2 Monsters: Full 10-Frame Move + Attack + Hurt + KO Sheets
     { key: 'enemy_pengking_move', file: 'assets/enemy_pengking_move_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
     { key: 'enemy_pengking_attack', file: 'assets/enemy_pengking_attack_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
@@ -488,7 +497,7 @@
       { id: 'rp_run', label: '奔跑動畫 (Run)', triggerDesc: '連按兩次 AA / DD / ←← / →→', sheetKey: 'rp_run', fallbackSheet: null, fps: 17, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
       { id: 'rp_dash', label: '瞬間衝刺・蒼藍音爆閃身步 (Dash)', triggerDesc: '10 幀極速蒼藍音爆破風瞬間突進（Shift 觸發）', sheetKey: 'rp_dash', fallbackSheet: null, fps: 24, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
       { id: 'rp_lightAttack', label: '輕攻擊・五連閃電連擊 (Light)', triggerDesc: '金色閃電高速連拳（共用輕攻鍵）', sheetKey: 'rp_lightAttack', fallbackSheet: null, fps: 18, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
-      { id: 'rp_attack', label: '重攻擊・烈焰流星錘 (Heavy)', triggerDesc: '獨立 10 幀！雙拳躍起高舉火焰重砸裂地衝擊（共用重攻鍵）', sheetKey: 'rp_attack', fallbackSheet: null, fps: 14, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
+      { id: 'rp_attack', label: '重攻擊・升龍拳 (Heavy)', triggerDesc: '獨立 10 幀！發招大喊「升龍拳」躍起黃金能量上鉤拳，把敵人高高打飛至空中（可接空中追打）', sheetKey: 'rp_attack', fallbackSheet: null, fps: 16, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
       { id: 'rp_dashLightAttack', label: '衝刺輕攻擊・閃電踢球 (Dash Light)', triggerDesc: '獨立 10 幀！跑步中 按 輕攻鍵 發動雷電抽射足球', sheetKey: 'rp_dashLightAttack', fallbackSheet: null, fps: 17, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
       { id: 'rp_dashAttack', label: '衝刺重攻擊・赤焰衝刺撞擊 (Dash Heavy)', triggerDesc: '獨立 10 幀！跑步中 按 重攻鍵 發動赤焰高速撞擊', sheetKey: 'rp_dashAttack', fallbackSheet: null, fps: 18, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
       { id: 'rp_tornadoKick', label: '特殊招式・烈焰龍捲旋風腳 (Tornado Kick)', triggerDesc: '按住 ↑ 再按 重攻擊（W+Num5 / 手把 ↑+重攻）發動！烈焰旋風打浮空可空中追打', sheetKey: 'rp_tornadoKick', fallbackSheet: 'rp_dashAttack', fps: 15, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
@@ -520,6 +529,8 @@
       { id: 'kuromi', name: '😈 呆呆伶（主角 1）', actions: createDefaultHeroActions() },
       { id: 'redpanda', name: '🦊 超級帆（主角 2）', actions: createDefaultRedPandaActions() },
       createEnemyCharProfile('enemy_donghua_boss', '🥋 冬花武聖大宗師（冬花 FINAL BOSS・2倍巨型）', 'enemy_donghua_boss', '「武」字黃金正拳＋太極震地氣勁', '三連黃金氣功波＋流星飛躍碎地斬', true),
+      createEnemyCharProfile('enemy_zebra_rush', '🦓 暴衝斑馬怪（設定稿・5色變色）', 'enemy_zebra_rush', '轉身後腿雙蹄反踢（近身震退）', '蓄力蹬蹄破風頭槌猛衝（5色：墨白/灰/棕/白金/藍）', true),
+      createEnemyCharProfile('enemy_joey_kangaroo', '🦘 育兒袋鼠怪（設定稿・小袋鼠回力球・5色）', 'enemy_joey_kangaroo', '衝天翻滾墜地重踩震波 (AOE)', '投擲育兒袋小袋鼠回力球（飛出再折返・5色變色）', true),
       createEnemyCharProfile('enemy_kangaroo', '🥊 拳擊袋鼠（彈跳拳擊怪）', 'enemy_kangaroo', '極速三連刺拳連擊', '彈簧飛躍重勾拳衝刺', true),
       createEnemyCharProfile('enemy_zebra', '🛹 滑板斑馬（龐克滑板怪）', 'enemy_zebra', '霓虹滑板極速衝刺斬', '巨型粉紅泡泡糖波浪炸彈', true),
       createEnemyCharProfile('enemy_koala', '🎧 電競無尾熊（賽博DJ怪）', 'enemy_koala', '霓虹耳機重低音震盪環 (AOE)', '全息電玩青藍衝擊波', true),
@@ -579,19 +590,24 @@
 
     save() {
       try {
-        const data = {
-          heroOverrides: this.getHero().actions.map((a) => ({
+        const allOverrides = {};
+        for (const ch of this.characters) {
+          allOverrides[ch.id] = ch.actions.map((a) => ({
             id: a.id,
             label: a.label,
             fps: a.fps,
             key: a.key,
             cols: a.cols,
             rows: a.rows,
+            frameCount: a.frameCount || (a.cols * a.rows),
             custom: !!a.custom,
             sheetKey: a.sheetKey,
             triggerDesc: a.triggerDesc,
-          })),
-          extraChars: this.characters.filter((c) => c.id !== 'kuromi' && !c.builtinEnemy).map((c) => ({
+          }));
+        }
+        const data = {
+          allOverrides,
+          extraChars: this.characters.filter((c) => c.id !== 'kuromi' && c.id !== 'redpanda' && !c.builtinEnemy).map((c) => ({
             id: c.id,
             name: c.name,
             actions: c.actions.map((a) => ({ ...a })),
@@ -601,44 +617,56 @@
       } catch (_) {}
     },
 
+    applyManifestMap(overridesMap) {
+      if (!overridesMap || typeof overridesMap !== 'object') return;
+      for (const ch of this.characters) {
+        const list = overridesMap[ch.id];
+        if (!Array.isArray(list)) continue;
+        for (const ov of list) {
+          const existing = ch.actions.find((a) => a.id === ov.id);
+          if (existing) {
+            if (typeof ov.fps === 'number') existing.fps = ov.fps;
+            if (existing.rebindable && ov.key) existing.key = ov.key;
+            if (ov.cols) existing.cols = ov.cols;
+            if (ov.rows) existing.rows = ov.rows;
+            if (ov.frameCount) existing.frameCount = ov.frameCount;
+          } else if (ov.custom) {
+            ch.actions.push({
+              id: ov.id,
+              label: ov.label,
+              triggerDesc: ov.triggerDesc || '自訂動作',
+              sheetKey: ov.sheetKey || ov.id,
+              fallbackSheet: null,
+              fps: ov.fps || 14,
+              cols: ov.cols || 5,
+              rows: ov.rows || 2,
+              frameCount: ov.frameCount || ((ov.cols || 5) * (ov.rows || 2)),
+              key: ov.key || null,
+              altKeys: [],
+              rebindable: ch.id === 'kuromi',
+              custom: true,
+            });
+          }
+        }
+      }
+    },
+
     load() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
         if (!raw) return;
         const data = JSON.parse(raw);
-        if (Array.isArray(data.heroOverrides)) {
-          const hero = this.getHero();
-          for (const ov of data.heroOverrides) {
-            const existing = hero.actions.find((a) => a.id === ov.id);
-            if (existing) {
-              if (typeof ov.fps === 'number') existing.fps = ov.fps;
-              if (existing.rebindable && ov.key) existing.key = ov.key;
-              if (ov.cols) existing.cols = ov.cols;
-              if (ov.rows) existing.rows = ov.rows;
-            } else if (ov.custom) {
-              hero.actions.push({
-                id: ov.id,
-                label: ov.label,
-                triggerDesc: ov.triggerDesc || '自訂動作',
-                sheetKey: ov.sheetKey || ov.id,
-                fallbackSheet: null,
-                fps: ov.fps || 14,
-                cols: ov.cols || 5,
-                rows: ov.rows || 2,
-                key: ov.key || null,
-                altKeys: [],
-                rebindable: true,
-                custom: true,
-              });
-            }
-          }
-        }
         if (Array.isArray(data.extraChars)) {
           for (const ec of data.extraChars) {
             if (!this.characters.some((c) => c.id === ec.id)) {
               this.characters.push(ec);
             }
           }
+        }
+        if (data.allOverrides) {
+          this.applyManifestMap(data.allOverrides);
+        } else if (Array.isArray(data.heroOverrides)) {
+          this.applyManifestMap({ kuromi: data.heroOverrides });
         }
       } catch (_) {}
     },
@@ -648,8 +676,229 @@
       this.activeCharId = 'kuromi';
       this.rebindingActionId = null;
       try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
+      CustomSpriteDB.clearAll().catch(() => {});
     },
   };
+
+  // ==========================================================================
+  // PERSISTENT BROWSER INDEXEDDB + DIRECT GITHUB CLOUD OVERWRITE ENGINE
+  // ==========================================================================
+  const CustomSpriteDB = {
+    dbName: 'SchoolFightCustomSpritesDB_v1',
+    storeName: 'sheets',
+    open() {
+      return new Promise((resolve, reject) => {
+        if (typeof indexedDB === 'undefined') return reject(new Error('No IndexedDB'));
+        const req = indexedDB.open(this.dbName, 1);
+        req.onupgradeneeded = () => {
+          const db = req.result;
+          if (!db.objectStoreNames.contains(this.storeName)) {
+            db.createObjectStore(this.storeName, { keyPath: 'sheetKey' });
+          }
+        };
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    },
+    async putSheet(sheetKey, record) {
+      try {
+        const db = await this.open();
+        return await new Promise((resolve, reject) => {
+          const tx = db.transaction(this.storeName, 'readwrite');
+          tx.objectStore(this.storeName).put({ sheetKey, ...record });
+          tx.oncomplete = () => { db.close(); resolve(true); };
+          tx.onerror = () => { db.close(); reject(tx.error); };
+        });
+      } catch (_) {
+        return false;
+      }
+    },
+    async getAllSheets() {
+      try {
+        const db = await this.open();
+        return await new Promise((resolve) => {
+          const tx = db.transaction(this.storeName, 'readonly');
+          const req = tx.objectStore(this.storeName).getAll();
+          req.onsuccess = () => { db.close(); resolve(req.result || []); };
+          req.onerror = () => { db.close(); resolve([]); };
+        });
+      } catch (_) {
+        return [];
+      }
+    },
+    async clearAll() {
+      try {
+        const db = await this.open();
+        return await new Promise((resolve) => {
+          const tx = db.transaction(this.storeName, 'readwrite');
+          tx.objectStore(this.storeName).clear();
+          tx.oncomplete = () => { db.close(); resolve(true); };
+          tx.onerror = () => { db.close(); resolve(false); };
+        });
+      } catch (_) {
+        return false;
+      }
+    },
+  };
+
+  const CloudSyncManager = {
+    cfgKey: 'schoolfight_cloud_sync_cfg_v1',
+    repo: 'snell0804/SchoolFight-TV',
+    branch: 'main',
+    token: '',
+    autoUpload: false,
+    smartAutoGrid: true,
+
+    loadConfig() {
+      try {
+        const raw = localStorage.getItem(this.cfgKey);
+        if (!raw) return;
+        const c = JSON.parse(raw);
+        if (c.repo) this.repo = c.repo;
+        if (c.branch) this.branch = c.branch;
+        if (typeof c.token === 'string') this.token = c.token;
+        if (typeof c.autoUpload === 'boolean') this.autoUpload = c.autoUpload;
+        if (typeof c.smartAutoGrid === 'boolean') this.smartAutoGrid = c.smartAutoGrid;
+      } catch (_) {}
+    },
+
+    saveConfig() {
+      try {
+        localStorage.setItem(this.cfgKey, JSON.stringify({
+          repo: this.repo,
+          branch: this.branch,
+          token: this.token,
+          autoUpload: this.autoUpload,
+          smartAutoGrid: this.smartAutoGrid,
+        }));
+      } catch (_) {}
+    },
+
+    async ghPutFile(repoPath, base64Content, commitMsg) {
+      if (!this.token || !this.token.trim()) {
+        throw new Error('請先在上方「☁️ 雲端直連覆寫設定」填入您的 GitHub Token（僅存於您的瀏覽器本機）');
+      }
+      const cleanRepo = (this.repo || 'snell0804/SchoolFight-TV').trim();
+      const branch = (this.branch || 'main').trim();
+      const apiUrl = `https://api.github.com/repos/${cleanRepo}/contents/${repoPath}`;
+      const headers = {
+        Accept: 'application/vnd.github+json',
+        Authorization: `Bearer ${this.token.trim()}`,
+      };
+
+      let sha = null;
+      const getRes = await fetch(`${apiUrl}?ref=${encodeURIComponent(branch)}&_t=${Date.now()}`, { headers });
+      if (getRes.ok) {
+        const cur = await getRes.json();
+        sha = cur.sha || null;
+      } else if (getRes.status !== 404) {
+        const errTxt = await getRes.text();
+        throw new Error(`讀取雲端檔案失敗 (${getRes.status}): ${errTxt.slice(0, 120)}`);
+      }
+
+      const body = {
+        message: commitMsg,
+        content: base64Content,
+        branch,
+      };
+      if (sha) body.sha = sha;
+
+      const putRes = await fetch(apiUrl, {
+        method: 'PUT',
+        headers: { ...headers, 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      if (!putRes.ok) {
+        const errTxt = await putRes.text();
+        throw new Error(`雲端覆寫失敗 (${putRes.status}): ${errTxt.slice(0, 140)}`);
+      }
+      return await putRes.json();
+    },
+
+    buildCloudManifestObject(updatedSheetsMap = {}) {
+      const sheetsMeta = { ...updatedSheetsMap };
+      const allOverrides = {};
+      for (const ch of StudioState.characters) {
+        allOverrides[ch.id] = ch.actions.map((a) => {
+          const sh = SpriteBank.sheets[a.sheetKey];
+          if (sh && sh.custom) {
+            sheetsMeta[a.sheetKey] = {
+              file: `assets/${a.sheetKey}_sheet.webp`,
+              cols: sh.cols,
+              rows: sh.rows,
+              frameCount: sh.frameCount,
+              anchorX: sh.anchorX,
+              anchorY: sh.anchorY,
+              updatedAt: sheetsMeta[a.sheetKey]?.updatedAt || Date.now(),
+            };
+          }
+          return {
+            id: a.id,
+            label: a.label,
+            fps: a.fps,
+            key: a.key,
+            cols: sh ? sh.cols : a.cols,
+            rows: sh ? sh.rows : a.rows,
+            frameCount: sh ? sh.frameCount : (a.frameCount || a.cols * a.rows),
+            custom: !!a.custom,
+            sheetKey: a.sheetKey,
+            triggerDesc: a.triggerDesc,
+          };
+        });
+      }
+      return {
+        format: 'schoolfight_cloud_manifest_v1',
+        updatedAt: Date.now(),
+        sheets: sheetsMeta,
+        allOverrides,
+      };
+    },
+
+    async uploadSheetToCloud(sheetKey, actLabel = '') {
+      const sheet = SpriteBank.sheets[sheetKey];
+      if (!sheet || !sheet.img) throw new Error('找不到此動作精靈表');
+
+      const c = document.createElement('canvas');
+      c.width = sheet.img.width;
+      c.height = sheet.img.height;
+      c.getContext('2d').drawImage(sheet.img, 0, 0);
+
+      // Export crisp lossless/high-quality WebP matching GitHub Pages asset path!
+      let dataUrl = c.toDataURL('image/webp', 0.92);
+      let ext = 'webp';
+      if (!dataUrl.startsWith('data:image/webp')) {
+        dataUrl = c.toDataURL('image/png');
+        ext = 'png';
+      }
+      const b64 = dataUrl.split(',')[1];
+      const targetPath = `assets/${sheetKey}_sheet.${ext}`;
+      await this.ghPutFile(targetPath, b64, `chore(sprite): update ${sheetKey} (${sheet.cols}x${sheet.rows}, ${sheet.frameCount}f) ${actLabel} via Gear Studio`);
+
+      // Also merge & push assets/cloud_manifest.json so 20~30 frame grid & FPS sync across all devices/TV!
+      let existingManifestSheets = {};
+      try {
+        const r = await fetch(`assets/cloud_manifest.json?_t=${Date.now()}`);
+        if (r.ok) {
+          const mj = await r.json();
+          if (mj && mj.sheets) existingManifestSheets = mj.sheets;
+        }
+      } catch (_) {}
+      existingManifestSheets[sheetKey] = {
+        file: targetPath,
+        cols: sheet.cols,
+        rows: sheet.rows,
+        frameCount: sheet.frameCount,
+        anchorX: sheet.anchorX,
+        anchorY: sheet.anchorY,
+        updatedAt: Date.now(),
+      };
+      const manifestObj = this.buildCloudManifestObject(existingManifestSheets);
+      const manifestB64 = btoa(unescape(encodeURIComponent(JSON.stringify(manifestObj, null, 2))));
+      await this.ghPutFile('assets/cloud_manifest.json', manifestB64, `chore(manifest): sync ${sheetKey} (${sheet.frameCount}f) config`);
+      return targetPath;
+    },
+  };
+  CloudSyncManager.loadConfig();
 
   function formatKeyCode(code) {
     if (!code) return '未設定';
@@ -672,25 +921,79 @@
     portraitCanvas: null,
     portraits: {},
 
+    getFrameCount(sheetKey, fallback = 10) {
+      const sh = this.sheets[sheetKey];
+      return (sh && sh.frameCount >= 1) ? sh.frameCount : fallback;
+    },
+
     async loadAll() {
+      // 1. Optional Cloud Manifest from GitHub Pages (applies cloud-overwritten 20~30f sheets & FPS!)
+      let cloudManifest = null;
+      if (!window.EMBEDDED_SPRITES && (location.protocol === 'http:' || location.protocol === 'https:')) {
+        try {
+          const res = await fetch(`assets/cloud_manifest.json?_t=${Date.now()}`, { cache: 'no-store' });
+          if (res.ok) {
+            cloudManifest = await res.json();
+            if (cloudManifest && cloudManifest.allOverrides) {
+              StudioState.applyManifestMap(cloudManifest.allOverrides);
+            }
+          }
+        } catch (_) {}
+      }
+
+      // 2. Local browser overrides (FPS, keybinds, custom actions)
       StudioState.load();
+
       const embedded = window.EMBEDDED_SPRITES || {};
+      const cloudSheets = (cloudManifest && cloudManifest.sheets) || {};
+
       const promises = DEFAULT_SHEETS_DEF.map(async (def) => {
-        const src = embedded[def.key] || def.file;
+        const cm = cloudSheets[def.key];
+        const src = cm
+          ? `${cm.file}?v=${cm.updatedAt || 1}`
+          : (embedded[def.key] || def.file);
         if (!src) return;
         const img = await this.loadImage(src);
+        const cols = (cm && cm.cols) || def.cols;
+        const rows = (cm && cm.rows) || def.rows;
+        const fc = (cm && cm.frameCount) || (cols * rows);
         this.sheets[def.key] = {
           img,
-          cols: def.cols,
-          rows: def.rows,
-          cellW: img.width / def.cols,
-          cellH: img.height / def.rows,
-          anchorX: def.anchorX,
-          anchorY: def.anchorY,
-          frameCount: def.cols * def.rows,
-          custom: false,
+          cols,
+          rows,
+          cellW: img.width / cols,
+          cellH: img.height / rows,
+          anchorX: (cm && typeof cm.anchorX === 'number') ? cm.anchorX : def.anchorX,
+          anchorY: (cm && typeof cm.anchorY === 'number') ? cm.anchorY : def.anchorY,
+          frameCount: fc,
+          custom: !!cm,
         };
       });
+
+      // Also load any custom cloud-added sheets not in DEFAULT_SHEETS_DEF
+      for (const [sKey, cm] of Object.entries(cloudSheets)) {
+        if (!DEFAULT_SHEETS_DEF.some((d) => d.key === sKey) && cm && cm.file) {
+          promises.push((async () => {
+            try {
+              const img = await this.loadImage(`${cm.file}?v=${cm.updatedAt || 1}`);
+              const cols = cm.cols || 5;
+              const rows = cm.rows || 2;
+              this.sheets[sKey] = {
+                img,
+                cols,
+                rows,
+                cellW: img.width / cols,
+                cellH: img.height / rows,
+                anchorX: typeof cm.anchorX === 'number' ? cm.anchorX : 136,
+                anchorY: typeof cm.anchorY === 'number' ? cm.anchorY : 242,
+                frameCount: cm.frameCount || (cols * rows),
+                custom: true,
+              };
+            } catch (_) {}
+          })());
+        }
+      }
+
       // Load Sanrio-illustrated street panoramas + 10-frame Kids Rice Cooker supply boxes & pickups
       const bgDef = [
         { key: 'starfish', embedKey: 'bg_starfish_street', file: 'assets/bg_starfish_street.webp' },
@@ -711,6 +1014,30 @@
         })());
       }
       await Promise.all(promises);
+
+      // 3. Restore any locally uploaded PNG sheets from IndexedDB (persists across page reloads!)
+      const savedCustom = await CustomSpriteDB.getAllSheets();
+      for (const rec of savedCustom) {
+        if (!rec || !rec.dataUrl || !rec.sheetKey) continue;
+        try {
+          const img = await this.loadImage(rec.dataUrl);
+          const cols = rec.cols || 5;
+          const rows = rec.rows || 2;
+          this.sheets[rec.sheetKey] = {
+            img,
+            cols,
+            rows,
+            cellW: img.width / cols,
+            cellH: img.height / rows,
+            anchorX: typeof rec.anchorX === 'number' ? rec.anchorX : 136,
+            anchorY: typeof rec.anchorY === 'number' ? rec.anchorY : 242,
+            frameCount: rec.frameCount || (cols * rows),
+            custom: true,
+          };
+          this.tintedCache = {};
+        } catch (_) {}
+      }
+
       this.buildPortrait();
       this.ready = true;
       renderControlsLegend();
@@ -742,83 +1069,333 @@
     },
 
     /**
-     * Browser-side smart valley-split + dark-background removal + 300x264 zero-clipping aligner
-     * for any sprite sheets uploaded live in the Gear Settings Studio!
+     * SMART SPRITE SHEET PROCESSOR v2 (10 ~ 60+ Frames, Zero Clipping, Auto Scale & Auto Bg Removal!):
+     * 1. Ignores screenshot rounded corners & finds true dominant background color (dark, white, card, green, or alpha).
+     * 2. Optional 2D projection-valley Auto-Grid Detector (detects 5x2=10, 5x4=20, 5x6=30, 6x5=30, etc.!).
+     * 3. Smart Y-row + X-column valley splits (±28% search window) so wide explosions/weapons NEVER get sliced!
+     * 4. Flood-fill + interior pocket background removal + 1px anti-aliased edge feathering.
+     * 5. UNIFORM AUTO-SCALING into 300x264 cells (clamped with safety margin) so high-res uploads NEVER overflow or slice!
      */
-    processUploadedSheet(img, cols = 5, rows = 2, frameCount = null) {
-      const sw = img.width;
-      const sh = img.height;
-      const rowH = Math.floor(sh / rows);
+    processUploadedSheet(img, cols = 5, rows = 2, frameCount = null, opts = null) {
+      const rawW = img.width;
+      const rawH = img.height;
+      const maxDim = 2200;
+      const preScale = Math.max(rawW, rawH) > maxDim ? (maxDim / Math.max(rawW, rawH)) : 1;
+      const sw = Math.max(16, Math.round(rawW * preScale));
+      const sh = Math.max(16, Math.round(rawH * preScale));
+      const isEnemy = !!(opts && opts.isEnemy);
+      const isBoss = !!(opts && opts.isBoss);
+      const autoDetect = !!(opts && opts.autoDetect);
+
       const outCellW = 300;
       const outCellH = 264;
-      const targetCx = 136;
-      const targetFootY = 242;
+      const targetCx = isEnemy ? 150 : 136;
+      const targetFootY = isBoss ? 242 : (isEnemy ? 236 : 242);
+      const targetBodyH = isBoss ? 186 : (isEnemy ? 150 : 167);
 
       const srcCanvas = document.createElement('canvas');
       srcCanvas.width = sw;
       srcCanvas.height = sh;
       const sctx = srcCanvas.getContext('2d');
-      sctx.drawImage(img, 0, 0);
-      const fullData = sctx.getImageData(0, 0, sw, sh).data;
+      sctx.imageSmoothingEnabled = true;
+      sctx.imageSmoothingQuality = 'high';
+      sctx.drawImage(img, 0, 0, sw, sh);
+      const fullImg = sctx.getImageData(0, 0, sw, sh);
+      const fullData = fullImg.data;
 
-      const bgR = fullData[0], bgG = fullData[1], bgB = fullData[2], bgA = fullData[3];
-      const alreadyTransparent = bgA < 20;
+      // Step 1: Sample inset border pixels (skipping outer 6% rounded screenshot corners!)
+      const insetX = Math.max(4, Math.floor(sw * 0.06));
+      const insetY = Math.max(4, Math.floor(sh * 0.06));
+      let transVotes = 0, totalVotes = 0;
+      const buckets = new Map();
+      const samplePixel = (x, y) => {
+        const idx = (y * sw + x) * 4;
+        totalVotes++;
+        if (fullData[idx + 3] < 24) {
+          transVotes++;
+          return;
+        }
+        const qr = fullData[idx] >> 3;
+        const qg = fullData[idx + 1] >> 3;
+        const qb = fullData[idx + 2] >> 3;
+        const key = (qr << 10) | (qg << 5) | qb;
+        let b = buckets.get(key);
+        if (!b) { b = { count: 0, sr: 0, sg: 0, sb: 0 }; buckets.set(key, b); }
+        b.count++;
+        b.sr += fullData[idx];
+        b.sg += fullData[idx + 1];
+        b.sb += fullData[idx + 2];
+      };
+      for (let x = insetX; x < sw - insetX; x += 2) {
+        samplePixel(x, 1);
+        samplePixel(x, Math.min(sh - 1, 3));
+        samplePixel(x, sh - 2);
+      }
+      for (let y = insetY; y < sh - insetY; y += 2) {
+        samplePixel(1, y);
+        samplePixel(sw - 2, y);
+      }
 
-      const outCanvas = document.createElement('canvas');
-      outCanvas.width = outCellW * cols;
-      outCanvas.height = outCellH * rows;
-      const octx = outCanvas.getContext('2d');
+      const alreadyTransparent = transVotes > totalVotes * 0.42;
+      let bgR = 16, bgG = 20, bgB = 32;
+      if (!alreadyTransparent && buckets.size > 0) {
+        let best = null;
+        for (const b of buckets.values()) {
+          if (!best || b.count > best.count) best = b;
+        }
+        bgR = best.sr / best.count;
+        bgG = best.sg / best.count;
+        bgB = best.sb / best.count;
+      }
+      const bgLum = 0.299 * bgR + 0.587 * bgG + 0.114 * bgB;
 
-      for (let r = 0; r < rows; r++) {
-        const y0 = r * rowH;
-        const y1 = Math.min(sh, (r + 1) * rowH);
+      // Strip rounded white/light screenshot corners automatically when background is dark!
+      if (!alreadyTransparent && bgLum < 90) {
+        const cornerR = Math.max(18, Math.floor(Math.min(sw, sh) * 0.08));
+        const corners = [[0, 0], [sw - 1, 0], [0, sh - 1], [sw - 1, sh - 1]];
+        for (const [cx0, cy0] of corners) {
+          const xStart = cx0 === 0 ? 0 : sw - cornerR;
+          const xEnd = cx0 === 0 ? cornerR : sw;
+          const yStart = cy0 === 0 ? 0 : sh - cornerR;
+          const yEnd = cy0 === 0 ? cornerR : sh;
+          for (let y = yStart; y < yEnd; y++) {
+            for (let x = xStart; x < xEnd; x++) {
+              const idx = (y * sw + x) * 4;
+              if (fullData[idx] > 200 && fullData[idx + 1] > 200 && fullData[idx + 2] > 200) {
+                fullData[idx] = Math.round(bgR);
+                fullData[idx + 1] = Math.round(bgG);
+                fullData[idx + 2] = Math.round(bgB);
+              }
+            }
+          }
+        }
+        sctx.putImageData(fullImg, 0, 0);
+      }
 
-        // Smart valley split along X so wide effects never clip!
+      const isFgAt = (idx) => {
+        if (fullData[idx + 3] < 24) return false;
+        if (alreadyTransparent) return true;
+        const dr = fullData[idx] - bgR;
+        const dg = fullData[idx + 1] - bgG;
+        const db = fullData[idx + 2] - bgB;
+        return (dr * dr + dg * dg + db * db) > (22 * 22);
+      };
+
+      // Step 2: Optional Smart 2D Periodic Peak-Valley Auto-Grid Detection (supports 10, 12, 15, 16, 20, 24, 25, 30, 60+ frames!)
+      let effCols = Math.max(1, parseInt(cols, 10) || 5);
+      let effRows = Math.max(1, parseInt(rows, 10) || 2);
+
+      if (autoDetect) {
+        const fgMask = new Uint8Array(sw * sh);
+        const rowProfile = new Int32Array(sh);
+        for (let y = 0; y < sh; y++) {
+          let rc = 0;
+          const rowOff = y * sw;
+          for (let x = 0; x < sw; x++) {
+            if (isFgAt((rowOff + x) * 4)) {
+              fgMask[rowOff + x] = 1;
+              rc++;
+            }
+          }
+          rowProfile[y] = rc;
+        }
+
+        const bandAvg = (arr, len, center, halfW) => {
+          const lo = Math.max(0, Math.floor(center - halfW));
+          const hi = Math.min(len - 1, Math.floor(center + halfW));
+          if (hi < lo) return 0;
+          let s = 0;
+          for (let i = lo; i <= hi; i++) s += arr[i];
+          return s / (hi - lo + 1);
+        };
+
+        const minValley = (arr, len, nom, win) => {
+          const lo = Math.max(0, Math.floor(nom - win));
+          const hi = Math.min(len - 1, Math.floor(nom + win));
+          let best = 1e12;
+          for (let i = lo; i <= hi; i++) {
+            const a = Math.max(0, i - 1);
+            const b = Math.min(len - 1, i + 1);
+            let s = 0;
+            for (let k = a; k <= b; k++) s += arr[k];
+            const v = s / (b - a + 1);
+            if (v < best) best = v;
+          }
+          return best;
+        };
+
+        // 2a. Score candidate row counts R in 1..14
+        let bestR = effRows, bestRScore = -1e9;
+        for (let R = 1; R <= 14; R++) {
+          const cellH = sh / R;
+          if (cellH < 40) break;
+          let minCenter = 1e12, sumCenter = 0;
+          for (let r = 0; r < R; r++) {
+            const cv = bandAvg(rowProfile, sh, (r + 0.5) * cellH, Math.max(1, cellH * 0.08));
+            if (cv < minCenter) minCenter = cv;
+            sumCenter += cv;
+          }
+          if (minCenter < sw * 0.018) continue;
+          const meanC = sumCenter / R;
+          let score;
+          if (R === 1) {
+            score = 0.25 + (R === effRows ? 0.02 : 0);
+          } else {
+            let maxV = 0, sumV = 0;
+            for (let r = 1; r < R; r++) {
+              const v = minValley(rowProfile, sh, r * cellH, cellH * 0.12);
+              if (v > maxV) maxV = v;
+              sumV += v;
+            }
+            const meanV = sumV / (R - 1);
+            if (maxV > meanC * 0.42) continue;
+            const contrast = (meanC - meanV) / Math.max(1, meanC);
+            score = contrast - (maxV / Math.max(1, meanC)) * 0.40 + Math.min(0.42, R * 0.04) + (R === effRows ? 0.02 : 0);
+          }
+          if (score > bestRScore) {
+            bestRScore = score;
+            bestR = R;
+          }
+        }
+        effRows = bestR;
+
+        // 2b. Score candidate column counts C in 1..18 using per-row horizontal profiles (never confused by cross-row effects!)
+        const rowH = sh / effRows;
+        const perRowCols = [];
+        for (let r = 0; r < effRows; r++) {
+          const y0 = Math.floor(r * rowH);
+          const y1 = Math.floor((r + 1) * rowH);
+          const cp = new Int32Array(sw);
+          for (let y = y0; y < y1; y++) {
+            const rowOff = y * sw;
+            for (let x = 0; x < sw; x++) cp[x] += fgMask[rowOff + x];
+          }
+          perRowCols.push(cp);
+        }
+
+        let bestC = effCols, bestCScore = -1e9;
+        for (let C = 1; C <= 18; C++) {
+          const cellW = sw / C;
+          if (cellW < 40) break;
+          const aspect = cellW / rowH;
+          if (C > 1 && (aspect < 0.36 || aspect > 2.65)) continue;
+          if (C === 1) {
+            const sc1 = 0.24 + (aspect >= 0.6 && aspect <= 1.6 ? 0.05 : 0);
+            if (sc1 > bestCScore) { bestCScore = sc1; bestC = 1; }
+            continue;
+          }
+          let sumMc = 0, sumMv = 0, maxMx = 0, validRows = 0;
+          let valid = true;
+          for (let r = 0; r < effRows; r++) {
+            const cp = perRowCols[r];
+            let rowTotal = 0;
+            for (let x = 0; x < sw; x++) rowTotal += cp[x];
+            if (rowTotal < rowH * sw * 0.01) continue;
+            let nonEmptyCount = 0, sumRowC = 0;
+            for (let c = 0; c < C; c++) {
+              const cv = bandAvg(cp, sw, (c + 0.5) * cellW, Math.max(1, cellW * 0.08));
+              if (cv >= rowH * 0.03) {
+                nonEmptyCount++;
+                sumRowC += cv;
+              }
+            }
+            if (r < effRows - 1 && nonEmptyCount < C) { valid = false; break; }
+            if (nonEmptyCount === 0) continue;
+            const mc = sumRowC / nonEmptyCount;
+            let sumV = 0, mxV = 0;
+            for (let c = 1; c < C; c++) {
+              const v = minValley(cp, sw, c * cellW, cellW * 0.12);
+              sumV += v;
+              if (v > mxV) mxV = v;
+            }
+            sumMc += mc;
+            sumMv += sumV / (C - 1);
+            if (mxV > maxMx) maxMx = mxV;
+            validRows++;
+          }
+          if (!valid || validRows === 0) continue;
+          const mcAll = sumMc / validRows;
+          const mvAll = sumMv / validRows;
+          if (maxMx > mcAll * 0.45) continue;
+          const contrast = (mcAll - mvAll) / Math.max(1, mcAll);
+          const aspectBonus = -Math.abs(aspect - 1.10) * 0.06;
+          const score = contrast - (maxMx / Math.max(1, mcAll)) * 0.35 + Math.min(0.45, C * 0.038) + aspectBonus + (C === effCols ? 0.02 : 0);
+          if (score > bestCScore) {
+            bestCScore = score;
+            bestC = C;
+          }
+        }
+        effCols = bestC;
+      }
+
+      // Step 3: Smart Y-Row Valley Splits (±26% search around nominal row borders!)
+      const rowCounts = new Int32Array(sh);
+      for (let y = 0; y < sh; y++) {
+        let cnt = 0;
+        for (let x = 0; x < sw; x++) {
+          if (isFgAt((y * sw + x) * 4)) cnt++;
+        }
+        rowCounts[y] = cnt;
+      }
+      const ySplits = [0];
+      const nomRowH = sh / effRows;
+      for (let r = 1; r < effRows; r++) {
+        const nomY = Math.round(r * nomRowH);
+        const winY = Math.max(12, Math.floor(nomRowH * 0.26));
+        const loY = Math.max(ySplits[ySplits.length - 1] + Math.floor(nomRowH * 0.45), nomY - winY);
+        const hiY = Math.min(sh - Math.floor(nomRowH * 0.45), nomY + winY);
+        let bestY = nomY, bestScore = 1e12;
+        for (let sy = loY; sy <= hiY; sy++) {
+          const wsum = (rowCounts[Math.max(0, sy - 1)] + rowCounts[sy] * 2 + rowCounts[Math.min(sh - 1, sy + 1)]);
+          const sc = wsum * 100 + Math.abs(sy - nomY) * 0.15;
+          if (sc < bestScore) { bestScore = sc; bestY = sy; }
+        }
+        ySplits.push(bestY);
+      }
+      ySplits.push(sh);
+
+      // Step 4: Extract & Clean Every Cell (Smart X-Valley Splits + Flood Bg Removal)
+      const cleanedCells = [];
+      const nomColW = sw / effCols;
+
+      for (let r = 0; r < effRows; r++) {
+        const y0 = ySplits[r];
+        const y1 = ySplits[r + 1];
         const colCounts = new Int32Array(sw);
         for (let x = 0; x < sw; x++) {
           let cnt = 0;
           for (let y = y0; y < y1; y++) {
-            const idx = (y * sw + x) * 4;
-            if (alreadyTransparent) {
-              if (fullData[idx + 3] > 20) cnt++;
-            } else {
-              const dr = fullData[idx] - bgR;
-              const dg = fullData[idx + 1] - bgG;
-              const db = fullData[idx + 2] - bgB;
-              if (dr * dr + dg * dg + db * db > 18 * 18) cnt++;
-            }
+            if (isFgAt((y * sw + x) * 4)) cnt++;
           }
           colCounts[x] = cnt;
         }
 
-        const splits = [0];
-        for (let k = 1; k < cols; k++) {
-          const nom = Math.round((k * sw) / cols);
-          let bestX = nom;
-          let bestVal = 1e12;
-          const lo = Math.max(splits[splits.length - 1] + 40, nom - 58);
-          const hi = Math.min(sw - 40, nom + 58);
-          for (let sx = lo; sx <= hi; sx++) {
-            const score = colCounts[sx] * 100 + Math.abs(sx - nom) * 0.12;
-            if (score < bestVal) {
-              bestVal = score;
-              bestX = sx;
-            }
+        const xSplits = [0];
+        const winX = Math.max(16, Math.floor(nomColW * 0.28));
+        for (let k = 1; k < effCols; k++) {
+          const nomX = Math.round(k * nomColW);
+          const loX = Math.max(xSplits[xSplits.length - 1] + Math.floor(nomColW * 0.42), nomX - winX);
+          const hiX = Math.min(sw - Math.floor(nomColW * 0.42), nomX + winX);
+          let bestX = nomX, bestVal = 1e12;
+          for (let sx = loX; sx <= hiX; sx++) {
+            const wsum = colCounts[Math.max(0, sx - 1)] + colCounts[sx] * 2 + colCounts[Math.min(sw - 1, sx + 1)];
+            const score = wsum * 100 + Math.abs(sx - nomX) * 0.14;
+            if (score < bestVal) { bestVal = score; bestX = sx; }
           }
-          splits.push(bestX);
+          xSplits.push(bestX);
         }
-        splits.push(sw);
+        xSplits.push(sw);
 
-        for (let c = 0; c < cols; c++) {
-          const x0 = splits[c];
-          const cw = Math.max(1, splits[c + 1] - x0);
+        for (let c = 0; c < effCols; c++) {
+          const x0 = xSplits[c];
+          const cw = Math.max(1, xSplits[c + 1] - x0);
           const ch = Math.max(1, y1 - y0);
 
           const tmp = document.createElement('canvas');
           tmp.width = cw;
           tmp.height = ch;
           const tctx = tmp.getContext('2d');
-          tctx.drawImage(img, x0, y0, cw, ch, 0, 0, cw, ch);
+          tctx.drawImage(srcCanvas, x0, y0, cw, ch, 0, 0, cw, ch);
           const id = tctx.getImageData(0, 0, cw, ch);
           const d = id.data;
 
@@ -828,12 +1405,16 @@
             const queue = new Int32Array(cw * ch);
             let head = 0, tail = 0;
             const dist = (i) => Math.hypot(d[i] - bgR, d[i + 1] - bgG, d[i + 2] - bgB);
+            const thresh = bgLum > 200 ? 24 : 22.5;
             const enqueue = (x, y) => {
               const p = y * cw + x;
               if (visited[p]) return;
               const idx = p * 4;
-              const pureBlack = d[idx] < 14 && d[idx + 1] < 14 && d[idx + 2] < 18 && d[idx + 2] - d[idx] < 6;
-              if (!pureBlack && dist(idx) < 20) {
+              // Protect pure-black cartoon ink outlines when removing dark backgrounds
+              if (bgLum < 80 && d[idx] < 14 && d[idx + 1] < 14 && d[idx + 2] < 19 && (d[idx + 2] - d[idx]) < 6) return;
+              // Protect pure-white body highlights when removing light sky-blue card backgrounds
+              if (bgLum > 200 && (bgB - bgR) >= 8 && d[idx] > 246 && (d[idx + 2] - d[idx]) <= 3) return;
+              if (dist(idx) < thresh) {
                 visited[p] = 1;
                 isBg[p] = 1;
                 queue[tail++] = p;
@@ -852,50 +1433,121 @@
             }
             for (let p = 0; p < cw * ch; p++) {
               const idx = p * 4;
-              if (isBg[p] || (dist(idx) < 11.5 && d[idx + 2] - d[idx] >= 7)) {
+              if (isBg[p]) {
                 d[idx + 3] = 0;
+              } else if (bgLum < 80 && dist(idx) < 12.5 && (d[idx + 2] - d[idx]) >= 5) {
+                // Enclosed dark-navy pocket inside weapon/slash loops
+                isBg[p] = 1;
+                d[idx + 3] = 0;
+              }
+            }
+            // 1px soft edge feathering against background halo
+            for (let y = 1; y < ch - 1; y++) {
+              for (let x = 1; x < cw - 1; x++) {
+                const p = y * cw + x;
+                if (isBg[p]) continue;
+                if (isBg[p - 1] || isBg[p + 1] || isBg[p - cw] || isBg[p + cw]) {
+                  const idx = p * 4;
+                  const dd = dist(idx);
+                  if (dd < 30) {
+                    d[idx + 3] = Math.max(0, Math.min(255, Math.round(((dd - 14) / 16) * 255)));
+                  }
+                }
               }
             }
             tctx.putImageData(id, 0, 0);
           }
 
-          // Measure non-transparent bbox & white-body center
-          let minX = cw, maxX = 0, minY = ch, maxY = 0;
-          let bodySumX = 0, bodyCnt = 0;
+          let minX = cw, maxX = -1, minY = ch, maxY = -1, solidPixels = 0;
+          let coreMinX = cw, coreMaxX = -1;
           for (let y = 0; y < ch; y++) {
             for (let x = 0; x < cw; x++) {
               const idx = (y * cw + x) * 4;
-              if (d[idx + 3] > 160) {
+              if (d[idx + 3] > 60) {
+                solidPixels++;
                 if (x < minX) minX = x;
                 if (x > maxX) maxX = x;
                 if (y < minY) minY = y;
                 if (y > maxY) maxY = y;
-                if (d[idx] > 190 && d[idx + 1] > 190 && d[idx + 2] > 190 && x > cw * 0.16 && x < cw * 0.78) {
-                  bodySumX += x;
-                  bodyCnt++;
+                if (d[idx + 3] > 180 && y > ch * 0.22) {
+                  if (x < coreMinX) coreMinX = x;
+                  if (x > coreMaxX) coreMaxX = x;
                 }
               }
             }
           }
-          const cx = bodyCnt ? bodySumX / bodyCnt : (minX + maxX) / 2 || cw / 2;
-          let dx = Math.round(targetCx - cx);
-          let dy = Math.round(targetFootY - (maxY || ch * 0.88));
-          if (minX <= maxX) {
-            if (minX + dx < 2) dx = 2 - minX;
-            if (maxX + dx > outCellW - 2) dx = outCellW - 2 - maxX;
-            if (minY + dy < 2) dy = 2 - minY;
-            if (maxY + dy > outCellH - 2) dy = outCellH - 2 - maxY;
+
+          if (maxX >= minX && solidPixels >= 24) {
+            cleanedCells.push({
+              canvas: tmp,
+              empty: false,
+              minX, minY,
+              w: maxX - minX + 1,
+              h: maxY - minY + 1,
+              coreCx: coreMaxX >= coreMinX ? ((coreMinX + coreMaxX) / 2 - minX) : ((maxX - minX + 1) / 2),
+            });
+          } else {
+            cleanedCells.push({ canvas: tmp, empty: true, minX: 0, minY: 0, w: 1, h: 1, coreCx: 0.5 });
           }
-          octx.drawImage(tmp, c * outCellW + dx, r * outCellH + dy);
         }
       }
 
-      const maxFrames = cols * rows;
-      const effCount = (typeof frameCount === 'number' && frameCount >= 1) ? Math.min(maxFrames, Math.floor(frameCount)) : maxFrames;
+      // Step 5: Compute Uniform Character Scale (from Frame 0 / median height) + Zero-Clipping Fit into 300x264!
+      const nonEmpty = cleanedCells.filter((c) => !c.empty);
+      let refH = nonEmpty.length > 0 ? nonEmpty[0].h : targetBodyH;
+      if (nonEmpty.length >= 3) {
+        const sortedH = nonEmpty.slice(0, Math.min(5, nonEmpty.length)).map((c) => c.h).sort((a, b) => a - b);
+        refH = sortedH[0] > sortedH[Math.floor(sortedH.length / 2)] * 0.65 ? nonEmpty[0].h : sortedH[Math.floor(sortedH.length / 2)];
+      }
+      const baseScale = targetBodyH / Math.max(1, refH);
+
+      const outCanvas = document.createElement('canvas');
+      outCanvas.width = outCellW * effCols;
+      outCanvas.height = outCellH * effRows;
+      const octx = outCanvas.getContext('2d');
+      octx.imageSmoothingEnabled = true;
+      octx.imageSmoothingQuality = 'high';
+
+      let lastNonEmptyIdx = -1;
+      for (let idx = 0; idx < cleanedCells.length; idx++) {
+        const cell = cleanedCells[idx];
+        if (cell.empty) continue;
+        lastNonEmptyIdx = idx;
+
+        const c = idx % effCols;
+        const r = Math.floor(idx / effCols);
+
+        // Uniform scale, clamped strictly so wide explosions/slashes NEVER exceed 300x264 cell bounds!
+        const maxAllowedW = outCellW - 12;
+        const maxAllowedH = targetFootY - 6;
+        const curScale = Math.min(baseScale, maxAllowedW / cell.w, maxAllowedH / cell.h);
+
+        const dw = Math.max(1, Math.round(cell.w * curScale));
+        const dh = Math.max(1, Math.round(cell.h * curScale));
+        const scaledCoreCx = cell.coreCx * curScale;
+
+        let dx = Math.round(targetCx - scaledCoreCx);
+        let dy = Math.round(targetFootY - dh);
+        dx = Math.max(4, Math.min(outCellW - dw - 4, dx));
+        dy = Math.max(4, Math.min(outCellH - dh - 4, dy));
+
+        octx.drawImage(
+          cell.canvas,
+          cell.minX, cell.minY, cell.w, cell.h,
+          c * outCellW + dx, r * outCellH + dy, dw, dh
+        );
+      }
+
+      const maxFrames = effCols * effRows;
+      const detectedFrames = lastNonEmptyIdx >= 0 ? (lastNonEmptyIdx + 1) : maxFrames;
+      const effCount = (!autoDetect && typeof frameCount === 'number' && frameCount >= 1)
+        ? Math.min(maxFrames, Math.floor(frameCount))
+        : detectedFrames;
+
       return {
         img: outCanvas,
-        cols,
-        rows,
+        cols: effCols,
+        rows: effRows,
         cellW: outCellW,
         cellH: outCellH,
         anchorX: targetCx,
@@ -962,18 +1614,16 @@
           const r = d[i], g = d[i + 1], b = d[i + 2];
           const lum = 0.299 * r + 0.587 * g + 0.114 * b;
           // Preserve crisp dark cartoon ink outlines!
-          if (lum < 66) continue;
+          if (lum < (mode === 'zebra' ? 40 : 66)) continue;
 
           const maxC = Math.max(r, g, b);
           const minC = Math.min(r, g, b);
           const sat = maxC > 0 ? (maxC - minC) / maxC : 0;
 
           if (mode === 'ghost') {
-            // Preserve bright yellow dizzy stars & vivid red/pink mouth/cheeks
             if (r > 205 && g > 155 && b < 110) continue;
             if (r > 180 && g < 115 && b < 145) continue;
             if (sat > 0.30 && b > r && auraRgb) {
-              // Recolor spectral flames & magic aura to variant aura color!
               const k = Math.min(1, lum / 230);
               d[i] = Math.min(255, Math.round(auraRgb[0] * (0.45 + 0.55 * k)));
               d[i + 1] = Math.min(255, Math.round(auraRgb[1] * (0.45 + 0.55 * k)));
@@ -990,15 +1640,41 @@
                 d[i + 2] = Math.min(255, Math.round((b * 0.22 + tb * 0.78) * (0.72 + 0.28 * t)));
               }
             }
+          } else if (mode === 'zebra') {
+            // 5-color Zebra variants (墨白 / 灰 / 棕 / 白金 / 藍)
+            if (r > 215 && g > 165 && b < 110) continue;
+            if (b > r + 40 && g > 130) continue;
+            if (r > 180 && (r - g) > 32) continue;
+            if (lum < 128 && sat < 0.26 && variant.stripeRgb) {
+              const st = Math.min(1, lum / 120);
+              d[i] = Math.min(255, Math.round(variant.stripeRgb[0] * (0.48 + 0.65 * st)));
+              d[i + 1] = Math.min(255, Math.round(variant.stripeRgb[1] * (0.48 + 0.65 * st)));
+              d[i + 2] = Math.min(255, Math.round(variant.stripeRgb[2] * (0.48 + 0.65 * st)));
+            } else if (lum >= 155 && sat < 0.22) {
+              const t = Math.min(1, lum / 248);
+              d[i] = Math.min(255, Math.round(tr * (0.72 + 0.28 * t)));
+              d[i + 1] = Math.min(255, Math.round(tg * (0.72 + 0.28 * t)));
+              d[i + 2] = Math.min(255, Math.round(tb * (0.72 + 0.28 * t)));
+            }
+          } else if (mode === 'kangaroo') {
+            // 5-color Kangaroo variants (棕色 / 灰色 / 粉紅 / 白色 / 藍色)
+            if (r > 232 && g > 192 && b < 95) continue;
+            if (b > r + 30) continue;
+            if (r > 195 && (r - g) > 65 && b > 125) continue;
+            if (r > b + 28 && g > 72 && lum >= 92 && sat >= 0.24) {
+              const t = Math.min(1.12, lum / 185);
+              d[i] = Math.min(255, Math.round(tr * (0.52 + 0.48 * t)));
+              d[i + 1] = Math.min(255, Math.round(tg * (0.52 + 0.48 * t)));
+              d[i + 2] = Math.min(255, Math.round(tb * (0.52 + 0.48 * t)));
+            }
           } else {
-            // Fur / Wool mode (Rabbit & Sheep): keep eyes, inner-ear pink, brown horns, dizzy stars & speed lines!
-            if (r > 195 && g > 155 && b < 95) continue; // Yellow dizzy stars / lightning bursts
-            if (b > r + 42 && g > 130) continue;        // Cyan speed lines
-            if (r > 165 && g < 105 && b < 115) continue; // Red eyes / open mouth
-            if (mode === 'sheep' && r > 85 && g > 48 && b < 95 && (r - b) > 32 && lum < 175) continue; // Curved brown sheep horns
-            if (mode === 'rabbit' && r > 185 && (r - g) > 28 && (r - b) > 12 && g < 185) continue; // Pink inner ears & cheek blush
+            // Fur / Wool mode (Rabbit & Sheep)
+            if (r > 195 && g > 155 && b < 95) continue;
+            if (b > r + 42 && g > 130) continue;
+            if (r > 165 && g < 105 && b < 115) continue;
+            if (mode === 'sheep' && r > 85 && g > 48 && b < 95 && (r - b) > 32 && lum < 175) continue;
+            if (mode === 'rabbit' && r > 185 && (r - g) > 28 && (r - b) > 12 && g < 185) continue;
 
-            // Tint light fur / wool cleanly with soft shading preserved
             if (lum >= 122 && sat < 0.36) {
               const t = Math.min(1, lum / 248);
               if (variant.dark) {
@@ -1325,6 +2001,7 @@
   // 4. GAME STATE, 3 SCHOOL STAGES, WAVES, ENTITIES & COMBAT
   // ==========================================================================
   const ALL_RANDOM_MONSTER_POOL = [
+    'zebra_rush', 'joey_kangaroo',
     'kangaroo', 'zebra', 'koala', 'capybara', 'cactus', 'wizard_ghost',
     'penguin_king', 'penguin_ice', 'rabbit', 'ghost', 'sheep',
     'pig', 'slime', 'mushroom', 'puffer', 'star',
@@ -1357,9 +2034,9 @@
           triggerX: 280,
           lockCamX: 0,
           spawns: [
-            { type: 'penguin_ice', side: 1, z: 394, delay: 0.15 },
-            { type: 'capybara', side: 1, z: 448, delay: 0.55 },
-            { type: 'puffer', side: -1, z: 422, delay: 1.45 },
+            { type: 'zebra_rush', side: 1, z: 394, delay: 0.15 },
+            { type: 'joey_kangaroo', side: 1, z: 452, delay: 0.55 },
+            { type: 'penguin_ice', side: -1, z: 422, delay: 1.45 },
             { type: 'penguin_king', side: 1, z: 406, delay: 2.35 },
           ],
         },
@@ -1371,8 +2048,8 @@
           spawns: [
             { type: 'puffer', side: 1, z: 404, delay: 0.2 },
             { type: 'wizard_ghost', side: 1, z: 456, delay: 0.65 },
-            { type: 'star', side: -1, z: 388, delay: 1.5 },
-            { type: 'penguin_ice', side: -1, z: 448, delay: 2.3 },
+            { type: 'joey_kangaroo', side: -1, z: 388, delay: 1.5 },
+            { type: 'capybara', side: -1, z: 448, delay: 2.3 },
             { type: 'slime', side: 1, z: 416, delay: 3.1 },
           ],
         },
@@ -1384,7 +2061,7 @@
           isBoss: true,
           spawns: [
             { type: 'boss', side: 1, z: 425, delay: 1.1, customName: '⭐ Star Fish 國小 宇宙海星體育股長', hpMult: 0.72 },
-            { type: 'penguin_king', side: -1, z: 385, delay: 3.6 },
+            { type: 'zebra_rush', side: -1, z: 385, delay: 3.6 },
             { type: 'wizard_ghost', side: 1, z: 465, delay: 7.4 },
             { type: 'penguin_ice', side: -1, z: 432, delay: 11.2 },
           ],
@@ -1396,7 +2073,7 @@
       key: 'aqiang',
       name: 'STAGE 2 · 阿強國小',
       shortName: '阿強國小',
-      themeBadge: '🎲 新怪大亂鬥（袋鼠・斑馬・無尾熊・水豚・仙人掌）',
+      themeBadge: '🎲 新怪大亂鬥（育兒袋鼠・暴衝斑馬・無尾熊・水豚・仙人掌）',
       icon: '🔥',
       accent: '#f97316',
       bossWarnName: '阿強國小 暴走鐵拳教官 降臨！',
@@ -1417,10 +2094,10 @@
           triggerX: 280,
           lockCamX: 0,
           spawns: [
-            { type: 'kangaroo', side: 1, z: 402, delay: 0.15 },
-            { type: 'zebra', side: 1, z: 458, delay: 0.55 },
-            { type: 'koala', side: -1, z: 390, delay: 1.4 },
-            { type: 'capybara', side: 1, z: 446, delay: 2.2 },
+            { type: 'joey_kangaroo', side: 1, z: 398, delay: 0.15 },
+            { type: 'zebra_rush', side: 1, z: 458, delay: 0.50 },
+            { type: 'koala', side: -1, z: 390, delay: 1.35 },
+            { type: 'zebra', side: 1, z: 446, delay: 2.15 },
           ],
         },
         {
@@ -1430,7 +2107,7 @@
           lockCamX: 1080,
           spawns: [
             { type: 'cactus', side: 1, z: 392, delay: 0.2 },
-            { type: 'wizard_ghost', side: 1, z: 454, delay: 0.65 },
+            { type: 'zebra_rush', side: 1, z: 454, delay: 0.65 },
             { type: 'kangaroo', side: -1, z: 422, delay: 1.45 },
             { type: 'random', pool: ALL_RANDOM_MONSTER_POOL, side: 1, z: 402, delay: 2.3 },
             { type: 'random', pool: ALL_RANDOM_MONSTER_POOL, side: -1, z: 462, delay: 3.1 },
@@ -1444,7 +2121,7 @@
           isBoss: true,
           spawns: [
             { type: 'boss', side: 1, z: 425, delay: 1.1, customName: '🔥 阿強國小 暴走鐵拳教官', hpMult: 0.9 },
-            { type: 'zebra', side: -1, z: 382, delay: 3.5 },
+            { type: 'joey_kangaroo', side: -1, z: 382, delay: 3.5 },
             { type: 'cactus', side: 1, z: 468, delay: 7.2 },
             { type: 'random', pool: ALL_RANDOM_MONSTER_POOL, side: -1, z: 430, delay: 11.0 },
           ],
@@ -1477,9 +2154,9 @@
           triggerX: 280,
           lockCamX: 0,
           spawns: [
-            { type: 'sheep', side: 1, z: 390, delay: 0.15 },
-            { type: 'kangaroo', side: 1, z: 454, delay: 0.5 },
-            { type: 'cactus', side: -1, z: 420, delay: 1.3 },
+            { type: 'zebra_rush', side: 1, z: 390, delay: 0.15 },
+            { type: 'joey_kangaroo', side: 1, z: 454, delay: 0.5 },
+            { type: 'sheep', side: -1, z: 420, delay: 1.3 },
             { type: 'koala', side: 1, z: 402, delay: 2.1 },
           ],
         },
@@ -1491,21 +2168,21 @@
           spawns: [
             { type: 'zebra', side: 1, z: 398, delay: 0.2 },
             { type: 'capybara', side: -1, z: 454, delay: 0.6 },
-            { type: 'rabbit', side: 1, z: 430, delay: 1.35 },
+            { type: 'joey_kangaroo', side: 1, z: 430, delay: 1.35 },
             { type: 'wizard_ghost', side: -1, z: 386, delay: 2.1 },
-            { type: 'pig', side: 1, z: 462, delay: 2.9 },
+            { type: 'zebra_rush', side: 1, z: 462, delay: 2.9 },
           ],
         },
         {
           id: 3,
           name: '冬花國小 · 武聖大宗師終極決戰',
           triggerX: 2760,
-          lockCamX: STAGE_W - CANVAS_W,
+          lockCamX: 3584 - 1024,
           isBoss: true,
           spawns: [
             { type: 'donghua_boss', side: 1, z: 428, delay: 1.2, customName: '🥋 冬花武聖大宗師', hpMult: 1.0 },
-            { type: 'kangaroo', side: -1, z: 382, delay: 4.5 },
-            { type: 'wizard_ghost', side: 1, z: 466, delay: 8.5 },
+            { type: 'joey_kangaroo', side: -1, z: 382, delay: 4.5 },
+            { type: 'zebra_rush', side: 1, z: 466, delay: 8.5 },
             { type: 'cactus', side: -1, z: 422, delay: 12.5 },
           ],
         },
@@ -1882,21 +2559,24 @@
 
   // Enemy Ranged Attack Projectiles (Star, Water, Spore, Ghost Orb + 6 New Signature Projectiles!)
   class EnemyProjectile {
-    constructor(x, z, facing, kind = 'star', dmg = 14, vz = 0, color = null) {
+    constructor(x, z, facing, kind = 'star', dmg = 14, vz = 0, color = null, owner = null) {
       this.id = nextEntityId++;
       this.x = x;
       this.z = z;
-      this.baseJumpY = kind === 'martial_chi' ? 78 : 66;
+      this.baseJumpY = kind === 'martial_chi' ? 78 : (kind === 'joey_boomerang' ? 72 : 66);
       this.jumpY = this.baseJumpY;
       this.facing = facing;
-      this.kind = kind; // star | water | spore | ghost_orb | bubblegum | holo_wave | zen_leaf | cactus_needle | cosmic_meteor | martial_chi
+      this.owner = owner || null;
+      this.returning = false;
+      this.kind = kind; // star | water | spore | ghost_orb | bubblegum | holo_wave | zen_leaf | cactus_needle | cosmic_meteor | martial_chi | joey_boomerang
       this.color = color || (
         kind === 'bubblegum' ? '#f472b6'
           : (kind === 'holo_wave' ? '#38bdf8'
             : (kind === 'zen_leaf' ? '#4ade80'
               : (kind === 'cactus_needle' ? '#facc15'
                 : (kind === 'cosmic_meteor' ? '#a855f7'
-                  : (kind === 'martial_chi' ? '#facc15' : (kind === 'ghost_orb' ? '#c084fc' : null))))))
+                  : (kind === 'joey_boomerang' ? '#fbbf24'
+                    : (kind === 'martial_chi' ? '#facc15' : (kind === 'ghost_orb' ? '#c084fc' : null)))))))
       );
       this.dmg = dmg;
       const spdMap = {
@@ -1910,12 +2590,13 @@
         cactus_needle: 510,
         cosmic_meteor: 455,
         martial_chi: 525,
+        joey_boomerang: 495,
       };
       this.vx = facing * (spdMap[kind] || 405);
       this.vz = vz;
       this.rot = 0;
       this.age = 0;
-      this.life = kind === 'spore' ? 1.55 : (kind === 'bubblegum' ? 1.85 : 2.15);
+      this.life = kind === 'spore' ? 1.55 : (kind === 'bubblegum' ? 1.85 : (kind === 'joey_boomerang' ? 1.72 : 2.15));
       this.dead = false;
     }
 
@@ -1929,13 +2610,32 @@
         this.dead = true;
         return;
       }
+
+      if (this.kind === 'joey_boomerang') {
+        // Baby Kangaroo Boomerang: decelerates to apex (~0.56s), then curves back to parent pouch!
+        this.vx -= this.facing * 880 * dt;
+        this.jumpY = this.baseJumpY + Math.sin(this.age * 11) * 16;
+        if (this.age > 0.56) {
+          this.returning = true;
+          if (this.owner && !this.owner.dead) {
+            const dzOwner = this.owner.z - this.z;
+            this.z += Math.max(-130, Math.min(130, dzOwner * 3.5)) * dt;
+            if (Math.hypot(this.owner.x - this.x, this.owner.z - this.z) < 42) {
+              spawnParticles(this.owner.x, this.owner.z - 64, '#fde047', 6, 110, 4);
+              this.dead = true;
+              return;
+            }
+          }
+        }
+      }
+
       this.x += this.vx * dt;
       this.z = Math.max(Z_MIN, Math.min(Z_MAX, this.z + this.vz * dt));
       if (this.kind === 'bubblegum') {
         // Wavy floating bubblegum bob!
         this.jumpY = this.baseJumpY + Math.sin(this.age * 9) * 20;
       }
-      this.rot += this.facing * dt * (this.kind === 'star' || this.kind === 'zen_leaf' ? 14 : (this.kind === 'spore' ? 10 : 9));
+      this.rot += this.facing * dt * (this.kind === 'joey_boomerang' ? 20 : (this.kind === 'star' || this.kind === 'zen_leaf' ? 14 : (this.kind === 'spore' ? 10 : 9)));
 
       const pCol = this.color || (this.kind === 'star' ? '#fb7185' : (this.kind === 'spore' ? '#fb923c' : '#38bdf8'));
       if (Math.random() < 0.55) {
@@ -1950,16 +2650,22 @@
         Math.abs(p.z - this.z) <= (this.kind === 'martial_chi' ? 38 : 30) &&
         p.jumpY < (this.kind === 'martial_chi' ? 88 : 58)
       ) {
-        p.takeDamage(this.dmg, this.facing, this.kind === 'martial_chi' || this.kind === 'bubblegum');
-        spawnSlashSparks(this.x, this.z - this.jumpY, this.facing, pCol);
+        const knockDir = this.vx >= 0 ? 1 : -1;
+        p.takeDamage(this.dmg, knockDir, this.kind === 'martial_chi' || this.kind === 'bubblegum');
+        spawnSlashSparks(this.x, this.z - this.jumpY, knockDir, pCol);
         if (this.kind === 'bubblegum') {
           spawnParticles(this.x, this.z - this.jumpY, '#f472b6', 16, 210, 6);
         }
-        this.dead = true;
-        return;
+        if (this.kind !== 'joey_boomerang') {
+          this.dead = true;
+          return;
+        }
+        // Joey boomerang bounces right back to parent pouch after bonking hero!
+        this.vx = -this.facing * 420;
+        this.age = Math.max(this.age, 0.62);
       }
 
-      if (this.x < game.camX - 120 || this.x > game.camX + CANVAS_W + 120) {
+      if (this.x < game.camX - 160 || this.x > game.camX + CANVAS_W + 160) {
         this.dead = true;
       }
     }
@@ -1976,7 +2682,46 @@
 
       const py = this.z - this.jumpY;
 
-      if (this.kind === 'martial_chi') {
+      if (this.kind === 'joey_boomerang') {
+        // Spinning Curled-Up Baby Kangaroo Joey Boomerang (小袋鼠回力球!)
+        ctx.translate(Math.round(this.x), Math.round(py));
+        ctx.strokeStyle = 'rgba(253, 224, 71, 0.65)';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(0, 0, 24, this.rot, this.rot + Math.PI * 1.35);
+        ctx.stroke();
+
+        ctx.rotate(this.rot);
+        const coatCol = this.color || '#e09148';
+        // Cute kangaroo ears
+        ctx.fillStyle = coatCol;
+        ctx.strokeStyle = '#3b1d0f';
+        ctx.lineWidth = 2.6;
+        for (const ex of [-7, 6]) {
+          ctx.beginPath();
+          ctx.ellipse(ex, -19, 5, 11, ex < 0 ? -0.22 : 0.22, 0, Math.PI * 2);
+          ctx.fill(); ctx.stroke();
+          ctx.fillStyle = '#fda4af';
+          ctx.beginPath();
+          ctx.ellipse(ex, -18, 2.5, 6.5, ex < 0 ? -0.22 : 0.22, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = coatCol;
+        }
+        // Round curled baby body
+        ctx.beginPath();
+        ctx.arc(0, 0, 16, 0, Math.PI * 2);
+        ctx.fill(); ctx.stroke();
+        // Cream belly patch
+        ctx.fillStyle = '#fde6c4';
+        ctx.beginPath();
+        ctx.ellipse(2, 4, 10, 8, 0, 0, Math.PI * 2);
+        ctx.fill();
+        // Determined baby eyes & blush
+        ctx.fillStyle = '#1e120c';
+        ctx.beginPath(); ctx.arc(-4, -3, 2.3, 0, Math.PI * 2); ctx.arc(5, -3, 2.3, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#fb7185';
+        ctx.beginPath(); ctx.arc(-8, 1, 2.6, 0, Math.PI * 2); ctx.arc(9, 1, 2.6, 0, Math.PI * 2); ctx.fill();
+      } else if (this.kind === 'martial_chi') {
         // Giant Golden-Ink Tai-Chi Crescent Energy Wave (冬花武聖大宗師 黃金氣功波!)
         ctx.translate(Math.round(this.x), Math.round(py));
         ctx.scale(this.facing, 1);
@@ -2341,22 +3086,27 @@
     }
 
     startHeavyAttack() {
+      const isRp = this.hero.id === 'redpanda';
       this.isRunning = false;
       this.state = 'heavy';
       this.stateTime = 0;
       this.comboQueued = null;
       this.hitIds.clear();
-      this.frame = 2;
+      this.frame = isRp ? 0 : 2;
       sfx.playSwing(3);
-      this.x += this.facing * (this.hero.id === 'redpanda' ? 28 : 18);
-      spawnComicBubble(this.x - this.facing * 24, this.z - 196, this.hero.heavyShout, {
+      this.x += this.facing * (isRp ? 18 : 18);
+      if (isRp) {
+        spawnParticles(this.x + this.facing * 20, this.z - 22, '#fde047', 12, 220, 6);
+      }
+      spawnComicBubble(this.x - this.facing * 18, this.z - (isRp ? 206 : 196), this.hero.heavyShout, {
         style: 'shout',
         subText: this.hero.heavySub,
         fillA: '#fde047',
-        fillB: this.hero.accent,
-        rx: 94,
-        ry: 42,
+        fillB: isRp ? '#ea580c' : this.hero.accent,
+        rx: isRp ? 98 : 94,
+        ry: 44,
         tailDir: -this.facing,
+        dur: isRp ? 0.78 : 0.62,
       });
     }
 
@@ -2575,8 +3325,9 @@
         }
       }
 
-      // Vertical Jump Physics (skip gravity override during tornadoKick custom flight curve)
-      if (this.state !== 'tornadoKick' && (this.jumpY > 0 || this.vy > 0)) {
+      // Vertical Jump Physics (skip gravity override during tornadoKick & Red Panda Shoryuken rising flight curves)
+      const inShoryukenArc = this.state === 'heavy' && this.hero.id === 'redpanda';
+      if (this.state !== 'tornadoKick' && !inShoryukenArc && (this.jumpY > 0 || this.vy > 0)) {
         this.jumpY += this.vy * dt;
         this.vy -= 1350 * dt;
         if (this.jumpY <= 0) {
@@ -2592,14 +3343,13 @@
       // --- STATE MACHINE ---
       if (this.state === 'hurt') {
         this.stateTime += dt;
-        const hurtSheet = SpriteBank.sheets.hurt;
+        const hurtSheet = SpriteBank.sheets[this.resolveSheet('hurt')];
         const fc = hurtSheet ? hurtSheet.frameCount : 10;
-        const fps = StudioState.getFps('hurt', 15);
+        const fps = StudioState.getFps(this.hero.id === 'redpanda' ? 'rp_hurt' : 'hurt', 15);
         const totalDur = fc / fps;
         this.frame = Math.min(fc - 1, Math.floor((this.stateTime / totalDur) * fc));
-        // Recoil knockback during frames 0-5, steady footing recovery on frames 6-9
         this.x += this.vx * dt;
-        this.vx *= Math.pow(this.frame <= 4 ? 0.08 : 0.01, dt);
+        this.vx *= Math.pow(this.stateTime < totalDur * 0.5 ? 0.08 : 0.01, dt);
         if (this.stateTime >= totalDur && this.jumpY === 0) {
           this.state = 'idle';
           this.animTimer = 0;
@@ -2626,7 +3376,8 @@
         this.stateTime += dt;
         this.x += moveX * 260 * dt;
         this.z += moveZ * 120 * dt;
-        this.frame = this.stateTime < 0.12 ? 3 : 5;
+        const atkFc = SpriteBank.getFrameCount(this.resolveSheet('attack'), 10);
+        this.frame = this.stateTime < 0.12 ? Math.floor(atkFc * 0.3) : Math.floor(atkFc * 0.5);
         if (this.stateTime >= 0.05 && this.stateTime <= 0.22) {
           this.performMeleeHitbox(135, 22, false, 150);
         }
@@ -2661,7 +3412,6 @@
             this.hitIds.clear();
             sfx.playSwing(2);
           } else if (this.isRunning || this.state === 'run') {
-            // RUNNING + LIGHT ATTACK => ROGUE SOCCER KICK (浪子踢球)!!
             this.startDashLightAttack();
           } else {
             this.startLightAttack(1);
@@ -2715,7 +3465,6 @@
               });
             }
           } else if (isMoving) {
-            // Dedicated 10-frame upright Walk animation!
             this.state = 'walk';
             const fps = StudioState.getFps(this.hero.id === 'redpanda' ? 'rp_walk' : 'walk', 11);
             this.animTimer += dt * fps;
@@ -2739,31 +3488,33 @@
     }
 
     /**
-     * 100% Image-faithful 10-frame Instant Burst Dash (閃身步!) triggered by SHIFT!
+     * Multi-frame Instant Burst Dash (閃身步!) — dynamically scales to 10, 20, or 30+ frames!
      */
     updateDash(dt, wantLight, wantHeavy, wantSpecial, wantTornado = false) {
       this.stateTime += dt;
+      const sheetKey = this.resolveSheet('dash');
+      const fc = SpriteBank.getFrameCount(sheetKey, 10);
       const fps = StudioState.getFps(this.hero.id === 'redpanda' ? 'rp_dash' : 'dash', 25);
-      const totalDur = 10 / fps;
+      const totalDur = Math.max(0.32, fc / fps);
       const progress = Math.min(0.999, this.stateTime / totalDur);
-      this.frame = Math.floor(progress * 10);
+      this.frame = Math.floor(progress * fc);
 
       let speed = 0;
-      if (this.frame <= 1) speed = 260;
-      else if (this.frame === 2) speed = 920;
-      else if (this.frame === 3) speed = 1380;
-      else if (this.frame === 4) speed = 1650;
-      else if (this.frame === 5) speed = 1320;
-      else if (this.frame === 6) speed = 740;
-      else if (this.frame === 7) speed = 320;
-      else if (this.frame === 8) speed = 120;
+      if (progress < 0.2) speed = 260;
+      else if (progress < 0.3) speed = 920;
+      else if (progress < 0.4) speed = 1380;
+      else if (progress < 0.5) speed = 1650;
+      else if (progress < 0.6) speed = 1320;
+      else if (progress < 0.7) speed = 740;
+      else if (progress < 0.8) speed = 320;
+      else if (progress < 0.9) speed = 120;
       else speed = 0;
 
       this.x += this.facing * speed * dt;
 
-      if (this.frame >= 3 && this.frame <= 6 && Math.random() < 0.65) {
+      if (progress >= 0.3 && progress <= 0.7 && Math.random() < 0.65) {
         game.afterimages.push({
-          sheetKey: this.resolveSheet('dash'),
+          sheetKey,
           frame: this.frame,
           x: this.x,
           y: this.z - this.jumpY,
@@ -2773,8 +3524,7 @@
         });
       }
 
-      // Cancel brake frames (7-9) right into 龍捲旋風腳 / 浪子踢球 / 星杖衝刺斬 / 能量砲!
-      if (this.frame >= 7) {
+      if (progress >= 0.7) {
         if (wantSpecial) { this.startSpecial(); return; }
         if (wantTornado && (!this.tornadoCd || this.tornadoCd <= 0)) { this.startTornadoKick(); return; }
         if (wantHeavy) { this.startDashAttack(); return; }
@@ -2788,38 +3538,35 @@
     }
 
     /**
-     * 10-frame Rogue Soccer Kick (浪子踢球) — Running + Light Attack!
-     * Launches a blazing spinning Gothic Energy Soccer Ball across the street on frame 4!
+     * Multi-frame Rogue Soccer Kick (浪子踢球 / 閃電踢球) — supports 10 ~ 60+ frames!
      */
     updateDashLightAttack(dt, wantSpecial) {
       this.stateTime += dt;
-      if (wantSpecial && this.frame >= 7) {
+      const isRp = this.hero.id === 'redpanda';
+      const fc = SpriteBank.getFrameCount(this.resolveSheet('dashLightAttack'), 10);
+      const fps = StudioState.getFps(isRp ? 'rp_dashLightAttack' : 'dashLightAttack', 17);
+      const totalDur = Math.max(0.45, fc / fps);
+      const progress = Math.min(0.999, this.stateTime / totalDur);
+      this.frame = Math.floor(progress * fc);
+
+      if (wantSpecial && progress >= 0.7) {
         this.startSpecial();
         return;
       }
 
-      const isRp = this.hero.id === 'redpanda';
-      const fps = StudioState.getFps(isRp ? 'rp_dashLightAttack' : 'dashLightAttack', 17);
-      const totalDur = 10 / fps;
-      const progress = Math.min(0.999, this.stateTime / totalDur);
-      this.frame = Math.floor(progress * 10);
-
-      // Slide-in momentum slowing on kick plant
       let speed = 0;
-      if (this.frame === 0) speed = 310;
-      else if (this.frame === 1) speed = 200;
-      else if (this.frame === 2) speed = 110;
-      else if (this.frame === 3 || this.frame === 4) speed = 80;
-      else if (this.frame === 6 || this.frame === 7) speed = 90;
+      if (progress < 0.12) speed = 310;
+      else if (progress < 0.24) speed = 200;
+      else if (progress < 0.35) speed = 110;
+      else if (progress < 0.55) speed = 80;
+      else if (progress >= 0.62 && progress < 0.8) speed = 90;
       this.x += this.facing * speed * dt;
 
-      // Frame 3: Point-blank instep kick hitbox
-      if (this.frame === 3) {
+      if (progress >= 0.28 && progress <= 0.42) {
         this.performMeleeHitbox(148, 22, false, 180);
       }
 
-      // Frame 4: Launch blazing Energy Soccer Ball + Comic Impact Frame!
-      if (this.frame >= 4 && !this.ballLaunched) {
+      if (progress >= 0.40 && !this.ballLaunched) {
         this.ballLaunched = true;
         game.projectiles.push(new SoccerBall(this.x + this.facing * 68, this.z, this.facing));
         sfx.playHit(true);
@@ -2834,39 +3581,40 @@
     }
 
     /**
-     * 100% Image-faithful 10-frame Dash Heavy Attack (星杖衝刺斬 / 赤焰衝刺撞擊)
+     * Multi-frame Dash Heavy Attack (星杖衝刺斬 / 赤焰衝刺撞擊) — supports 10 ~ 60+ frames!
      */
     updateDashAttack(dt, wantSpecial) {
       this.stateTime += dt;
-      if (wantSpecial && this.frame >= 7) {
+      const fc = SpriteBank.getFrameCount(this.resolveSheet('dashAttack'), 10);
+      const fps = StudioState.getFps(this.hero.id === 'redpanda' ? 'rp_dashAttack' : 'dashAttack', 18);
+      const totalDur = Math.max(0.45, fc / fps);
+      const progress = Math.min(0.999, this.stateTime / totalDur);
+      this.frame = Math.floor(progress * fc);
+
+      if (wantSpecial && progress >= 0.7) {
         this.startSpecial();
         return;
       }
 
-      const fps = StudioState.getFps(this.hero.id === 'redpanda' ? 'rp_dashAttack' : 'dashAttack', 18);
-      const totalDur = 10 / fps;
-      const progress = Math.min(0.999, this.stateTime / totalDur);
-      this.frame = Math.floor(progress * 10);
-
       let speed = 0;
-      if (this.frame <= 1) speed = 320;
-      else if (this.frame <= 3) speed = 480;
-      else if (this.frame === 4) speed = 560;
-      else if (this.frame === 5) speed = 400;
-      else if (this.frame === 6) speed = 260;
-      else if (this.frame === 7) speed = 120;
+      if (progress < 0.2) speed = 320;
+      else if (progress < 0.4) speed = 480;
+      else if (progress < 0.52) speed = 560;
+      else if (progress < 0.62) speed = 400;
+      else if (progress < 0.72) speed = 260;
+      else if (progress < 0.82) speed = 120;
       else speed = 0;
 
       this.x += this.facing * speed * dt;
 
-      if (this.frame === 3 || this.frame === 4) {
+      if (progress >= 0.28 && progress < 0.48) {
         this.performMeleeHitbox(164, 22, false, 140, this.hitIds);
       }
-      if (this.frame === 5 && !this.dashImpactDone) {
+      if (progress >= 0.48 && !this.dashImpactDone) {
         this.dashImpactDone = true;
         triggerImpactFrame('#fde047', 0.06);
       }
-      if (this.frame === 5 || this.frame === 6) {
+      if (progress >= 0.48 && progress <= 0.72) {
         this.performMeleeHitbox(192, 38, true, 360, this.hitIdsStage2);
       }
 
@@ -2887,7 +3635,6 @@
       const fps = act.fps || 14;
       const totalDur = sheet.frameCount / fps;
       this.frame = Math.min(sheet.frameCount - 1, Math.floor(this.stateTime * fps));
-      // Allow custom actions to also deal melee hit during middle frames!
       if (this.frame >= Math.floor(sheet.frameCount * 0.35) && this.frame <= Math.floor(sheet.frameCount * 0.65)) {
         this.performMeleeHitbox(155, 28, true, 240);
       }
@@ -2900,6 +3647,7 @@
     updateMeleeCombo(dt, wantLight, wantHeavy, wantSpecial) {
       this.stateTime += dt;
       if (wantSpecial) {
+        this.jumpY = 0;
         this.startSpecial();
         return;
       }
@@ -2909,16 +3657,20 @@
       }
 
       const isRp = this.hero.id === 'redpanda';
+      const lightFc = SpriteBank.getFrameCount(this.resolveSheet('lightAttack'), 10);
+      const heavyFc = SpriteBank.getFrameCount(this.resolveSheet('attack'), 10);
       const lightFps = StudioState.getFps(isRp ? 'rp_lightAttack' : 'lightAttack', 17);
-      const heavyFps = StudioState.getFps(isRp ? 'rp_attack' : 'heavyAttack', 14);
+      const heavyFps = StudioState.getFps(isRp ? 'rp_attack' : 'heavyAttack', isRp ? 16 : 14);
+
+      const s1End = Math.max(1, Math.round(lightFc * 0.3));
+      const s2End = Math.max(s1End + 1, Math.round(lightFc * 0.6));
 
       if (this.state === 'light1') {
-        // Stage 1: Snappy Straight Jab [0, 1, 2]
-        const seq = [0, 1, 2];
-        const dur = seq.length / lightFps;
-        const idx = Math.min(seq.length - 1, Math.floor((this.stateTime / dur) * seq.length));
-        this.frame = seq[idx];
-        if (this.frame === 2) {
+        const len = s1End;
+        const dur = len / lightFps;
+        const prog = Math.min(0.999, this.stateTime / dur);
+        this.frame = Math.floor(prog * len);
+        if (prog >= 0.55) {
           this.performMeleeHitbox(134, 14, false, 80);
         }
         if (this.stateTime >= dur) {
@@ -2927,12 +3679,11 @@
           else this.state = 'idle';
         }
       } else if (this.state === 'light2') {
-        // Stage 2: Stepping Cross + Sweeping Hook [3, 4, 5]
-        const seq = [3, 4, 5];
-        const dur = seq.length / lightFps;
-        const idx = Math.min(seq.length - 1, Math.floor((this.stateTime / dur) * seq.length));
-        this.frame = seq[idx];
-        if (this.frame === 4 || this.frame === 5) {
+        const len = Math.max(1, s2End - s1End);
+        const dur = len / lightFps;
+        const prog = Math.min(0.999, this.stateTime / dur);
+        this.frame = s1End + Math.floor(prog * len);
+        if (prog >= 0.35) {
           this.performMeleeHitbox(148, 20, false, 125);
         }
         if (this.stateTime >= dur) {
@@ -2941,12 +3692,11 @@
           else this.state = 'idle';
         }
       } else if (this.state === 'light3') {
-        // Stage 3: Crouch -> Soaring Rising Uppercut Finisher [6, 7, 8, 9]
-        const seq = [6, 7, 8, 9];
-        const dur = seq.length / Math.max(10, lightFps * 0.85);
-        const idx = Math.min(seq.length - 1, Math.floor((this.stateTime / dur) * seq.length));
-        this.frame = seq[idx];
-        if (this.frame === 7) {
+        const len = Math.max(1, lightFc - s2End);
+        const dur = len / Math.max(10, lightFps * 0.85);
+        const prog = Math.min(0.999, this.stateTime / dur);
+        this.frame = s2End + Math.floor(prog * len);
+        if (prog >= 0.25 && prog <= 0.65) {
           this.performMeleeHitbox(156, 28, true, 240);
         }
         if (this.stateTime >= dur) {
@@ -2954,16 +3704,58 @@
           else this.state = 'idle';
         }
       } else if (this.state === 'heavy') {
-        // Heavy Attack (Numpad5): Magic Star Wand Overhead Slam [2, 3, 5, 7, 8, 9]
-        const seq = [2, 3, 5, 7, 8, 9];
-        const dur = seq.length / heavyFps;
-        const idx = Math.min(seq.length - 1, Math.floor((this.stateTime / dur) * seq.length));
-        this.frame = seq[idx];
-        if (this.frame === 5 || this.frame === 7 || this.frame === 8) {
-          this.performMeleeHitbox(168, 42, true, 340);
-        }
-        if (this.stateTime >= dur) {
-          this.state = 'idle';
+        if (isRp) {
+          // 🦊 RED PANDA HEAVY ATTACK: 升龍拳 (SHORYUKEN — Rising Dragon Energy Uppercut + High Air Launch!)
+          const dur = Math.max(0.48, heavyFc / heavyFps);
+          const prog = Math.min(0.999, this.stateTime / dur);
+          this.frame = Math.min(heavyFc - 1, Math.floor(prog * heavyFc));
+
+          // Rising Shoryuken flight arc across uppercut frames (22%..78%) + golden energy sparks!
+          if (prog >= 0.22 && prog <= 0.78) {
+            const arcT = (prog - 0.22) / 0.56;
+            this.jumpY = Math.sin(arcT * Math.PI) * 58;
+            this.x += this.facing * (prog < 0.52 ? 175 : 65) * dt;
+            if (Math.random() < 0.72) {
+              spawnParticles(
+                this.x + this.facing * 48 + (Math.random() - 0.5) * 28,
+                this.z - this.jumpY - 64 - Math.random() * 58,
+                Math.random() < 0.55 ? '#fde047' : '#fb923c',
+                2,
+                195,
+                5.5
+              );
+            }
+          } else {
+            this.jumpY = 0;
+          }
+
+          // Active Rising Dragon Uppercut hitbox: launches hit enemies HIGH into the sky (▲ 浮空!!)
+          if (prog >= 0.26 && prog <= 0.68) {
+            this.performMeleeHitbox(176, 44, true, 84, this.hitIds, {
+              wideBack: 42,
+              launchAir: true,
+              launchVy: 595,
+              customWord: '升龍拳!!',
+            });
+          }
+
+          if (this.stateTime >= dur) {
+            this.jumpY = 0;
+            this.state = 'idle';
+          }
+        } else {
+          // 😈 KUROMI HEAVY ATTACK: 寒冰重擊 (Frost Glacier Overhead Smash — scales to 10~60+ frames!)
+          const startIdx = heavyFc > 12 ? 0 : Math.min(2, heavyFc - 1);
+          const span = Math.max(1, heavyFc - startIdx);
+          const dur = span / heavyFps;
+          const prog = Math.min(0.999, this.stateTime / dur);
+          this.frame = startIdx + Math.floor(prog * span);
+          if (prog >= 0.42 && prog <= 0.88) {
+            this.performMeleeHitbox(168, 42, true, 340);
+          }
+          if (this.stateTime >= dur) {
+            this.state = 'idle';
+          }
         }
       }
     }
@@ -3292,6 +4084,57 @@
       cooldown: 1.05,
       armor: true,
       isBoss: true,
+    },
+    zebra_rush: {
+      name: '斑馬怪',
+      spritePrefix: 'enemy_zebra_rush',
+      attackMode: 'dual_unique',
+      hasHurt: true,
+      hp: 132,
+      speedX: 258,
+      speedZ: 126,
+      reach: 146,
+      dmg: 18,
+      score: 520,
+      scale: 1.06,
+      windup: 0.36,
+      attackDur: 0.66,
+      cooldown: 1.02,
+      armor: false,
+      rangedChance: 0.68,
+      colorVariants: [
+        { id: 'white', label: '墨白', rgb: [252, 252, 255], stripeRgb: [46, 52, 64], mode: 'zebra' },
+        { id: 'grey', label: '鐵灰', rgb: [212, 220, 232], stripeRgb: [71, 85, 105], mode: 'zebra' },
+        { id: 'brown', label: '赤棕', rgb: [248, 234, 214], stripeRgb: [120, 62, 34], mode: 'zebra' },
+        { id: 'gold', label: '白金', rgb: [255, 246, 208], stripeRgb: [196, 138, 42], mode: 'zebra' },
+        { id: 'blue', label: '冰藍', rgb: [224, 244, 255], stripeRgb: [29, 98, 184], mode: 'zebra' },
+      ],
+    },
+    joey_kangaroo: {
+      name: '袋鼠怪',
+      spritePrefix: 'enemy_joey_kangaroo',
+      attackMode: 'dual_unique',
+      hasHurt: true,
+      projKind: 'joey_boomerang',
+      hp: 138,
+      speedX: 205,
+      speedZ: 132,
+      reach: 148,
+      dmg: 18,
+      score: 540,
+      scale: 1.08,
+      windup: 0.38,
+      attackDur: 0.70,
+      cooldown: 1.06,
+      armor: false,
+      rangedChance: 0.62,
+      colorVariants: [
+        { id: 'white', label: '琥珀棕', rgb: [224, 145, 72], boomColor: '#e09148', mode: 'kangaroo' },
+        { id: 'grey', label: '銀灰', rgb: [168, 178, 194], boomColor: '#94a3b8', mode: 'kangaroo' },
+        { id: 'pink', label: '草莓粉', rgb: [251, 146, 188], boomColor: '#f472b6', mode: 'kangaroo' },
+        { id: 'cream', label: '雪奶白', rgb: [252, 238, 212], boomColor: '#fde68a', mode: 'kangaroo' },
+        { id: 'blue', label: '晴空藍', rgb: [132, 188, 248], boomColor: '#60a5fa', mode: 'kangaroo' },
+      ],
     },
     kangaroo: {
       name: '🥊 拳擊袋鼠',
@@ -3833,6 +4676,11 @@
       const prefix = this.cfg.spritePrefix;
       const moveFps = StudioState.getAction(`${prefix}_move`)?.fps || 12;
       const koFps = StudioState.getAction(`${prefix}_ko`)?.fps || 12;
+      const moveFc = SpriteBank.getFrameCount(`${prefix}_move`, 10);
+      const atkFc = SpriteBank.getFrameCount(`${prefix}_attack`, 10);
+      const hurtFc = SpriteBank.getFrameCount(`${prefix}_hurt`, 10);
+      const koFc = SpriteBank.getFrameCount(`${prefix}_ko`, 10);
+      const halfFc = Math.max(2, Math.floor(atkFc / 2));
 
       // Airborne & knockback physics (slightly floatier apex gravity when launched for juicy air juggles!)
       if (this.jumpY > 0 || this.vy > 0) {
@@ -3858,9 +4706,8 @@
 
       if (this.state === 'dead') {
         this.stateTime += dt;
-        this.frame = Math.min(9, Math.floor(this.stateTime * koFps));
-        // Let the knocked-out dizzy animation stay visible on the ground before arcade blink-fade
-        if (this.jumpY === 0 && this.stateTime > 1.05) {
+        this.frame = Math.min(koFc - 1, Math.floor(this.stateTime * koFps));
+        if (this.jumpY === 0 && this.stateTime > Math.max(1.05, (koFc / koFps) * 0.9)) {
           this.deadFade -= dt * 1.4;
         }
         return;
@@ -3874,7 +4721,7 @@
         this.stateTime += dt;
         const hurtDur = this.cfg.hasHurt ? 0.36 : 0.28;
         if (this.cfg.hasHurt && SpriteBank.sheets[`${prefix}_hurt`]) {
-          this.frame = Math.min(9, Math.floor((this.stateTime / hurtDur) * 10));
+          this.frame = Math.min(hurtFc - 1, Math.floor((this.stateTime / hurtDur) * hurtFc));
         } else {
           this.frame = this.stateTime < 0.14 ? 0 : 1;
         }
@@ -3886,37 +4733,44 @@
         }
       } else if (this.state === 'knocked') {
         this.stateTime += dt;
-        this.frame = Math.min(7, 2 + Math.floor((this.stateTime / 0.72) * 6));
+        const knockStart = Math.min(koFc - 1, Math.floor(koFc * 0.2));
+        const knockSpan = Math.max(1, Math.floor(koFc * 0.6));
+        this.frame = Math.min(koFc - 2, knockStart + Math.floor((this.stateTime / 0.72) * knockSpan));
         if (this.jumpY === 0 && this.stateTime >= 0.72) {
           this.state = 'approach';
           this.attackCd = 0.55;
         }
       } else if (this.state === 'windup') {
         this.stateTime += dt;
-        this.facing = dx >= 0 ? 1 : -1;
+        // Zebra Rush Mode A turns its back so its hind hooves point directly at the hero!
+        if (this.type === 'zebra_rush' && this.attackStyle === 'A') {
+          this.facing = dx >= 0 ? -1 : 1;
+        } else {
+          this.facing = dx >= 0 ? 1 : -1;
+        }
         const enraged = this.cfg.isBoss && this.hp < this.maxHp * 0.5;
         const dur = enraged ? this.cfg.windup * 0.76 : this.cfg.windup;
         const prog = Math.min(0.99, this.stateTime / dur);
 
         if (this.cfg.attackMode === 'full10') {
           if (this.cfg.windupSheet) {
-            // Slime plays its dedicated 10-frame Angry Reaction sheet (`!` -> steaming mad!)
-            this.frame = Math.min(9, Math.floor(prog * 10));
-          } else if (this.type === 'puffer') {
-            // Pufferfish inflates across frames 0 -> 1 -> 2 -> 3
-            this.frame = Math.min(3, Math.floor(prog * 4));
+            const wFc = SpriteBank.getFrameCount(this.cfg.windupSheet, 10);
+            this.frame = Math.min(wFc - 1, Math.floor(prog * wFc));
           } else {
-            // Windup crouch / charge across frames 0 -> 1 -> 2
-            this.frame = Math.min(2, Math.floor(prog * 3));
+            const wSpan = Math.max(2, Math.floor(atkFc * (this.type === 'puffer' ? 0.4 : 0.3)));
+            this.frame = Math.min(wSpan - 1, Math.floor(prog * wSpan));
           }
         } else if (this.cfg.attackMode === 'donghua_boss') {
-          // Grandmaster gathers golden Tai-Chi chi aura across frames 0 -> 1 -> 2!
-          this.frame = Math.min(2, Math.floor(prog * 3));
+          const wSpan = Math.max(2, Math.floor(atkFc * 0.3));
+          this.frame = Math.min(wSpan - 1, Math.floor(prog * wSpan));
           if (Math.random() < 0.45) {
             spawnParticles(this.x + (Math.random() - 0.5) * 90, this.z - 60 - Math.random() * 120, '#facc15', 1, 90, 6);
           }
         } else {
-          this.frame = this.attackStyle === 'A' ? Math.floor(prog * 2) : 5 + Math.floor(prog * 2);
+          const wSpan = Math.max(1, Math.floor(halfFc * 0.4));
+          this.frame = this.attackStyle === 'A'
+            ? Math.floor(prog * wSpan)
+            : halfFc + Math.floor(prog * wSpan);
         }
 
         if (this.stateTime >= dur) {
@@ -3927,7 +4781,6 @@
           this.projFired = false;
 
           if (this.cfg.attackMode === 'donghua_boss') {
-            // 4 Distinct High-Power Martial Arts Grandmaster Moves!
             const move = this.bossMove || 'wu_punch';
             if (move === 'wu_punch') {
               this.dashVel = this.facing * 650;
@@ -3941,7 +4794,6 @@
               this.dashVel = -this.facing * 60;
               spawnComicBubble(this.x, this.z - 290, '武聖三連氣功波!!', { accent: '#fb923c', sub: 'MARTIAL CHI WAVE!!', style: 'super' });
             } else {
-              // meteor_slam: Leaps high into the sky and crashes down!
               this.dashVel = this.facing * 390;
               this.vy = 450;
               this.jumpY = 6;
@@ -3950,13 +4802,34 @@
             }
             sfx.playSwing(3);
           } else if (this.cfg.attackMode === 'dual_unique') {
-            // Each of the 6 new monsters launches its OWN unique signature motion!
-            if (this.type === 'kangaroo') {
+            if (this.type === 'zebra_rush') {
               if (this.attackStyle === 'A') {
-                // Mode A: Snappy forward boxing step-in 1-2-3 flurry!
+                // Mode A: Turn-around Double Hind-Leg Back Kick toward hero!
+                const towardPlayer = dx >= 0 ? 1 : -1;
+                this.facing = -towardPlayer;
+                this.dashVel = towardPlayer * 145;
+                spawnParticles(this.x + towardPlayer * 28, this.z - 22, '#fef08a', 10, 170, 5);
+              } else {
+                // Mode B: Blazing Stampede Headbutt Rush!
+                this.facing = dx >= 0 ? 1 : -1;
+                this.dashVel = this.facing * 675;
+                spawnParticles(this.x - this.facing * 26, this.z - 16, '#38bdf8', 14, 225, 6);
+              }
+            } else if (this.type === 'joey_kangaroo') {
+              if (this.attackStyle === 'A') {
+                // Mode A: Sky-High Somersault Ground-Pound Meteor Stomp!
+                this.dashVel = this.facing * 320;
+                this.vy = 445;
+                this.jumpY = 6;
+                spawnParticles(this.x, this.z - 12, '#fde68a', 12, 185, 6);
+              } else {
+                // Mode B: Pouch Baby Joey Boomerang Toss!
+                this.dashVel = -this.facing * 45;
+              }
+            } else if (this.type === 'kangaroo') {
+              if (this.attackStyle === 'A') {
                 this.dashVel = this.facing * 260;
               } else {
-                // Mode B: Spring-loaded high Kangaroo Jump-Uppercut Leap!
                 this.dashVel = this.facing * 470;
                 this.vy = 340;
                 this.jumpY = 4;
@@ -3964,61 +4837,48 @@
               }
             } else if (this.type === 'zebra') {
               if (this.attackStyle === 'A') {
-                // Mode A: High-Speed Neon Skateboard Grind Charge!
                 this.dashVel = this.facing * 610;
                 spawnParticles(this.x - this.facing * 24, this.z - 14, '#f472b6', 12, 210, 6);
               } else {
-                // Mode B: Recoil pop launching giant Pink Bubblegum Bomb!
                 this.dashVel = -this.facing * 75;
               }
             } else if (this.type === 'koala') {
-              // Mode A: Headphone Bass Drop AOE (stationary) | Mode B: Hologram Wave Shot
               this.dashVel = this.attackStyle === 'A' ? 0 : -this.facing * 50;
             } else if (this.type === 'capybara') {
               if (this.attackStyle === 'A') {
-                // Mode A: Zen Belly-Flop Quake Jump Slam!
                 this.dashVel = this.facing * 240;
                 this.vy = 310;
                 this.jumpY = 4;
               } else {
-                // Mode B: Calm Zen Exhale Leaf Fan
                 this.dashVel = 0;
               }
             } else if (this.type === 'cactus') {
               if (this.attackStyle === 'A') {
-                // Mode A: Needle Barrage Spin-Dash!
                 this.dashVel = this.facing * 560;
                 spawnParticles(this.x - this.facing * 20, this.z - 32, '#bef264', 12, 200, 6);
               } else {
-                // Mode B: Giant Cactus Club + 3-Way Golden Needle Fan!
                 this.dashVel = -this.facing * 60;
               }
             } else if (this.type === 'wizard_ghost') {
-              // Mode A: Starburst Nova AOE | Mode B: Astral Portal Meteor Shower!
               this.dashVel = this.attackStyle === 'A' ? 0 : -this.facing * 70;
             }
             sfx.playSwing(this.attackStyle === 'A' ? 2 : 1);
           } else if (this.cfg.attackMode === 'full10') {
             if (this.type === 'pig' || this.type === 'sheep') {
-              // Close-range blazing boar / furious sheep horn ramming dash!
               this.dashVel = this.facing * (this.type === 'sheep' ? 560 : 590);
               spawnParticles(this.x - this.facing * 26, this.z - 16, '#fde68a', 12, 200, 6);
             } else if (this.type === 'penguin_king') {
-              // Royal golden belly-slide tackle!
               this.dashVel = this.facing * 540;
               spawnParticles(this.x - this.facing * 24, this.z - 14, '#facc15', 12, 190, 6);
             } else if (this.type === 'penguin_ice') {
-              // Frost belly-slide + icy crystal burst!
               this.dashVel = this.facing * 510;
               spawnParticles(this.x - this.facing * 20, this.z - 22, '#67e8f9', 12, 195, 6);
             } else if (this.type === 'rabbit') {
-              // Fast hopping bunny lunge!
               this.dashVel = this.facing * 570;
               this.vy = 240;
               this.jumpY = 2;
               spawnParticles(this.x - this.facing * 18, this.z - 12, '#f9a8d4', 8, 160, 5);
             } else if (this.type === 'ghost') {
-              // Floating ghost hovers back slightly while launching spectral ghost_orb!
               this.dashVel = -this.facing * 65;
               const orbCol = (this.variant && this.variant.orbColor) || '#c084fc';
               spawnParticles(this.x + this.facing * 20, this.z - 64, orbCol, 10, 150, 5);
@@ -4029,7 +4889,6 @@
               this.dashVel = this.facing * 520;
               spawnParticles(this.x - this.facing * 24, this.z - 45, '#38bdf8', 10, 190, 5);
             } else if (this.type === 'mushroom') {
-              // Mushroom leaps forward into a headbutt ground slam!
               this.dashVel = this.facing * 320;
               this.vy = 290;
               this.jumpY = 2;
@@ -4041,7 +4900,7 @@
               const rushSpeed = (this.type === 'star' || this.type === 'boss') ? 430 : 190;
               this.dashVel = this.facing * rushSpeed;
             } else {
-              this.dashVel = -this.facing * 45; // Subtle firing recoil
+              this.dashVel = -this.facing * 45;
             }
             sfx.playSwing(this.cfg.isBoss ? 3 : (this.attackStyle === 'B' ? 2 : 1));
           }
@@ -4056,14 +4915,14 @@
           const prog = Math.min(0.99, this.stateTime / dur);
           const enraged = this.hp < this.maxHp * 0.5;
           const move = this.bossMove || 'wu_punch';
-          // Sweep across frames 3 -> 9 showcasing 「武」 impact, giant arc, and master guard!
-          this.frame = Math.min(9, 3 + Math.floor(prog * 7));
+          const wSpan = Math.max(2, Math.floor(atkFc * 0.3));
+          this.frame = Math.min(atkFc - 1, wSpan + Math.floor(prog * Math.max(1, atkFc - wSpan)));
 
           if (move === 'wu_punch') {
-            if (this.frame >= 4 && this.frame <= 6 && Math.random() < 0.7) {
+            if (prog >= 0.14 && prog <= 0.55 && Math.random() < 0.7) {
               spawnParticles(this.x + this.facing * 60, this.z - 110, '#facc15', 3, 220, 7);
             }
-            if (!this.didHitPlayer && this.frame >= 4 && this.frame <= 6) {
+            if (!this.didHitPlayer && prog >= 0.14 && prog <= 0.55) {
               const hitDx = (p.x - this.x) * this.facing;
               if (hitDx >= -40 && hitDx <= 235 && Math.abs(p.z - this.z) <= 50 && p.jumpY < 110) {
                 this.didHitPlayer = true;
@@ -4073,18 +4932,17 @@
               }
             }
           } else if (move === 'taichi_nova') {
-            if (!this.projFired && this.frame >= 5) {
+            if (!this.projFired && prog >= 0.28) {
               this.projFired = true;
               addShake(11, 0.24);
               spawnParticles(this.x, this.z - 70, '#fef08a', 26, 320, 8);
               spawnParticles(this.x, this.z - 40, '#1e293b', 16, 260, 7);
-              // 360-degree Tai-Chi Nova shockwave hits heroes on BOTH sides!
               if (Math.hypot(p.x - this.x, (p.z - this.z) * 2.1) <= 215 && p.jumpY < 90) {
                 p.takeDamage(this.cfg.dmg, p.x >= this.x ? 1 : -1, true);
               }
             }
           } else if (move === 'chi_wave') {
-            if (!this.projFired && this.frame >= 5) {
+            if (!this.projFired && prog >= 0.28) {
               this.projFired = true;
               const px = this.x + this.facing * 92;
               const fanVz = enraged ? [-86, -42, 0, 42, 86] : [-58, 0, 58];
@@ -4104,7 +4962,6 @@
               if (Math.hypot(p.x - this.x, (p.z - this.z) * 2.0) <= 205 && p.jumpY < 72) {
                 p.takeDamage(this.cfg.dmg + 4, p.x >= this.x ? 1 : -1, true);
               }
-              // Dual ground chi tremors shooting left & right!
               game.projectiles.push(new EnemyProjectile(this.x + 56, this.z, 1, 'martial_chi', 18, 0));
               game.projectiles.push(new EnemyProjectile(this.x - 56, this.z, -1, 'martial_chi', 18, 0));
             }
@@ -4118,23 +4975,71 @@
         } else if (this.cfg.attackMode === 'dual_unique') {
           const dur = this.cfg.attackDur || 0.64;
           const prog = Math.min(0.99, this.stateTime / dur);
+          const wSpan = Math.max(1, Math.floor(halfFc * 0.4));
+          const actSpanA = Math.max(1, halfFc - wSpan);
+          const actSpanB = Math.max(1, atkFc - (halfFc + wSpan));
           this.frame = this.attackStyle === 'A'
-            ? Math.min(4, 2 + Math.floor(prog * 3))
-            : Math.min(9, 7 + Math.floor(prog * 3));
+            ? Math.min(halfFc - 1, wSpan + Math.floor(prog * actSpanA))
+            : Math.min(atkFc - 1, halfFc + wSpan + Math.floor(prog * actSpanB));
 
-          if (this.type === 'kangaroo') {
+          if (this.type === 'zebra_rush') {
             if (this.attackStyle === 'A') {
-              // Rapid 1-2-3 Boxing Punch Flurry (2 crisp hit windows!)
+              // Mode A: Double Hind-Leg Back Kick (kicks in -this.facing direction!)
+              const kickDir = -this.facing;
+              const hitDx = (p.x - this.x) * kickDir;
+              if (!this.didHitPlayer && prog >= 0.08 && prog <= 0.72) {
+                if (hitDx >= -24 && hitDx <= this.cfg.reach + 20 && Math.abs(p.z - this.z) <= 38 && p.jumpY < 64) {
+                  this.didHitPlayer = true;
+                  addShake(7, 0.16);
+                  p.takeDamage(this.cfg.dmg, kickDir, true);
+                }
+              }
+            } else {
+              // Mode B: Blazing Stampede Headbutt Charge!
+              if (Math.random() < 0.7) {
+                spawnParticles(this.x - this.facing * 32, this.z - 16, '#e2e8f0', 2, 165, 5);
+              }
+              if (!this.didHitPlayer && prog >= 0.12 && prog <= 0.85) {
+                const hitDx = (p.x - this.x) * this.facing;
+                if (hitDx >= -26 && hitDx <= this.cfg.reach + 22 && Math.abs(p.z - this.z) <= 38 && p.jumpY < 62) {
+                  this.didHitPlayer = true;
+                  addShake(8, 0.18);
+                  p.takeDamage(this.cfg.dmg + 3, this.facing, true);
+                }
+              }
+            }
+          } else if (this.type === 'joey_kangaroo') {
+            if (this.attackStyle === 'A') {
+              // Mode A: Sky-High Somersault Ground-Pound Meteor Stomp AOE on landing!
+              if (!this.projFired && this.jumpY <= 5 && this.stateTime > 0.22) {
+                this.projFired = true;
+                addShake(9, 0.20);
+                spawnParticles(this.x, this.z - 12, '#facc15', 20, 260, 7);
+                spawnParticles(this.x, this.z - 10, '#f5f5f4', 14, 210, 6);
+                if (Math.hypot(p.x - this.x, (p.z - this.z) * 2.0) <= 165 && p.jumpY < 60) {
+                  p.takeDamage(this.cfg.dmg + 2, p.x >= this.x ? 1 : -1, true);
+                }
+              }
+            } else if (!this.projFired && prog >= 0.18) {
+              // Mode B: Launch Spinning Baby Joey Boomerang (flies out then returns to pouch!)
+              this.projFired = true;
+              const px = this.x + this.facing * 52;
+              const boomCol = (this.variant && this.variant.boomColor) || '#e09148';
+              game.projectiles.push(new EnemyProjectile(px, this.z, this.facing, 'joey_boomerang', this.cfg.dmg - 2, 0, boomCol, this));
+              spawnParticles(px, this.z - 68, '#fde047', 10, 175, 5);
+            }
+          } else if (this.type === 'kangaroo') {
+            if (this.attackStyle === 'A') {
               const hitDx = (p.x - this.x) * this.facing;
-              if (!this.didHitPlayer && this.frame === 2 && hitDx >= -18 && hitDx <= this.cfg.reach && Math.abs(p.z - this.z) <= 34 && p.jumpY < 60) {
+              if (!this.didHitPlayer && prog < 0.45 && hitDx >= -18 && hitDx <= this.cfg.reach && Math.abs(p.z - this.z) <= 34 && p.jumpY < 60) {
                 this.didHitPlayer = true;
                 p.takeDamage(Math.round(this.cfg.dmg * 0.65), this.facing, false);
               }
-              if (!this.didHitPlayer2 && this.frame === 4 && hitDx >= -18 && hitDx <= this.cfg.reach + 14 && Math.abs(p.z - this.z) <= 34 && p.jumpY < 60) {
+              if (!this.didHitPlayer2 && prog >= 0.55 && hitDx >= -18 && hitDx <= this.cfg.reach + 14 && Math.abs(p.z - this.z) <= 34 && p.jumpY < 60) {
                 this.didHitPlayer2 = true;
                 p.takeDamage(this.cfg.dmg, this.facing, true);
               }
-            } else if (!this.didHitPlayer && (this.frame === 7 || this.frame === 8)) {
+            } else if (!this.didHitPlayer && prog >= 0.15 && prog <= 0.78) {
               const hitDx = (p.x - this.x) * this.facing;
               if (hitDx >= -24 && hitDx <= this.cfg.reach + 24 && Math.abs(p.z - this.z) <= 38 && p.jumpY < 85) {
                 this.didHitPlayer = true;
@@ -4144,14 +5049,14 @@
           } else if (this.type === 'zebra') {
             if (this.attackStyle === 'A') {
               if (Math.random() < 0.65) spawnParticles(this.x - this.facing * 24, this.z - 16, '#f472b6', 2, 160, 5);
-              if (!this.didHitPlayer && (this.frame === 2 || this.frame === 3)) {
+              if (!this.didHitPlayer && prog >= 0.1 && prog <= 0.72) {
                 const hitDx = (p.x - this.x) * this.facing;
                 if (hitDx >= -24 && hitDx <= this.cfg.reach + 14 && Math.abs(p.z - this.z) <= 36 && p.jumpY < 60) {
                   this.didHitPlayer = true;
                   p.takeDamage(this.cfg.dmg, this.facing, true);
                 }
               }
-            } else if (!this.projFired && this.frame >= 7) {
+            } else if (!this.projFired && prog >= 0.15) {
               this.projFired = true;
               const px = this.x + this.facing * 48;
               game.projectiles.push(new EnemyProjectile(px, this.z, this.facing, 'bubblegum', this.cfg.dmg, 0));
@@ -4159,8 +5064,7 @@
             }
           } else if (this.type === 'koala') {
             if (this.attackStyle === 'A') {
-              // Neon Headphones BASS DROP 360° AOE Ring!
-              if (!this.projFired && this.frame >= 2) {
+              if (!this.projFired && prog >= 0.15) {
                 this.projFired = true;
                 addShake(6, 0.16);
                 spawnParticles(this.x, this.z - 55, '#c084fc', 18, 240, 6);
@@ -4169,7 +5073,7 @@
                   p.takeDamage(this.cfg.dmg + 2, p.x >= this.x ? 1 : -1, true);
                 }
               }
-            } else if (!this.projFired && this.frame >= 7) {
+            } else if (!this.projFired && prog >= 0.15) {
               this.projFired = true;
               const px = this.x + this.facing * 48;
               game.projectiles.push(new EnemyProjectile(px, this.z, this.facing, 'holo_wave', this.cfg.dmg, -26));
@@ -4178,7 +5082,6 @@
             }
           } else if (this.type === 'capybara') {
             if (this.attackStyle === 'A') {
-              // Zen Belly-Flop Ground Tremor AOE!
               if (!this.projFired && this.jumpY <= 4 && this.stateTime > 0.16) {
                 this.projFired = true;
                 addShake(8, 0.18);
@@ -4187,7 +5090,7 @@
                   p.takeDamage(this.cfg.dmg, p.x >= this.x ? 1 : -1, true);
                 }
               }
-            } else if (!this.projFired && this.frame >= 7) {
+            } else if (!this.projFired && prog >= 0.15) {
               this.projFired = true;
               const px = this.x + this.facing * 44;
               for (const vz of [-46, 0, 46]) {
@@ -4198,14 +5101,14 @@
           } else if (this.type === 'cactus') {
             if (this.attackStyle === 'A') {
               if (Math.random() < 0.6) spawnParticles(this.x, this.z - 34, '#facc15', 2, 170, 5);
-              if (!this.didHitPlayer && (this.frame === 3 || this.frame === 4)) {
+              if (!this.didHitPlayer && prog >= 0.2 && prog <= 0.85) {
                 const hitDx = (p.x - this.x) * this.facing;
                 if (hitDx >= -24 && hitDx <= this.cfg.reach + 16 && Math.abs(p.z - this.z) <= 38 && p.jumpY < 62) {
                   this.didHitPlayer = true;
                   p.takeDamage(this.cfg.dmg, this.facing, true);
                 }
               }
-            } else if (!this.projFired && this.frame >= 7) {
+            } else if (!this.projFired && prog >= 0.15) {
               this.projFired = true;
               const px = this.x + this.facing * 48;
               for (const vz of [-48, 0, 48]) {
@@ -4215,8 +5118,7 @@
             }
           } else if (this.type === 'wizard_ghost') {
             if (this.attackStyle === 'A') {
-              // Cosmic Starburst Nova AOE!
-              if (!this.projFired && this.frame >= 2) {
+              if (!this.projFired && prog >= 0.15) {
                 this.projFired = true;
                 addShake(6, 0.16);
                 spawnParticles(this.x, this.z - 60, '#fef08a', 18, 250, 6);
@@ -4225,7 +5127,7 @@
                   p.takeDamage(this.cfg.dmg, p.x >= this.x ? 1 : -1, true);
                 }
               }
-            } else if (!this.projFired && this.frame >= 7) {
+            } else if (!this.projFired && prog >= 0.15) {
               this.projFired = true;
               const px = this.x + this.facing * 52;
               game.projectiles.push(new EnemyProjectile(px, this.z, this.facing, 'cosmic_meteor', this.cfg.dmg, -34));
@@ -4401,16 +5303,19 @@
           ? 295
           : (this.type === 'ghost'
             ? 275
-            : (this.type === 'donghua_boss'
-              ? 210
-              : (this.type === 'capybara'
-                ? 135
-                : ((this.type === 'star' || this.type === 'puffer' || this.type === 'slime' || this.type === 'pig' || this.type === 'sheep' || this.type === 'penguin_king' || this.type === 'penguin_ice' || this.type === 'rabbit' || this.type === 'zebra' || this.type === 'cactus') ? 195 : (this.cfg.reach - 10)))));
+            : (this.type === 'joey_kangaroo'
+              ? 230
+              : (this.type === 'donghua_boss' || this.type === 'zebra_rush'
+                ? 210
+                : (this.type === 'capybara'
+                  ? 135
+                  : ((this.type === 'star' || this.type === 'puffer' || this.type === 'slime' || this.type === 'pig' || this.type === 'sheep' || this.type === 'penguin_king' || this.type === 'penguin_ice' || this.type === 'rabbit' || this.type === 'zebra' || this.type === 'cactus') ? 195 : (this.cfg.reach - 10))))));
         const targetX = p.x + this.strafeSide * desiredDist;
         let extraZ = (attackers >= 2 ? this.strafeOffsetZ * 1.8 : 0);
-        // Unique Locomotion: Skateboard Zebra weaves diagonally & Wizard Ghost glides figure-8!
+        // Unique Locomotion Z-paths: Skateboard Zebra drifts, Wizard Ghost glides figure-8, Joey Kangaroo zig-zag hops!
         if (this.type === 'zebra') extraZ += Math.sin(this.animTime * 4.2 + this.id) * 52;
         else if (this.type === 'wizard_ghost') extraZ += Math.sin(this.animTime * 2.6 + this.id) * 38;
+        else if (this.type === 'joey_kangaroo') extraZ += Math.cos(this.animTime * 3.4 + this.id * 1.7) * 46;
         const targetZ = Math.max(Z_MIN, Math.min(Z_MAX, p.z + extraZ));
 
         const toX = targetX - this.x;
@@ -4419,26 +5324,40 @@
 
         if (distToTarget > 14) {
           this.isMoving = true;
-          const speedBoost = (this.type === 'cactus' && (Math.floor(this.animTime * 2) % 3 === 1)) ? 1.42 : 1.0;
+          // Zebra Rush: Stop-and-go hoof-pawing stampede bursts!
+          let speedBoost = 1.0;
+          if (this.type === 'zebra_rush') {
+            const stampedePhase = (this.animTime * 1.55 + (this.id % 3) * 0.33) % 1.0;
+            speedBoost = stampedePhase < 0.28 ? 0.18 : 1.65;
+            if (stampedePhase >= 0.28 && Math.random() < 0.28) {
+              spawnParticles(this.x - this.facing * 22, this.z - 6, '#f5f5f4', 1, 85, 4);
+            }
+          } else if (this.type === 'cactus' && (Math.floor(this.animTime * 2) % 3 === 1)) {
+            speedBoost = 1.42;
+          }
           const mx = (toX / distToTarget) * this.cfg.speedX * speedBoost;
           const mz = (toZ / distToTarget) * this.cfg.speedZ;
           this.x += mx * dt;
           this.z += mz * dt;
-          this.frame = Math.floor(this.animTime * moveFps) % 10;
+          this.frame = Math.floor(this.animTime * moveFps) % moveFc;
 
-          // Unique Locomotion: Boxing Kangaroo moves in springy parabolic hops!
-          if (this.type === 'kangaroo' && this.jumpY === 0) {
+          // Unique Locomotion: Joey Kangaroo bounces in high pogo arcs, Boxing Kangaroo in quick boxing hops!
+          if (this.type === 'joey_kangaroo' && this.jumpY === 0) {
+            this.vy = 265;
+            this.jumpY = 2;
+            spawnParticles(this.x, this.z - 4, '#f5f5f4', 3, 75, 4);
+          } else if (this.type === 'kangaroo' && this.jumpY === 0) {
             this.vy = 215;
             this.jumpY = 2;
           }
-          // Skateboard Zebra leaves subtle neon skate sparks while drifting!
           if (this.type === 'zebra' && Math.random() < 0.25) {
             spawnParticles(this.x - this.facing * 18, this.z - 6, '#f472b6', 1, 70, 3);
           }
         } else {
           this.isMoving = false;
           const idleFps = this.cfg.idleSheet ? (StudioState.getAction(this.cfg.idleSheet)?.fps || 8) : moveFps * 0.7;
-          this.frame = Math.floor(this.animTime * idleFps) % 10;
+          const idleFc = this.cfg.idleSheet ? SpriteBank.getFrameCount(this.cfg.idleSheet, moveFc) : moveFc;
+          this.frame = Math.floor(this.animTime * idleFps) % idleFc;
         }
 
         // Soft separation from other enemies so they don't stack on 1 pixel
@@ -4458,7 +5377,6 @@
         const inRangeZ = Math.abs(dz) <= (this.type === 'donghua_boss' ? 46 : 34);
         if (inRangeZ && this.attackCd <= 0 && (attackers < 2 || this.cfg.isBoss)) {
           if (this.cfg.attackMode === 'donghua_boss') {
-            // Dynamic 4-move Martial Grandmaster Boss selector!
             const r = Math.random();
             if (absDx <= 185) {
               this.bossMove = r < 0.45 ? 'taichi_nova' : (r < 0.80 ? 'wu_punch' : 'meteor_slam');
@@ -4475,8 +5393,10 @@
               this.stateTime = 0;
             }
           } else if (this.cfg.attackMode === 'dual_unique') {
-            const closeDist = (this.type === 'koala' || this.type === 'wizard_ghost') ? 148 : 175;
-            const farDist = (this.type === 'kangaroo') ? 285 : 430;
+            const closeDist = (this.type === 'koala' || this.type === 'wizard_ghost')
+              ? 148
+              : (this.type === 'zebra_rush' ? 158 : 175);
+            const farDist = (this.type === 'kangaroo') ? 285 : (this.type === 'zebra_rush' ? 385 : 430);
             if (absDx <= closeDist) {
               this.attackStyle = 'A';
               this.state = 'windup';
@@ -6730,10 +7650,304 @@
     });
   }
 
+  // ==========================================================================
+  // PURE-JS ZERO-DEPENDENCY PKZIP ARCHIVE BUILDER (One-Click Export All!)
+  // ==========================================================================
+  const ZipBuilder = (() => {
+    const crcTable = new Uint32Array(256);
+    for (let n = 0; n < 256; n++) {
+      let c = n;
+      for (let k = 0; k < 8; k++) {
+        c = (c & 1) ? (0xedb88320 ^ (c >>> 1)) : (c >>> 1);
+      }
+      crcTable[n] = c >>> 0;
+    }
+    function crc32(bytes) {
+      let c = 0xffffffff;
+      for (let i = 0; i < bytes.length; i++) {
+        c = crcTable[(c ^ bytes[i]) & 0xff] ^ (c >>> 8);
+      }
+      return (c ^ 0xffffffff) >>> 0;
+    }
+    function createZipBlob(files) {
+      const enc = new TextEncoder();
+      const localParts = [];
+      const centralParts = [];
+      let offset = 0;
+
+      for (const f of files) {
+        const nameBytes = enc.encode(f.name);
+        const data = f.data instanceof Uint8Array ? f.data : enc.encode(String(f.data));
+        const crc = crc32(data);
+
+        const lh = new Uint8Array(30 + nameBytes.length);
+        const lv = new DataView(lh.buffer);
+        lv.setUint32(0, 0x04034b50, true);
+        lv.setUint16(4, 20, true);
+        lv.setUint16(6, 0x0800, true); // UTF-8 filename flag
+        lv.setUint16(8, 0, true);      // STORE (0)
+        lv.setUint16(10, 0, true);
+        lv.setUint16(12, 0x5821, true);
+        lv.setUint32(14, crc, true);
+        lv.setUint32(18, data.length, true);
+        lv.setUint32(22, data.length, true);
+        lv.setUint16(26, nameBytes.length, true);
+        lv.setUint16(28, 0, true);
+        lh.set(nameBytes, 30);
+
+        const ch = new Uint8Array(46 + nameBytes.length);
+        const cv = new DataView(ch.buffer);
+        cv.setUint32(0, 0x02014b50, true);
+        cv.setUint16(4, 20, true);
+        cv.setUint16(6, 20, true);
+        cv.setUint16(8, 0x0800, true);
+        cv.setUint16(10, 0, true);
+        cv.setUint16(12, 0, true);
+        cv.setUint16(14, 0x5821, true);
+        cv.setUint32(16, crc, true);
+        cv.setUint32(20, data.length, true);
+        cv.setUint32(24, data.length, true);
+        cv.setUint16(28, nameBytes.length, true);
+        cv.setUint16(30, 0, true);
+        cv.setUint16(32, 0, true);
+        cv.setUint16(34, 0, true);
+        cv.setUint16(36, 0, true);
+        cv.setUint32(38, 0, true);
+        cv.setUint32(42, offset, true);
+        ch.set(nameBytes, 46);
+
+        localParts.push(lh, data);
+        centralParts.push(ch);
+        offset += lh.length + data.length;
+      }
+
+      const centralSize = centralParts.reduce((s, p) => s + p.length, 0);
+      const eocd = new Uint8Array(22);
+      const ev = new DataView(eocd.buffer);
+      ev.setUint32(0, 0x06054b50, true);
+      ev.setUint16(4, 0, true);
+      ev.setUint16(6, 0, true);
+      ev.setUint16(8, files.length, true);
+      ev.setUint16(10, files.length, true);
+      ev.setUint32(12, centralSize, true);
+      ev.setUint32(16, offset, true);
+      ev.setUint16(20, 0, true);
+
+      return new Blob([...localParts, ...centralParts, eocd], { type: 'application/zip' });
+    }
+    return { createZipBlob };
+  })();
+
+  let isExportingAllZip = false;
+  async function exportAllCharactersAnimationsZip(triggerBtn = null) {
+    if (isExportingAllZip) return;
+    isExportingAllZip = true;
+    const origText = triggerBtn ? triggerBtn.textContent : '';
+    const setStatus = (txt) => { if (triggerBtn) triggerBtn.textContent = txt; };
+
+    try {
+      const sanitize = (s) => String(s || '').replace(/[\\/:*?"<>|]/g, '_').replace(/\s+/g, '_');
+      const tasks = [];
+      for (let ci = 0; ci < StudioState.characters.length; ci++) {
+        const ch = StudioState.characters[ci];
+        for (let ai = 0; ai < ch.actions.length; ai++) {
+          const act = ch.actions[ai];
+          const sh = SpriteBank.sheets[act.sheetKey] || (act.fallbackSheet ? SpriteBank.sheets[act.fallbackSheet] : null);
+          if (sh && sh.img) {
+            tasks.push({ ci, ch, ai, act, sh, isFallback: !SpriteBank.sheets[act.sheetKey] });
+          }
+        }
+      }
+
+      const zipFiles = [];
+      const manifest = {
+        game: 'Star Fish 國小 大亂鬥 (SchoolFight-TV)',
+        exportedAt: new Date().toISOString(),
+        recommendedCellSize: '300x264',
+        totalCharacters: StudioState.characters.length,
+        totalAnimationSheets: tasks.length,
+        characters: [],
+      };
+
+      const charMap = new Map();
+      const encodeSheetPngBytes = async (sh) => {
+        const src = sh.img && sh.img.src ? String(sh.img.src) : '';
+        if (!sh.custom && (src.endsWith('.png') || src.startsWith('data:image/png'))) {
+          try {
+            const r = await fetch(src);
+            if (r.ok) return new Uint8Array(await r.arrayBuffer());
+          } catch (_) {}
+        }
+        const c = document.createElement('canvas');
+        c.width = sh.img.width;
+        c.height = sh.img.height;
+        c.getContext('2d').drawImage(sh.img, 0, 0);
+        return await new Promise((resolve) => {
+          c.toBlob(async (blob) => {
+            if (!blob) return resolve(new Uint8Array(0));
+            resolve(new Uint8Array(await blob.arrayBuffer()));
+          }, 'image/png');
+        });
+      };
+
+      const BATCH = 8;
+      for (let start = 0; start < tasks.length; start += BATCH) {
+        const slice = tasks.slice(start, start + BATCH);
+        setStatus(`⏳ 打包中 (${Math.min(tasks.length, start + slice.length)}/${tasks.length})...`);
+        const encodedBatch = await Promise.all(slice.map((t) => encodeSheetPngBytes(t.sh)));
+
+        for (let k = 0; k < slice.length; k++) {
+          const { ci, ch, ai, act, sh, isFallback } = slice[k];
+          const pngBytes = encodedBatch[k];
+          const folder = `${String(ci + 1).padStart(2, '0')}_${sanitize(ch.id)}_${sanitize(ch.name).slice(0, 18)}`;
+          const baseName = `${String(ai + 1).padStart(2, '0')}_${sanitize(act.id)}_${sh.cols}x${sh.rows}_${sh.frameCount}f`;
+          const pngPath = `${folder}/${baseName}.png`;
+          zipFiles.push({ name: pngPath, data: pngBytes });
+
+          const metaEntry = {
+            actionId: act.id,
+            label: act.label,
+            sheetKey: act.sheetKey,
+            isFallback,
+            cols: sh.cols,
+            rows: sh.rows,
+            frameCount: sh.frameCount,
+            fps: act.fps,
+            width: sh.img.width,
+            height: sh.img.height,
+            cellW: sh.cellW,
+            cellH: sh.cellH,
+            anchorX: sh.anchorX,
+            anchorY: sh.anchorY,
+            pngFile: pngPath,
+          };
+          if (!charMap.has(ch.id)) {
+            const chRec = { id: ch.id, name: ch.name, folder, actions: [] };
+            charMap.set(ch.id, chRec);
+            manifest.characters.push(chRec);
+          }
+          charMap.get(ch.id).actions.push(metaEntry);
+        }
+      }
+
+      const readme = [
+        '《Star Fish 國小 大亂鬥》全部角色連續動畫精靈表打包檔',
+        '======================================================',
+        `匯出時間：${manifest.exportedAt}`,
+        `角色總數：${manifest.totalCharacters} 位角色｜連續動畫精靈表總數：${manifest.totalAnimationSheets} 張`,
+        '',
+        '【建議新精靈表上傳規格（支援 10 ~ 60+ 幀！）】',
+        '1. 幀數與排列：不限 10 幀！支援 5×2 (10幀)、5×4 (20幀)、5×6 或 6×5 (30幀) 等任意整齊網格。',
+        '2. 單格標準尺寸：遊戲內部每格為 300×264 px（主角腳底錨點 136,242；怪物腳底錨點 150,236）。',
+        '   ※ 您上傳任意高解析度圖片（如 1500×1056、2048×2048、2752×1536）皆可！',
+        '   ※ 內建「🤖 智能辨識 v2」會自動偵測欄×列與總幀數、自動去背、谷底切格不裁切大特效，並自動等比縮放進 300×264 絕不爆框切割！',
+        '3. AI 生圖小撇步：請使用單一純色深色背景（推薦 #0d1220 深藍黑）或透明 PNG，所有幀角色朝右、大小一致、格與格之間留些微空隙、不加文字標籤。',
+        '4. 雲端直接覆寫：於網頁「⚙️ 動作與按鍵設定」上方填入 GitHub Token 後，點各動作的「☁️ 雲端覆寫」即可直接更新 GitHub Pages 雲端！',
+      ].join('\n');
+
+      zipFiles.unshift({ name: 'animations_manifest.json', data: JSON.stringify(manifest, null, 2) });
+      zipFiles.unshift({ name: 'README_動畫規格與匯入說明.txt', data: readme });
+
+      const zipBlob = ZipBuilder.createZipBlob(zipFiles);
+      const url = URL.createObjectURL(zipBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `StarFish_All_Characters_Animations_${tasks.length}sheets.zip`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+      setStatus(`✅ 已匯出 ${tasks.length} 張動畫！`);
+      setTimeout(() => setStatus(origText), 2800);
+    } catch (err) {
+      console.error('Export all ZIP error:', err);
+      setStatus('❌ 匯出失敗');
+      setTimeout(() => setStatus(origText), 2600);
+    } finally {
+      isExportingAllZip = false;
+    }
+  }
+
   function renderGearStudio() {
     const tabsEl = document.getElementById('charTabs');
     const container = document.getElementById('spriteSlots');
     if (!container) return;
+
+    // 0. Inject / Sync Cloud Direct Overwrite + 10~60f Smart Upload Spec Bar above #charTabs!
+    const studioSec = document.getElementById('gearStudio');
+    if (studioSec && tabsEl) {
+      let cloudBar = document.getElementById('cloudSyncStudioBar');
+      if (!cloudBar) {
+        cloudBar = document.createElement('div');
+        cloudBar.id = 'cloudSyncStudioBar';
+        cloudBar.style.cssText = 'display:flex;flex-direction:column;gap:8px;padding:10px 12px;border-radius:10px;background:rgba(15,23,42,0.75);border:1px solid rgba(56,189,248,0.35);font-size:12px;color:#e2e8f0;';
+        studioSec.insertBefore(cloudBar, tabsEl);
+      }
+      cloudBar.innerHTML = `
+        <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;">
+          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;">
+            <strong style="color:#38bdf8;">☁️ 雲端直連覆寫 (GitHub Pages)</strong>
+            <label style="display:inline-flex;align-items:center;gap:4px;">Repo
+              <input id="inpCloudRepo" type="text" value="${CloudSyncManager.repo}" style="width:175px;padding:3px 6px;border-radius:5px;background:#0f172a;color:#f8fafc;border:1px solid #334155;font-size:11px;font-family:monospace;" />
+            </label>
+            <label style="display:inline-flex;align-items:center;gap:4px;">Token
+              <input id="inpCloudToken" type="password" placeholder="貼上 GitHub Token (ghp_... 僅存本機)" value="${CloudSyncManager.token}" style="width:210px;padding:3px 6px;border-radius:5px;background:#0f172a;color:#f8fafc;border:1px solid #334155;font-size:11px;font-family:monospace;" />
+            </label>
+            <label style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;" title="上傳任意尺寸 PNG 時自動偵測幾欄×幾列與有效總幀數（支援 10~60+ 幀）並自動去背與等比縮放！">
+              <input id="chkSmartAutoGrid" type="checkbox" ${CloudSyncManager.smartAutoGrid ? 'checked' : ''} />
+              <span style="color:#fde047;font-weight:700;">🤖 智能辨識格數・去背・防切割縮放</span>
+            </label>
+            <label style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;" title="勾選後，每次上傳 PNG 完會自動同步覆寫至 GitHub 雲端">
+              <input id="chkCloudAuto" type="checkbox" ${CloudSyncManager.autoUpload ? 'checked' : ''} />
+              <span>上傳後自動覆寫雲端</span>
+            </label>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <button id="btnPushAllCustomCloud" class="mini-btn" style="border-color:#38bdf8;color:#38bdf8;">☁️ 同步所有修改至雲端</button>
+            <span id="cloudSyncStatusMsg" style="font-size:11px;color:#94a3b8;">設定儲存於本機 IndexedDB，填 Token 可直接覆寫雲端</span>
+          </div>
+        </div>
+        <div style="font-size:11px;color:#cbd5e1;line-height:1.45;border-top:1px dashed rgba(148,163,184,0.25);padding-top:6px;">
+          📐 <strong style="color:#f8fafc;">PNG 動畫上傳最佳規格（支援 10 ~ 60 幀，不限 10 幀！）：</strong>
+          推薦排列 <code style="color:#38bdf8;">5×2 (10幀)</code>、<code style="color:#38bdf8;">5×4 (20幀)</code>、<code style="color:#38bdf8;">5×6 或 6×5 (30幀)</code>；單格標準 <code style="color:#fde047;">300×264 px</code>（或任意高解析度大圖，系統會<strong>自動偵測角色高度並等比縮放進 300×264</strong>，大爆炸特效絕不爆框或被切半！）。生圖建議：<strong>純色深藍黑背景 (#0d1220) 或透明 PNG、角色統一朝右、格間留少許空隙、勿壓文字</strong>。怪物雙攻擊表：前半幀＝近戰A、後半幀＝遠程/特技B（如 20 幀則 1-10 幀為 A、11-20 幀為 B）。
+        </div>
+      `;
+
+      const inpRepo = document.getElementById('inpCloudRepo');
+      const inpTok = document.getElementById('inpCloudToken');
+      const chkAutoGrid = document.getElementById('chkSmartAutoGrid');
+      const chkAutoUp = document.getElementById('chkCloudAuto');
+      const btnPushAll = document.getElementById('btnPushAllCustomCloud');
+      const statusMsg = document.getElementById('cloudSyncStatusMsg');
+
+      if (inpRepo) inpRepo.addEventListener('change', () => { CloudSyncManager.repo = inpRepo.value.trim() || 'snell0804/SchoolFight-TV'; CloudSyncManager.saveConfig(); });
+      if (inpTok) inpTok.addEventListener('change', () => { CloudSyncManager.token = inpTok.value.trim(); CloudSyncManager.saveConfig(); if (statusMsg) statusMsg.textContent = CloudSyncManager.token ? '✅ Token 已記住（本機加密儲存）' : '尚未填入 Token'; });
+      if (chkAutoGrid) chkAutoGrid.addEventListener('change', () => { CloudSyncManager.smartAutoGrid = chkAutoGrid.checked; CloudSyncManager.saveConfig(); });
+      if (chkAutoUp) chkAutoUp.addEventListener('change', () => { CloudSyncManager.autoUpload = chkAutoUp.checked; CloudSyncManager.saveConfig(); });
+      if (btnPushAll) {
+        btnPushAll.addEventListener('click', async () => {
+          try {
+            const customKeys = Object.entries(SpriteBank.sheets).filter(([, v]) => v && v.custom).map(([k]) => k);
+            btnPushAll.disabled = true;
+            for (let i = 0; i < customKeys.length; i++) {
+              if (statusMsg) statusMsg.textContent = `⏳ 正在覆寫雲端 (${i + 1}/${customKeys.length}): ${customKeys[i]}...`;
+              await CloudSyncManager.uploadSheetToCloud(customKeys[i], 'batch');
+            }
+            // Even if only FPS/keybinds changed, sync cloud_manifest.json!
+            if (customKeys.length === 0) {
+              const manifestObj = CloudSyncManager.buildCloudManifestObject({});
+              const manifestB64 = btoa(unescape(encodeURIComponent(JSON.stringify(manifestObj, null, 2))));
+              await CloudSyncManager.ghPutFile('assets/cloud_manifest.json', manifestB64, 'chore(manifest): sync FPS & action settings via Gear Studio');
+            }
+            if (statusMsg) { statusMsg.style.color = '#4ade80'; statusMsg.textContent = `✅ 雲端覆寫完成！GitHub Pages 約 30~60 秒自動生效`; }
+          } catch (err) {
+            if (statusMsg) { statusMsg.style.color = '#f87171'; statusMsg.textContent = `❌ ${err.message}`; }
+          } finally {
+            btnPushAll.disabled = false;
+          }
+        });
+      }
+    }
 
     // 1. Character Selector Tabs
     if (tabsEl) {
@@ -6776,6 +7990,8 @@
     studioPreviewItems.length = 0;
 
     const activeChar = StudioState.getActiveChar();
+    const isEnemyChar = !!activeChar.builtinEnemy;
+    const isBossChar = activeChar.id === 'enemy_donghua_boss';
 
     for (const act of activeChar.actions) {
       const ownSheet = SpriteBank.sheets[act.sheetKey];
@@ -6790,11 +8006,11 @@
 
       const card = document.createElement('div');
       card.className = `slot-card ${ownSheet ? 'loaded' : ''}`;
+      card.id = `slot_card_${act.id}`;
 
-      // Card Header
       const statusClass = ownSheet ? 'ready' : (fallbackSheet ? 'fallback' : 'empty');
       const statusText = ownSheet
-        ? `已載入 ${ownSheet.frameCount}幀`
+        ? `${ownSheet.custom ? '✨自訂 ' : '已載入 '}${ownSheet.cols}×${ownSheet.rows} (${ownSheet.frameCount}幀)`
         : (fallbackSheet ? '沿用備用表（可獨立上傳）' : '尚未上傳');
 
       const head = document.createElement('div');
@@ -6805,7 +8021,6 @@
       sub.className = 'slot-sub';
       sub.textContent = act.triggerDesc || '';
 
-      // Live Multi-Frame Preview Canvas (300x264 unclipped!)
       const prevWrap = document.createElement('div');
       prevWrap.className = 'slot-preview';
       const pCanvas = document.createElement('canvas');
@@ -6825,7 +8040,6 @@
         pState,
       });
 
-      // Play/Pause, Frame Stepper, & Keybind Row
       const animCtrl = document.createElement('div');
       animCtrl.className = 'anim-controls';
 
@@ -6869,7 +8083,6 @@
       stepGroup.appendChild(btnNext);
       animCtrl.appendChild(stepGroup);
 
-      // Rebindable Key Button (or trigger pill)
       if (act.rebindable) {
         const isListening = StudioState.rebindingActionId === act.id;
         const keyBtn = document.createElement('button');
@@ -6894,7 +8107,7 @@
           : ((act.id === 'dashAttack' || act.id === 'rp_dashAttack')
             ? `觸發：跑步 + ${heavyKey}（衝刺重攻）`
             : (act.id === 'rp_attack'
-              ? `觸發：${heavyKey}（重攻擊）`
+              ? `觸發：${heavyKey}（重攻擊・升龍拳）`
               : (act.id === 'rp_lightAttack'
                 ? `觸發：${lightKey}（輕攻擊）`
                 : (act.id === 'rp_dash'
@@ -6911,7 +8124,7 @@
         animCtrl.appendChild(tag);
       }
 
-      // Live FPS Slider (4 ~ 40 FPS)
+      // Live FPS Slider (4 ~ 60 FPS — ideal for 20~30 frame silky animations!)
       const fpsRow = document.createElement('div');
       fpsRow.className = 'fps-row';
       const fpsLabel = document.createElement('span');
@@ -6919,7 +8132,7 @@
       const fpsRange = document.createElement('input');
       fpsRange.type = 'range';
       fpsRange.min = '4';
-      fpsRange.max = '40';
+      fpsRange.max = '60';
       fpsRange.step = '0.5';
       fpsRange.value = String(act.fps);
       fpsRange.addEventListener('input', () => {
@@ -6930,7 +8143,7 @@
       fpsRow.appendChild(fpsLabel);
       fpsRow.appendChild(fpsRange);
 
-      // Unlimited Frame Grid (Cols × Rows + Exact FrameCount, not limited to 10 frames!)
+      // Unlimited Frame Grid (Cols × Rows + Exact FrameCount, 10 ~ 120+ frames!)
       const actionsRow = document.createElement('div');
       actionsRow.className = 'slot-actions';
       actionsRow.style.flexWrap = 'wrap';
@@ -6943,28 +8156,28 @@
       inCols.type = 'number';
       inCols.min = '1';
       inCols.max = '32';
-      inCols.value = String(act.cols || (ownSheet ? ownSheet.cols : 5));
-      inCols.title = '欄數 (Cols，最多 32)';
+      inCols.value = String(ownSheet ? ownSheet.cols : (act.cols || 5));
+      inCols.title = '欄數 (Cols，如 5 或 6)';
       const inRows = document.createElement('input');
       inRows.type = 'number';
       inRows.min = '1';
-      inRows.max = '16';
-      inRows.value = String(act.rows || (ownSheet ? ownSheet.rows : 2));
-      inRows.title = '列數 (Rows，最多 16)';
+      inRows.max = '24';
+      inRows.value = String(ownSheet ? ownSheet.rows : (act.rows || 2));
+      inRows.title = '列數 (Rows，如 2=10幀、4=20幀、6=30幀)';
       const inFrames = document.createElement('input');
       inFrames.type = 'number';
       inFrames.min = '1';
       inFrames.max = '512';
-      const curFc = act.frameCount || (ownSheet ? ownSheet.frameCount : (act.cols || 5) * (act.rows || 2));
+      const curFc = ownSheet ? ownSheet.frameCount : (act.frameCount || (act.cols || 5) * (act.rows || 2));
       inFrames.value = String(curFc);
-      inFrames.title = '有效總禎數（支援超過 10 禎，如 12/16/24/30 禎）';
+      inFrames.title = '有效總幀數（支援 10 / 20 / 30 / 60+ 幀連續動畫！）';
       inFrames.style.width = '40px';
 
       const syncGridLive = (autoMatchTotal = false) => {
         const cVal = Math.max(1, Math.min(32, parseInt(inCols.value, 10) || 5));
-        const rVal = Math.max(1, Math.min(16, parseInt(inRows.value, 10) || 2));
+        const rVal = Math.max(1, Math.min(24, parseInt(inRows.value, 10) || 2));
         const maxF = cVal * rVal;
-        let fVal = autoMatchTotal ? maxF : Math.max(1, Math.min(maxF, parseInt(inFrames.value, 10) || maxF));
+        const fVal = autoMatchTotal ? maxF : Math.max(1, Math.min(maxF, parseInt(inFrames.value, 10) || maxF));
         inCols.value = String(cVal);
         inRows.value = String(rVal);
         inFrames.value = String(fVal);
@@ -6978,8 +8191,9 @@
           sh.cellW = sh.img.width / cVal;
           sh.cellH = sh.img.height / rVal;
           sh.frameCount = fVal;
+          SpriteBank.tintedCache = {};
           const statusEl = head.querySelector('.slot-status');
-          if (statusEl) statusEl.textContent = `已載入 ${fVal}幀`;
+          if (statusEl) statusEl.textContent = `${sh.custom ? '✨自訂 ' : '已載入 '}${cVal}×${rVal} (${fVal}幀)`;
         }
         StudioState.save();
       };
@@ -6991,10 +8205,9 @@
       gridWrap.appendChild(inCols);
       gridWrap.appendChild(document.createTextNode('×'));
       gridWrap.appendChild(inRows);
-      gridWrap.appendChild(document.createTextNode(' 禎'));
+      gridWrap.appendChild(document.createTextNode(' 幀'));
       gridWrap.appendChild(inFrames);
 
-      // Import (PNG/WebP/JPG or .anim.json) + Export (PNG & JSON) buttons
       const rightBtns = document.createElement('div');
       rightBtns.style.display = 'flex';
       rightBtns.style.flexWrap = 'wrap';
@@ -7011,6 +8224,38 @@
 
       const safeBase = `${activeChar.id}_${act.id}`;
 
+      const btnCloudUp = document.createElement('button');
+      btnCloudUp.className = 'mini-btn';
+      btnCloudUp.style.borderColor = 'rgba(56,189,248,0.65)';
+      btnCloudUp.style.color = '#38bdf8';
+      btnCloudUp.textContent = '☁️ 雲端覆寫';
+      btnCloudUp.title = '直接將此動作目前的精靈表與幀數設定覆寫上傳至 GitHub 雲端 (snell0804/SchoolFight-TV)';
+      btnCloudUp.disabled = !effectiveSheet;
+      btnCloudUp.addEventListener('click', async () => {
+        const statusMsg = document.getElementById('cloudSyncStatusMsg');
+        btnCloudUp.disabled = true;
+        btnCloudUp.textContent = '⏳ 上傳中...';
+        try {
+          const targetKey = ownSheet ? act.sheetKey : effectiveSheetKey;
+          const path = await CloudSyncManager.uploadSheetToCloud(targetKey, act.label);
+          btnCloudUp.textContent = '✅ 已覆寫雲端';
+          if (statusMsg) {
+            statusMsg.style.color = '#4ade80';
+            statusMsg.textContent = `✅ 已成功覆寫雲端 ${path} (${effectiveSheet.frameCount}幀)！`;
+          }
+          setTimeout(() => { btnCloudUp.textContent = '☁️ 雲端覆寫'; btnCloudUp.disabled = false; }, 2400);
+        } catch (err) {
+          btnCloudUp.textContent = '❌ 失敗';
+          if (statusMsg) {
+            statusMsg.style.color = '#f87171';
+            statusMsg.textContent = `❌ ${err.message}`;
+          }
+          const inpTok = document.getElementById('inpCloudToken');
+          if (inpTok && !CloudSyncManager.token) inpTok.focus();
+          setTimeout(() => { btnCloudUp.textContent = '☁️ 雲端覆寫'; btnCloudUp.disabled = false; }, 2400);
+        }
+      });
+
       const btnExpPng = document.createElement('button');
       btnExpPng.className = 'mini-btn';
       btnExpPng.textContent = '💾 匯出PNG';
@@ -7024,8 +8269,8 @@
 
       const btnExpJson = document.createElement('button');
       btnExpJson.className = 'mini-btn';
-      btnExpJson.textContent = '📦 匯出JSON';
-      btnExpJson.title = '匯出完整動作檔（含精靈圖、欄列數、總禎數、FPS）';
+      btnExpJson.textContent = '📦 JSON';
+      btnExpJson.title = '匯出完整動作檔（含精靈圖、欄列數、總幀數、FPS）';
       btnExpJson.disabled = !effectiveSheet;
       btnExpJson.addEventListener('click', () => {
         if (!effectiveSheet) return;
@@ -7051,8 +8296,8 @@
 
       const uploadLabel = document.createElement('label');
       uploadLabel.className = 'upload-label';
-      uploadLabel.textContent = '📥 匯入';
-      uploadLabel.title = '匯入 PNG / WebP / JPG 精靈表，或匯入 .anim.json 動作檔（支援超過 10 禎）';
+      uploadLabel.textContent = '📤 上傳PNG';
+      uploadLabel.title = '上傳 PNG / WebP / JPG 精靈表（自動智能辨識 10~60+ 幀、去背、防切割縮放並永久保存本機；亦可直接覆寫雲端！）';
       const fileInput = document.createElement('input');
       fileInput.type = 'file';
       fileInput.accept = 'image/png,image/webp,image/jpeg,.json,application/json';
@@ -7067,21 +8312,31 @@
               const pkg = JSON.parse(String(reader.result || '{}'));
               if (!pkg.imageDataUrl) return;
               const img = new Image();
-              img.onload = () => {
+              img.onload = async () => {
                 const cVal = Math.max(1, Math.min(32, parseInt(pkg.cols, 10) || 5));
-                const rVal = Math.max(1, Math.min(16, parseInt(pkg.rows, 10) || 2));
+                const rVal = Math.max(1, Math.min(24, parseInt(pkg.rows, 10) || 2));
                 const fVal = Math.max(1, Math.min(cVal * rVal, parseInt(pkg.frameCount, 10) || (cVal * rVal)));
-                SpriteBank.sheets[act.sheetKey] = SpriteBank.createExactSheet(
+                const built = SpriteBank.createExactSheet(
                   img, cVal, rVal, fVal,
-                  typeof pkg.anchorX === 'number' ? pkg.anchorX : 136,
-                  typeof pkg.anchorY === 'number' ? pkg.anchorY : 242
+                  typeof pkg.anchorX === 'number' ? pkg.anchorX : (isEnemyChar ? 150 : 136),
+                  typeof pkg.anchorY === 'number' ? pkg.anchorY : (isEnemyChar && !isBossChar ? 236 : 242)
                 );
+                SpriteBank.sheets[act.sheetKey] = built;
+                SpriteBank.tintedCache = {};
                 act.cols = cVal;
                 act.rows = rVal;
                 act.frameCount = fVal;
-                if (typeof pkg.fps === 'number' && pkg.fps >= 4 && pkg.fps <= 40) act.fps = pkg.fps;
+                if (typeof pkg.fps === 'number' && pkg.fps >= 4 && pkg.fps <= 60) act.fps = pkg.fps;
                 if (act.sheetKey === 'idle' || act.sheetKey === 'rp_idle') SpriteBank.buildPortrait();
                 StudioState.save();
+                await CustomSpriteDB.putSheet(act.sheetKey, {
+                  dataUrl: pkg.imageDataUrl,
+                  cols: cVal,
+                  rows: rVal,
+                  frameCount: fVal,
+                  anchorX: built.anchorX,
+                  anchorY: built.anchorY,
+                });
                 renderGearStudio();
               };
               img.src = pkg.imageDataUrl;
@@ -7093,18 +8348,54 @@
         } else {
           reader.onload = () => {
             const cVal = Math.max(1, Math.min(32, parseInt(inCols.value, 10) || 5));
-            const rVal = Math.max(1, Math.min(16, parseInt(inRows.value, 10) || 2));
+            const rVal = Math.max(1, Math.min(24, parseInt(inRows.value, 10) || 2));
             const maxF = cVal * rVal;
             const fVal = Math.max(1, Math.min(maxF, parseInt(inFrames.value, 10) || maxF));
             const img = new Image();
-            img.onload = () => {
-              SpriteBank.sheets[act.sheetKey] = SpriteBank.processUploadedSheet(img, cVal, rVal, fVal);
-              act.cols = cVal;
-              act.rows = rVal;
-              act.frameCount = fVal;
+            img.onload = async () => {
+              const processed = SpriteBank.processUploadedSheet(img, cVal, rVal, fVal, {
+                isEnemy: isEnemyChar,
+                isBoss: isBossChar,
+                autoDetect: CloudSyncManager.smartAutoGrid,
+              });
+              SpriteBank.sheets[act.sheetKey] = processed;
+              SpriteBank.tintedCache = {};
+              act.cols = processed.cols;
+              act.rows = processed.rows;
+              act.frameCount = processed.frameCount;
               if (act.sheetKey === 'idle' || act.sheetKey === 'rp_idle') SpriteBank.buildPortrait();
               StudioState.save();
+
+              // Persist clean processed PNG to browser IndexedDB so refresh never loses it!
+              const cleanDataUrl = SpriteBank.exportSheetToDataUrl(processed);
+              await CustomSpriteDB.putSheet(act.sheetKey, {
+                dataUrl: cleanDataUrl,
+                cols: processed.cols,
+                rows: processed.rows,
+                frameCount: processed.frameCount,
+                anchorX: processed.anchorX,
+                anchorY: processed.anchorY,
+              });
+
+              let finalColor = '#fde047';
+              let finalMsg = `✨ 智能處理完成：${processed.cols}×${processed.rows} 共 ${processed.frameCount} 幀（已等比防切割縮放並永久存於本機）`;
+
+              if (CloudSyncManager.autoUpload && CloudSyncManager.token) {
+                try {
+                  const p = await CloudSyncManager.uploadSheetToCloud(act.sheetKey, act.label);
+                  finalColor = '#4ade80';
+                  finalMsg = `✅ 已自動覆寫雲端 ${p} (${processed.frameCount}幀)！`;
+                } catch (err) {
+                  finalColor = '#f87171';
+                  finalMsg = `⚠ 本機已儲存，但雲端覆寫失敗：${err.message}`;
+                }
+              }
               renderGearStudio();
+              const statusMsg = document.getElementById('cloudSyncStatusMsg');
+              if (statusMsg) {
+                statusMsg.style.color = finalColor;
+                statusMsg.textContent = finalMsg;
+              }
             };
             img.src = reader.result;
           };
@@ -7114,6 +8405,7 @@
       uploadLabel.appendChild(fileInput);
 
       rightBtns.appendChild(uploadLabel);
+      rightBtns.appendChild(btnCloudUp);
       rightBtns.appendChild(btnExpPng);
       rightBtns.appendChild(btnExpJson);
 
@@ -7662,6 +8954,39 @@
       meta.className = 'gp-bind-meta';
       meta.innerHTML = `<span class="gp-bind-title">${def.label}</span><span class="gp-bind-desc">${def.desc}</span>`;
 
+      const btnWrap = document.createElement('div');
+      btnWrap.style.display = 'flex';
+      btnWrap.style.alignItems = 'center';
+      btnWrap.style.gap = '6px';
+
+      const studioSlotMap = {
+        lightAttack: ['lightAttack', 'rp_lightAttack'],
+        heavyAttack: ['heavyAttack', 'rp_attack'],
+        special: ['special', 'rp_special'],
+        dash: ['dash', 'rp_dash'],
+        tornado: ['tornadoKick', 'rp_tornadoKick'],
+        jump: ['jump', 'rp_idle'],
+      };
+      if (studioSlotMap[def.id]) {
+        const pngShortcut = document.createElement('button');
+        pngShortcut.className = 'mini-btn';
+        pngShortcut.style.borderColor = 'rgba(56,189,248,0.6)';
+        pngShortcut.style.color = '#38bdf8';
+        pngShortcut.textContent = '📤 PNG/雲端';
+        pngShortcut.title = '前往此招式的 PNG 連續動畫上傳與雲端覆寫槽位';
+        pngShortcut.addEventListener('click', () => {
+          const isRp = game.selectedHeroId === 'redpanda';
+          StudioState.activeCharId = isRp ? 'redpanda' : 'kuromi';
+          const targetSlot = studioSlotMap[def.id][isRp ? 1 : 0];
+          toggleGearStudio(true);
+          setTimeout(() => {
+            const el = document.getElementById(`slot_card_${targetSlot}`);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 80);
+        });
+        btnWrap.appendChild(pngShortcut);
+      }
+
       const isListening = GamepadManager.rebindingId === def.id;
       const btn = document.createElement('button');
       btn.className = `gp-bind-btn ${isListening ? 'listening' : ''}`;
@@ -7673,9 +8998,10 @@
         GamepadManager.rebindingId = isListening ? null : def.id;
         renderGamepadSettings();
       });
+      btnWrap.appendChild(btn);
 
       card.appendChild(meta);
-      card.appendChild(btn);
+      card.appendChild(btnWrap);
       grid.appendChild(card);
     }
   }
@@ -7701,6 +9027,8 @@
   // ==========================================================================
   const btnGear = document.getElementById('btnGear');
   const btnCloseGear = document.getElementById('btnCloseGear');
+  const btnExportAllTop = document.getElementById('btnExportAllTop');
+  const btnExportAllZip = document.getElementById('btnExportAllZip');
   const btnGamepad = document.getElementById('btnGamepad');
   const btnCloseGamepad = document.getElementById('btnCloseGamepad');
   const btnGpPresetStd = document.getElementById('btnGpPresetStd');
@@ -7740,6 +9068,8 @@
 
   if (btnGear) btnGear.addEventListener('click', () => toggleGearStudio());
   if (btnCloseGear) btnCloseGear.addEventListener('click', () => toggleGearStudio(false));
+  if (btnExportAllTop) btnExportAllTop.addEventListener('click', () => exportAllCharactersAnimationsZip(btnExportAllTop));
+  if (btnExportAllZip) btnExportAllZip.addEventListener('click', () => exportAllCharactersAnimationsZip(btnExportAllZip));
   if (btnGamepad) btnGamepad.addEventListener('click', () => toggleGamepadPanel());
   if (btnCloseGamepad) btnCloseGamepad.addEventListener('click', () => toggleGamepadPanel(false));
   if (btnGpPresetStd) btnGpPresetStd.addEventListener('click', () => GamepadManager.applyPreset('standard'));
