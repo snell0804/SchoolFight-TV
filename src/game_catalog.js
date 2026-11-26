@@ -74,6 +74,8 @@
     enemyChar('enemy_cactus', '🌵 針刺仙人掌（條紋針刺怪）', 'enemy_cactus', true, { enemyKey: 'cactus' }),
     (() => {
       const wg = enemyChar('enemy_wizard_ghost', '🧙‍♂️ 星空巫師幽靈（星辰法師怪）', 'enemy_wizard_ghost', true, { enemyKey: 'wizard_ghost' });
+      const mv = wg.actions.find((a) => a.id === 'enemy_wizard_ghost_move');
+      if (mv) Object.assign(mv, { cols: 5, rows: 4, frames: 20, fps: 16 });
       const atk = wg.actions.find((a) => a.id === 'enemy_wizard_ghost_attack');
       if (atk) Object.assign(atk, { cols: 5, rows: 4, frames: 20, fps: 18 });
       return wg;
