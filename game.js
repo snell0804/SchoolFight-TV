@@ -2706,14 +2706,16 @@
   // GOTHIC ENERGY SOCCER BALL PROJECTILE (浪子踢球!)
   // --------------------------------------------------------------------------
   class SoccerBall {
-    constructor(x, z, facing) {
+    constructor(x, z, facing, style = 'gothic') {
       this.x = x;
       this.z = z;
       this.facing = facing;
+      this.style = style; // 'gothic' (Kuromi) | 'lightning' (Red Panda)
       this.vx = facing * 760;
-      this.jumpY = 24;
+      this.jumpY = style === 'lightning' ? 42 : 24;
       this.vy = 180;
       this.rot = 0;
+      this.age = 0;
       this.life = 1.05;
       this.hitsLeft = 4;
       this.hitIds = new Set();
@@ -2721,10 +2723,13 @@
     }
 
     update(dt) {
+      this.age += dt;
       this.life -= dt;
       if (this.life <= 0) { this.dead = true; return; }
       this.x += this.vx * dt;
       this.rot += this.facing * 26 * dt;
+
+      const isLightning = this.style === 'lightning';
 
       // Energetic soccer bounce along the street!
       this.jumpY += this.vy * dt;
@@ -2733,18 +2738,20 @@
         this.jumpY = 16;
         this.vy = Math.abs(this.vy) * 0.62;
         if (this.vy < 140) this.vy = 190;
-        spawnParticles(this.x, this.z, '#e879f9', 4, 120, 4);
+        spawnParticles(this.x, this.z, isLightning ? '#38bdf8' : '#e879f9', 5, 130, 4);
       }
 
-      // Fiery purple trail sparks
-      if (Math.random() < 0.75) {
+      // Trail sparks matching hero's kick style
+      if (Math.random() < 0.8) {
         game.particles.push({
           x: this.x - this.facing * 14,
-          y: this.z - this.jumpY + (Math.random() - 0.5) * 14,
-          vx: -this.facing * 110,
-          vy: (Math.random() - 0.5) * 40,
-          size: 5 + Math.random() * 4,
-          color: Math.random() < 0.5 ? '#f472b6' : '#facc15',
+          y: this.z - this.jumpY + (Math.random() - 0.5) * 16,
+          vx: -this.facing * 120,
+          vy: (Math.random() - 0.5) * 48,
+          size: 4.5 + Math.random() * 4,
+          color: isLightning
+            ? (Math.random() < 0.55 ? '#67e8f9' : '#fde047')
+            : (Math.random() < 0.5 ? '#f472b6' : '#facc15'),
           life: 0.16,
           maxLife: 0.16,
           gravity: 0,
@@ -2757,13 +2764,14 @@
         if (Math.abs(e.x - this.x) < 58 && Math.abs(e.z - this.z) <= 44) {
           this.hitIds.add(e.id);
           this.hitsLeft--;
-          e.takeHit(28, this.facing, true, 320, '#facc15', 'GOAL!!');
+          e.takeHit(28, this.facing, true, 320, isLightning ? '#38bdf8' : '#facc15', isLightning ? '⚡ GOAL!!' : 'GOAL!!');
           sfx.playHit(true);
           game.hitstop = 0.048;
           addShake(8, 0.16);
           if (this.hitsLeft <= 0) {
             this.dead = true;
-            spawnParticles(this.x, this.z - this.jumpY, '#f472b6', 16, 280, 7);
+            spawnParticles(this.x, this.z - this.jumpY, isLightning ? '#38bdf8' : '#f472b6', 16, 280, 7);
+            if (isLightning) spawnParticles(this.x, this.z - this.jumpY, '#fde047', 10, 240, 5);
             return;
           }
         }
@@ -2788,8 +2796,125 @@
       ctx.ellipse(this.x, this.z + 2, 22, 7, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // Blazing energy comet tail
       const by = this.z - this.jumpY;
+
+      if (this.style === 'lightning') {
+        // Red Panda's Golden-White Lightning Soccer Ball (matches rp_dashLightAttack sprite!)
+        const tailLen = 112;
+        const tail = ctx.createLinearGradient(this.x, by, this.x - this.facing * tailLen, by);
+        tail.addColorStop(0, 'rgba(103, 232, 249, 0.92)');
+        tail.addColorStop(0.35, 'rgba(56, 189, 248, 0.65)');
+        tail.addColorStop(0.7, 'rgba(250, 204, 21, 0.35)');
+        tail.addColorStop(1, 'rgba(56, 189, 248, 0)');
+        ctx.fillStyle = tail;
+        ctx.beginPath();
+        ctx.moveTo(this.x, by - 22);
+        ctx.lineTo(this.x - this.facing * tailLen, by);
+        ctx.lineTo(this.x, by + 22);
+        ctx.closePath();
+        ctx.fill();
+
+        // Crackling cyan & gold lightning bolts along the comet tail
+        const phase = Math.floor(this.age * 24);
+        for (let b = 0; b < 2; b++) {
+          ctx.beginPath();
+          const yOff = b === 0 ? -11 : 11;
+          ctx.moveTo(this.x - this.facing * 8, by + yOff);
+          for (let s = 1; s <= 4; s++) {
+            const tx = this.x - this.facing * (8 + s * 22);
+            const jag = (((phase + s * 3 + b * 7) % 3) - 1) * (10 - s * 1.4);
+            ctx.lineTo(tx, by + yOff * (1 - s * 0.22) + jag);
+          }
+          ctx.strokeStyle = b === 0 ? '#67e8f9' : '#fde047';
+          ctx.lineWidth = b === 0 ? 3 : 2.2;
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+          ctx.stroke();
+        }
+
+        // Radiant cyan electric aura halo around the ball
+        const halo = ctx.createRadialGradient(this.x, by, 14, this.x, by, 34);
+        halo.addColorStop(0, 'rgba(103, 232, 249, 0.72)');
+        halo.addColorStop(0.55, 'rgba(34, 211, 238, 0.36)');
+        halo.addColorStop(1, 'rgba(34, 211, 238, 0)');
+        ctx.fillStyle = halo;
+        ctx.beginPath();
+        ctx.arc(this.x, by, 34, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Spinning Golden-White Soccer Ball
+        const r = 20;
+        ctx.translate(Math.round(this.x), Math.round(by));
+        ctx.rotate(this.rot);
+
+        const bodyGrad = ctx.createRadialGradient(-5, -5, 3, 0, 0, r);
+        bodyGrad.addColorStop(0, '#ffffff');
+        bodyGrad.addColorStop(0.6, '#fef9c3');
+        bodyGrad.addColorStop(1, '#fde047');
+        ctx.fillStyle = bodyGrad;
+        ctx.beginPath();
+        ctx.arc(0, 0, r, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Clip inside ball for clean golden pentagon panels & seam lines
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(0, 0, r - 1, 0, Math.PI * 2);
+        ctx.clip();
+
+        // Golden seam lines from center to outer pentagons
+        ctx.strokeStyle = '#d97706';
+        ctx.lineWidth = 1.6;
+        for (let i = 0; i < 5; i++) {
+          const a = (i / 5) * Math.PI * 2 - Math.PI / 2;
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r);
+          ctx.stroke();
+        }
+
+        const drawPentagon = (cx, cy, pr, rotOff) => {
+          ctx.beginPath();
+          for (let k = 0; k < 5; k++) {
+            const a = (k / 5) * Math.PI * 2 + rotOff;
+            const px = cx + Math.cos(a) * pr;
+            const py = cy + Math.sin(a) * pr;
+            if (k === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+          }
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+        };
+
+        // Center golden pentagon + 5 surrounding golden pentagons
+        ctx.fillStyle = '#f59e0b';
+        ctx.strokeStyle = '#b45309';
+        ctx.lineWidth = 1.3;
+        drawPentagon(0, 0, 6.8, -Math.PI / 2);
+        for (let i = 0; i < 5; i++) {
+          const a = (i / 5) * Math.PI * 2 - Math.PI / 2;
+          drawPentagon(Math.cos(a) * 16.5, Math.sin(a) * 16.5, 6.2, a + Math.PI);
+        }
+        ctx.restore();
+
+        // Crisp golden outer border + cyan electric rim sheen
+        ctx.lineWidth = 3.2;
+        ctx.strokeStyle = '#d97706';
+        ctx.beginPath();
+        ctx.arc(0, 0, r, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.lineWidth = 1.6;
+        ctx.strokeStyle = 'rgba(103, 232, 249, 0.85)';
+        ctx.beginPath();
+        ctx.arc(0, 0, r + 2.2, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.restore();
+        return;
+      }
+
+      // Blazing purple gothic energy comet tail (Kuromi)
       const tail = ctx.createLinearGradient(this.x, by, this.x - this.facing * 95, by);
       tail.addColorStop(0, 'rgba(244, 114, 182, 0.9)');
       tail.addColorStop(0.5, 'rgba(168, 85, 247, 0.5)');
@@ -3871,9 +3996,10 @@
         this.performMeleeHitbox(148, 22, false, 180);
       }
 
-      if (progress >= 0.40 && !this.ballLaunched) {
+      const launchAt = isRp ? 0.50 : 0.40;
+      if (progress >= launchAt && !this.ballLaunched) {
         this.ballLaunched = true;
-        game.projectiles.push(new SoccerBall(this.x + this.facing * 68, this.z, this.facing));
+        game.projectiles.push(new SoccerBall(this.x + this.facing * 68, this.z, this.facing, isRp ? 'lightning' : 'gothic'));
         sfx.playHit(true);
         addShake(7, 0.14);
         triggerImpactFrame(isRp ? '#fde047' : '#f0abfc', 0.055);
