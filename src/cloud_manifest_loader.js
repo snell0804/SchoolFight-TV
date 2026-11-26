@@ -107,6 +107,7 @@
   async function applyToGame(spriteBank, manifestUrl = './cloud_manifest.json') {
     if (!spriteBank) return null;
     spriteBank.customActionsByChar = spriteBank.customActionsByChar || {};
+    spriteBank.actionFx = spriteBank.actionFx || {};
     spriteBank.cloudBackgrounds = spriteBank.cloudBackgrounds || [];
     spriteBank.cloudItems = spriteBank.cloudItems || [];
 
@@ -129,6 +130,10 @@
       const sorted = [...(ch.actions || [])].sort((a, b) => (Number(b.priority) || 0) - (Number(a.priority) || 0));
       spriteBank.customActionsByChar[ch.id] = sorted;
       for (const act of sorted) {
+        if (act.fx) {
+          if (act.sheetKey && !spriteBank.actionFx[act.sheetKey]) spriteBank.actionFx[act.sheetKey] = act.fx;
+          if (act.id && !spriteBank.actionFx[act.id]) spriteBank.actionFx[act.id] = act.fx;
+        }
         if (!act.sheetKey || (!act.png && !act.webp)) continue;
         tasks.push((async () => {
           const img = await fetchCachedImage(`sheet:${act.sheetKey}`, act.webp, act.png, act.updatedAt);

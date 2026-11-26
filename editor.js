@@ -250,6 +250,7 @@
         condition: typeof ov.condition === 'string' ? ov.condition : a.condition,
         priority: typeof ov.priority === 'number' ? ov.priority : a.priority,
         loop: typeof ov.loop === 'boolean' ? ov.loop : a.loop,
+        fx: ov.fx ? { ...defaultFxForAction(a.id), ...ov.fx } : (a.fx ? { ...defaultFxForAction(a.id), ...a.fx } : defaultFxForAction(a.id)),
         localSaved: true,
         localDataUrl: ov.dataUrl || null,
         localUpdatedAt: ov.updatedAt || null,
@@ -483,7 +484,9 @@
             cols, rows, frames: Math.max(1, Math.min(cols * rows, Number(a.frames) || cols * rows)),
             fps: Math.max(1, Math.min(60, Number(a.fps) || 12)), loop: !!a.loop,
             trigger: a.trigger || 'on_attack', condition: (a.condition || '').trim(),
-            priority: Number(a.priority) || 0, updatedAt: now,
+            priority: Number(a.priority) || 0,
+            ...(a.fx ? { fx: a.fx } : {}),
+            updatedAt: now,
           };
           ch.actions = ch.actions.filter((x) => x.id !== a.id).concat(next);
           prTitle = `Editor: update character ${payload.id}/${a.id}`;
@@ -727,6 +730,328 @@
           <p class="text-xs text-slate-500 mt-2">可用變數：<code>{{ whitelist.join(', ') }}</code></p>
         </details>
       </div>`,
+  };
+
+  const FX_PRESETS = {
+    dash: { shakeEnabled: false, shakeAmp: 4, shakeDur: 0.12, flashEnabled: false, flashColor: '#67e8f9', flashDur: 0.05, particlesEnabled: false, particleColor: '#67e8f9', particleCount: 10, bubbleEnabled: true, bubbleText: '閃身步!!', bubbleSubText: 'FLASH STEP!', bubbleStyle: 'shout', bubbleFillA: '#67e8f9', bubbleFillB: '#6366f1', bubbleTextColor: '#ffffff', bubbleDur: 0.56 },
+    rp_dash: { shakeEnabled: false, shakeAmp: 4, shakeDur: 0.12, flashEnabled: false, flashColor: '#67e8f9', flashDur: 0.05, particlesEnabled: false, particleColor: '#67e8f9', particleCount: 10, bubbleEnabled: true, bubbleText: '閃身步!!', bubbleSubText: 'FLASH STEP!', bubbleStyle: 'shout', bubbleFillA: '#67e8f9', bubbleFillB: '#6366f1', bubbleTextColor: '#ffffff', bubbleDur: 0.56 },
+    heavyAttack: { shakeEnabled: true, shakeAmp: 8, shakeDur: 0.18, flashEnabled: false, flashColor: '#38bdf8', flashDur: 0.06, particlesEnabled: false, particleColor: '#38bdf8', particleCount: 12, bubbleEnabled: true, bubbleText: '寒冰重擊!!', bubbleSubText: 'FROST GLACIER CRUSH!!', bubbleStyle: 'shout', bubbleFillA: '#fde047', bubbleFillB: '#a855f7', bubbleTextColor: '#ffffff', bubbleDur: 0.62 },
+    rp_attack: { shakeEnabled: true, shakeAmp: 9, shakeDur: 0.2, flashEnabled: false, flashColor: '#fde047', flashDur: 0.06, particlesEnabled: true, particleColor: '#fde047', particleCount: 12, bubbleEnabled: true, bubbleText: '升龍拳!!', bubbleSubText: 'SHORYUKEN!!', bubbleStyle: 'shout', bubbleFillA: '#fde047', bubbleFillB: '#ea580c', bubbleTextColor: '#ffffff', bubbleDur: 0.78 },
+    dashLightAttack: { shakeEnabled: true, shakeAmp: 7, shakeDur: 0.14, flashEnabled: true, flashColor: '#f0abfc', flashDur: 0.055, particlesEnabled: false, particleColor: '#f472b6', particleCount: 12, bubbleEnabled: true, bubbleText: '浪子踢球!!', bubbleSubText: 'ROGUE SHOOT!!', bubbleStyle: 'shout', bubbleFillA: '#e879f9', bubbleFillB: '#7e22ce', bubbleTextColor: '#ffffff', bubbleDur: 0.66 },
+    rp_dashLightAttack: { shakeEnabled: true, shakeAmp: 7, shakeDur: 0.14, flashEnabled: true, flashColor: '#fde047', flashDur: 0.055, particlesEnabled: false, particleColor: '#38bdf8', particleCount: 14, bubbleEnabled: true, bubbleText: '閃電踢球!!', bubbleSubText: 'THUNDER SHOOT!!', bubbleStyle: 'shout', bubbleFillA: '#67e8f9', bubbleFillB: '#2563eb', bubbleTextColor: '#ffffff', bubbleDur: 0.66 },
+    dashAttack: { shakeEnabled: true, shakeAmp: 8, shakeDur: 0.18, flashEnabled: true, flashColor: '#fde047', flashDur: 0.06, particlesEnabled: false, particleColor: '#e879f9', particleCount: 14, bubbleEnabled: true, bubbleText: '星杖衝刺斬!!', bubbleSubText: 'STAR SLASH!!', bubbleStyle: 'shout', bubbleFillA: '#fde047', bubbleFillB: '#a855f7', bubbleTextColor: '#ffffff', bubbleDur: 0.66 },
+    rp_dashAttack: { shakeEnabled: true, shakeAmp: 9, shakeDur: 0.18, flashEnabled: true, flashColor: '#fde047', flashDur: 0.06, particlesEnabled: false, particleColor: '#fb923c', particleCount: 16, bubbleEnabled: true, bubbleText: '赤焰衝刺撞擊!!', bubbleSubText: 'BLAZING TACKLE!!', bubbleStyle: 'shout', bubbleFillA: '#fde047', bubbleFillB: '#f97316', bubbleTextColor: '#ffffff', bubbleDur: 0.66 },
+    tornadoKick: { shakeEnabled: true, shakeAmp: 7, shakeDur: 0.16, flashEnabled: false, flashColor: '#e879f9', flashDur: 0.06, particlesEnabled: true, particleColor: '#e879f9', particleCount: 14, bubbleEnabled: true, bubbleText: '龍捲旋風腳!!', bubbleSubText: 'TORNADO HURRICANE KICK!!', bubbleStyle: 'shout', bubbleFillA: '#e879f9', bubbleFillB: '#7e22ce', bubbleTextColor: '#ffffff', bubbleDur: 0.72 },
+    rp_tornadoKick: { shakeEnabled: true, shakeAmp: 8, shakeDur: 0.16, flashEnabled: false, flashColor: '#fde047', flashDur: 0.06, particlesEnabled: true, particleColor: '#fde047', particleCount: 14, bubbleEnabled: true, bubbleText: '烈焰龍捲旋風腳!!', bubbleSubText: 'BLAZING TORNADO KICK!!', bubbleStyle: 'shout', bubbleFillA: '#fde047', bubbleFillB: '#ea580c', bubbleTextColor: '#ffffff', bubbleDur: 0.72 },
+    special: { shakeEnabled: true, shakeAmp: 11, shakeDur: 0.25, flashEnabled: true, flashColor: '#f472b6', flashDur: 0.085, particlesEnabled: true, particleColor: '#e879f9', particleCount: 20, bubbleEnabled: true, bubbleText: '能量砲十連發!!', bubbleSubText: 'MEGA CANNON BLAST!!', bubbleStyle: 'super', bubbleFillA: '#fde047', bubbleFillB: '#e11d48', bubbleTextColor: '#ffffff', bubbleDur: 0.92 },
+    rp_special: { shakeEnabled: true, shakeAmp: 12, shakeDur: 0.25, flashEnabled: true, flashColor: '#fb923c', flashDur: 0.085, particlesEnabled: true, particleColor: '#fde047', particleCount: 22, bubbleEnabled: true, bubbleText: '赤焰百拳連擊!!', bubbleSubText: '100-FIST FLAME RUSH!!', bubbleStyle: 'super', bubbleFillA: '#fde047', bubbleFillB: '#ea580c', bubbleTextColor: '#ffffff', bubbleDur: 0.92 },
+  };
+
+  function defaultFxForAction(actionId = '') {
+    const base = {
+      shakeEnabled: false, shakeAmp: 7, shakeDur: 0.16,
+      flashEnabled: false, flashColor: '#fde047', flashDur: 0.06,
+      particlesEnabled: false, particleColor: '#38bdf8', particleCount: 14,
+      bubbleEnabled: false, bubbleText: '', bubbleSubText: '',
+      bubbleStyle: 'shout', bubbleFillA: '#fde047', bubbleFillB: '#f97316',
+      bubbleTextColor: '#ffffff', bubbleDur: 0.66,
+    };
+    return { ...base, ...(FX_PRESETS[actionId] || {}) };
+  }
+
+  /** Interactive VFX, Screen Shake, and Comic Dialogue Bubble Designer with Live Canvas Preview. */
+  const FxBubbleEditor = {
+    props: { modelValue: { type: Object, required: true } },
+    emits: ['update:modelValue'],
+    setup(props, { emit }) {
+      const canvas = ref(null);
+      const shaking = ref(false);
+      let animRaf = 0;
+      let testAge = 99;
+      let testParts = [];
+
+      const fx = computed(() => props.modelValue || defaultFxForAction());
+      function patch(obj) { emit('update:modelValue', { ...fx.value, ...obj }); }
+
+      const shakePresets = [
+        { label: '關閉', v: { shakeEnabled: false } },
+        { label: '微震', v: { shakeEnabled: true, shakeAmp: 4, shakeDur: 0.12 } },
+        { label: '重擊', v: { shakeEnabled: true, shakeAmp: 9, shakeDur: 0.2 } },
+        { label: '大地震', v: { shakeEnabled: true, shakeAmp: 18, shakeDur: 0.42 } },
+      ];
+      const bubbleThemes = [
+        { label: '⚡ 雷電青金', a: '#67e8f9', b: '#2563eb', t: '#ffffff' },
+        { label: '🔥 赤焰橘黃', a: '#fde047', b: '#ea580c', t: '#ffffff' },
+        { label: '💜 哥德紫粉', a: '#f472b6', b: '#7e22ce', t: '#ffffff' },
+        { label: '💬 純白漫畫', a: '#ffffff', b: '#e2e8f0', t: '#0f172a' },
+      ];
+
+      function triggerPreview() {
+        testAge = 0;
+        testParts = [];
+        if (fx.value.particlesEnabled) {
+          const n = Math.max(4, Math.min(40, Number(fx.value.particleCount) || 14));
+          for (let i = 0; i < n; i++) {
+            const ang = (i / n) * Math.PI * 2 + Math.random() * 0.4;
+            const spd = 70 + Math.random() * 140;
+            testParts.push({ x: 160, y: 74, vx: Math.cos(ang) * spd, vy: Math.sin(ang) * spd, r: 3 + Math.random() * 4, life: 0.5 });
+          }
+        }
+        if (fx.value.shakeEnabled) {
+          shaking.value = true;
+          setTimeout(() => { shaking.value = false; }, Math.max(120, (Number(fx.value.shakeDur) || 0.16) * 1000));
+        }
+      }
+
+      function drawPreview() {
+        const c = canvas.value;
+        if (!c) return;
+        const ctx = c.getContext('2d');
+        const w = c.width, h = c.height;
+        ctx.clearRect(0, 0, w, h);
+
+        // Dark stage backdrop
+        const bg = ctx.createLinearGradient(0, 0, 0, h);
+        bg.addColorStop(0, '#1e1b4b'); bg.addColorStop(1, '#312e81');
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, 0, w, h);
+
+        const cur = fx.value;
+        let ox = 0, oy = 0;
+        if (cur.shakeEnabled && testAge < (Number(cur.shakeDur) || 0.16)) {
+          const amp = Math.min(18, Number(cur.shakeAmp) || 6) * (1 - testAge / Math.max(0.05, Number(cur.shakeDur) || 0.16));
+          ox = (Math.random() - 0.5) * amp * 2;
+          oy = (Math.random() - 0.5) * amp * 2;
+        }
+
+        ctx.save();
+        ctx.translate(ox, oy);
+
+        // Particles
+        for (const p of testParts) {
+          if (p.life <= 0) continue;
+          ctx.globalAlpha = Math.max(0, p.life / 0.5);
+          ctx.fillStyle = cur.particleColor || '#38bdf8';
+          ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+
+        // Dialogue bubble
+        if (cur.bubbleEnabled) {
+          const style = cur.bubbleStyle || 'shout';
+          const rx = style === 'super' ? 116 : (style === 'classic' ? 102 : 96);
+          const ry = style === 'super' ? 44 : 38;
+          const cx = w / 2, cy = h / 2 - 4;
+          const popScale = testAge < 0.12 ? (0.4 + (testAge / 0.12) * 0.72) : (testAge < 0.22 ? (1.12 - ((testAge - 0.12) / 0.10) * 0.12) : 1);
+
+          ctx.save();
+          ctx.translate(cx, cy);
+          ctx.scale(popScale, popScale);
+          if (style !== 'classic') ctx.rotate(-0.04);
+
+          const traceShape = (dx, dy) => {
+            ctx.beginPath();
+            if (style === 'classic') {
+              const x = -rx + dx, y = -ry + dy, bw = rx * 2, bh = ry * 2, rad = 20;
+              ctx.moveTo(x + rad, y);
+              ctx.lineTo(x + bw - rad, y); ctx.quadraticCurveTo(x + bw, y, x + bw, y + rad);
+              ctx.lineTo(x + bw, y + bh - rad); ctx.quadraticCurveTo(x + bw, y + bh, x + bw - rad, y + bh);
+              ctx.lineTo(x + rad, y + bh); ctx.quadraticCurveTo(x, y + bh, x, y + bh - rad);
+              ctx.lineTo(x, y + rad); ctx.quadraticCurveTo(x, y, x + rad, y);
+            } else {
+              const spikes = style === 'super' ? 18 : (style === 'shout' ? 14 : 12);
+              const n = spikes * 2;
+              for (let i = 0; i < n; i++) {
+                const ang = (i / n) * Math.PI * 2;
+                const r = (i % 2 === 0 ? 1.0 : 0.68) * (0.9 + ((Math.sin(i * 3.7) * 0.5 + 0.5) * 0.18));
+                const px = Math.cos(ang) * rx * r + dx;
+                const py = Math.sin(ang) * ry * r + dy;
+                if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+              }
+            }
+            ctx.closePath();
+          };
+
+          // Shadow
+          ctx.fillStyle = '#090710';
+          traceShape(4, 5); ctx.fill();
+
+          // Speech tail for shout & classic
+          if (style === 'shout' || style === 'classic') {
+            ctx.beginPath();
+            ctx.moveTo(-24, ry * 0.55);
+            ctx.lineTo(-40, ry * 1.18);
+            ctx.lineTo(-4, ry * 0.55);
+            ctx.closePath();
+            ctx.fillStyle = cur.bubbleFillB || '#f97316';
+            ctx.fill();
+            ctx.lineWidth = 3.5; ctx.strokeStyle = '#090710'; ctx.stroke();
+          }
+
+          // Gradient fill
+          const grad = ctx.createLinearGradient(0, -ry, 0, ry);
+          grad.addColorStop(0, cur.bubbleFillA || '#fde047');
+          grad.addColorStop(1, cur.bubbleFillB || '#f97316');
+          ctx.fillStyle = grad;
+          traceShape(0, 0); ctx.fill();
+          ctx.lineWidth = style === 'super' ? 4.5 : 3.5;
+          ctx.strokeStyle = '#090710';
+          ctx.stroke();
+
+          // Text
+          const mainText = (cur.bubbleText || '招式台詞!!').trim();
+          const subText = (cur.bubbleSubText || '').trim();
+          ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.font = `900 ${style === 'classic' ? '' : 'italic '}20px "Noto Sans TC", Impact, sans-serif`;
+          const ty = subText ? -6 : 1;
+          if (style !== 'classic' || (cur.bubbleTextColor || '#ffffff').toLowerCase() === '#ffffff') {
+            ctx.lineWidth = 5; ctx.strokeStyle = '#090710'; ctx.strokeText(mainText, 0, ty);
+          }
+          ctx.fillStyle = cur.bubbleTextColor || '#ffffff';
+          ctx.fillText(mainText, 0, ty);
+          if (subText) {
+            ctx.font = '900 italic 10px Impact, sans-serif';
+            ctx.lineWidth = 3; ctx.strokeStyle = '#090710'; ctx.strokeText(subText, 0, 14);
+            ctx.fillStyle = '#fef08a'; ctx.fillText(subText, 0, 14);
+          }
+          ctx.restore();
+        } else {
+          ctx.fillStyle = 'rgba(255,255,255,0.45)';
+          ctx.font = '12px sans-serif'; ctx.textAlign = 'center';
+          ctx.fillText('（已關閉對話框）', w / 2, h / 2);
+        }
+
+        // Flash overlay
+        if (cur.flashEnabled && testAge < (Number(cur.flashDur) || 0.06) * 2.2) {
+          ctx.fillStyle = cur.flashColor || '#fde047';
+          ctx.globalAlpha = 0.55 * (1 - testAge / ((Number(cur.flashDur) || 0.06) * 2.2));
+          ctx.fillRect(-20, -20, w + 40, h + 40);
+        }
+        ctx.restore();
+      }
+
+      let lastT = 0;
+      function tick(t) {
+        animRaf = requestAnimationFrame(tick);
+        const dt = lastT ? Math.min(0.05, (t - lastT) / 1000) : 0.016;
+        lastT = t;
+        if (testAge < 2) {
+          testAge += dt;
+          for (const p of testParts) { p.x += p.vx * dt; p.y += p.vy * dt; p.life -= dt; }
+        }
+        drawPreview();
+      }
+      onMounted(() => { animRaf = requestAnimationFrame(tick); });
+      onBeforeUnmount(() => cancelAnimationFrame(animRaf));
+
+      return { fx, patch, canvas, shaking, shakePresets, bubbleThemes, triggerPreview };
+    },
+    template: `
+      <details open class="border rounded-lg bg-slate-50 p-3 space-y-3">
+        <summary class="cursor-pointer font-semibold text-sm text-slate-800 flex items-center justify-between select-none">
+          <span>⚡ 特效、畫面震動與對話框設計</span>
+          <span class="text-xs font-normal text-slate-500">
+            {{ fx.shakeEnabled ? '📳 震動 ' + fx.shakeAmp : '無震動' }} ·
+            {{ fx.bubbleEnabled ? '💬 ' + (fx.bubbleText || '預設台詞') : '無對話框' }}
+          </span>
+        </summary>
+
+        <div class="grid grid-cols-12 gap-3 pt-1">
+          <!-- Left controls -->
+          <div class="col-span-12 lg:col-span-7 space-y-3 text-xs">
+            <!-- Screen Shake -->
+            <div class="bg-white border rounded p-2.5 space-y-2">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <label class="font-semibold text-slate-700 flex items-center gap-1.5 cursor-pointer">
+                  <input type="checkbox" :checked="fx.shakeEnabled" @change="patch({ shakeEnabled: $event.target.checked })" />
+                  📳 畫面震動（Screen Shake）
+                </label>
+                <div class="flex gap-1">
+                  <button v-for="p in shakePresets" :key="p.label" @click="patch(p.v)"
+                    class="px-2 py-0.5 rounded border bg-slate-50 hover:bg-indigo-50 text-[11px]">{{ p.label }}</button>
+                </div>
+              </div>
+              <div v-if="fx.shakeEnabled" class="grid grid-cols-2 gap-2">
+                <label>強度 ({{ fx.shakeAmp }}px)
+                  <input type="range" min="1" max="25" :value="fx.shakeAmp" @input="patch({ shakeAmp: Number($event.target.value) })" class="w-full" />
+                </label>
+                <label>持續秒數 ({{ fx.shakeDur }}s)
+                  <input type="range" min="0.05" max="0.8" step="0.02" :value="fx.shakeDur" @input="patch({ shakeDur: Number($event.target.value) })" class="w-full" />
+                </label>
+              </div>
+            </div>
+
+            <!-- Flash & Particles -->
+            <div class="bg-white border rounded p-2.5 space-y-2">
+              <div class="flex flex-wrap items-center gap-4">
+                <label class="font-semibold text-slate-700 flex items-center gap-1.5 cursor-pointer">
+                  <input type="checkbox" :checked="fx.flashEnabled" @change="patch({ flashEnabled: $event.target.checked })" />
+                  ⚡ 發動閃光幀
+                </label>
+                <label v-if="fx.flashEnabled" class="flex items-center gap-1">顏色
+                  <input type="color" :value="fx.flashColor" @input="patch({ flashColor: $event.target.value })" class="w-6 h-5 border rounded" />
+                </label>
+                <label class="font-semibold text-slate-700 flex items-center gap-1.5 cursor-pointer">
+                  <input type="checkbox" :checked="fx.particlesEnabled" @change="patch({ particlesEnabled: $event.target.checked })" />
+                  ✨ 粒子爆發
+                </label>
+                <template v-if="fx.particlesEnabled">
+                  <label class="flex items-center gap-1">顏色
+                    <input type="color" :value="fx.particleColor" @input="patch({ particleColor: $event.target.value })" class="w-6 h-5 border rounded" />
+                  </label>
+                  <label class="flex items-center gap-1">數量
+                    <input type="number" min="4" max="40" :value="fx.particleCount" @input="patch({ particleCount: Number($event.target.value) })" class="w-12 border rounded px-1" />
+                  </label>
+                </template>
+              </div>
+            </div>
+
+            <!-- Comic Dialogue Bubble -->
+            <div class="bg-white border rounded p-2.5 space-y-2">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <label class="font-semibold text-slate-700 flex items-center gap-1.5 cursor-pointer">
+                  <input type="checkbox" :checked="fx.bubbleEnabled" @change="patch({ bubbleEnabled: $event.target.checked })" />
+                  💬 招式對話框設計
+                </label>
+                <div v-if="fx.bubbleEnabled" class="flex flex-wrap gap-1">
+                  <button v-for="th in bubbleThemes" :key="th.label" @click="patch({ bubbleFillA: th.a, bubbleFillB: th.b, bubbleTextColor: th.t })"
+                    class="px-1.5 py-0.5 rounded border bg-slate-50 hover:bg-indigo-50 text-[11px]">{{ th.label }}</button>
+                </div>
+              </div>
+              <div v-if="fx.bubbleEnabled" class="space-y-2">
+                <div class="grid grid-cols-2 gap-2">
+                  <label>主台詞 <input :value="fx.bubbleText" @input="patch({ bubbleText: $event.target.value })" placeholder="閃電踢球!!" class="w-full border rounded px-2 py-1 mt-0.5" /></label>
+                  <label>副標英文 <input :value="fx.bubbleSubText" @input="patch({ bubbleSubText: $event.target.value })" placeholder="THUNDER SHOOT!!" class="w-full border rounded px-2 py-1 mt-0.5" /></label>
+                </div>
+                <div class="grid grid-cols-5 gap-2 items-center">
+                  <label class="col-span-2">造型
+                    <select :value="fx.bubbleStyle" @change="patch({ bubbleStyle: $event.target.value })" class="w-full border rounded px-1.5 py-1 mt-0.5">
+                      <option value="shout">💥 吶喊星芒 (shout)</option>
+                      <option value="burst">⚡ 衝擊爆框 (burst)</option>
+                      <option value="super">🔥 必殺大框 (super)</option>
+                      <option value="classic">💬 圓潤漫畫框 (classic)</option>
+                    </select>
+                  </label>
+                  <label>上色 <input type="color" :value="fx.bubbleFillA" @input="patch({ bubbleFillA: $event.target.value })" class="w-full h-7 border rounded mt-0.5" /></label>
+                  <label>下色 <input type="color" :value="fx.bubbleFillB" @input="patch({ bubbleFillB: $event.target.value })" class="w-full h-7 border rounded mt-0.5" /></label>
+                  <label>字色 <input type="color" :value="fx.bubbleTextColor" @input="patch({ bubbleTextColor: $event.target.value })" class="w-full h-7 border rounded mt-0.5" /></label>
+                </div>
+                <label class="inline-flex items-center gap-2">顯示秒數 ({{ fx.bubbleDur }}s)
+                  <input type="range" min="0.3" max="1.8" step="0.05" :value="fx.bubbleDur" @input="patch({ bubbleDur: Number($event.target.value) })" class="w-36" />
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right live preview -->
+          <div class="col-span-12 lg:col-span-5 flex flex-col items-center justify-center bg-white border rounded p-2.5 space-y-2">
+            <canvas ref="canvas" width="320" height="148" class="rounded border w-full max-w-[320px]"></canvas>
+            <button @click="triggerPreview" class="w-full py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold">
+              🎬 試播震動・特效・對話框
+            </button>
+          </div>
+        </div>
+      </details>`,
   };
 
   /** Full-featured AI Action Modification Modal (prompt, cols/rows/frames, turnaround + action ref uploads). */
@@ -1148,13 +1473,13 @@
 
   // ---------- Characters tab ----------
   const CharactersTab = {
-    components: { SpritePreview, DropZone, ConditionEditor, AiModifyModal },
+    components: { SpritePreview, DropZone, ConditionEditor, AiModifyModal, FxBubbleEditor },
     setup() {
       const selectedId = ref(null);
       const selectedActionId = ref(null);
       const isNewChar = ref(false);
       const charForm = reactive({ id: '', name: '' });
-      const blankAction = () => ({ id: '', label: '', cols: 5, rows: 2, frames: 10, fps: 12, loop: false, trigger: 'on_attack', condition: '', priority: 0, png: null, webp: null, sheetKey: null });
+      const blankAction = () => ({ id: '', label: '', cols: 5, rows: 2, frames: 10, fps: 12, loop: false, trigger: 'on_attack', condition: '', priority: 0, png: null, webp: null, sheetKey: null, fx: defaultFxForAction() });
       const actionForm = reactive(blankAction());
       const isNewAction = ref(true);
       const file = ref(null);
@@ -1245,7 +1570,9 @@
       }
       function selectAction(a) {
         isNewAction.value = false; selectedActionId.value = a.id; file.value = null;
-        Object.assign(actionForm, blankAction(), JSON.parse(JSON.stringify(a)));
+        const cloned = JSON.parse(JSON.stringify(a));
+        cloned.fx = { ...defaultFxForAction(a.id), ...(cloned.fx || {}) };
+        Object.assign(actionForm, blankAction(), cloned);
       }
       function newAction() {
         isNewAction.value = true; selectedActionId.value = null; file.value = null; Object.assign(actionForm, blankAction());
@@ -1318,6 +1645,7 @@
             condition: (actionForm.condition || '').trim(),
             priority: Number(actionForm.priority) || 0,
             loop: !!actionForm.loop,
+            fx: actionForm.fx ? JSON.parse(JSON.stringify(actionForm.fx)) : defaultFxForAction(actionForm.id),
             charId: charForm.id,
             actionId: actionForm.id,
             updatedAt: Date.now(),
@@ -1491,6 +1819,8 @@
               </p>
             </div>
           </div>
+
+          <fx-bubble-editor v-model="actionForm.fx" />
 
           <div class="flex flex-wrap items-center gap-2 border-t pt-3">
             <button id="btnSaveLocal" @click="saveLocal" :disabled="!canSave"

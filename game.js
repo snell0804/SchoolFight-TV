@@ -1297,6 +1297,11 @@
             studioAct.rows = rows;
             studioAct.frameCount = rec.frameCount || (cols * rows);
           }
+          if (rec.fx) {
+            this.actionFx = this.actionFx || {};
+            this.actionFx[rec.sheetKey] = rec.fx;
+            if (rec.actionId) this.actionFx[rec.actionId] = rec.fx;
+          }
           this.tintedCache = {};
         } catch (_) {}
       }
@@ -2557,6 +2562,55 @@
     game.impactFrame = { tint, life: dur, maxLife: dur };
   }
 
+  function getActionFx(actionId) {
+    if (!actionId || !SpriteBank.actionFx) return null;
+    return SpriteBank.actionFx[actionId] || null;
+  }
+
+  function triggerActionFx(actor, actionId, defaults = {}) {
+    const fx = getActionFx(actionId);
+    // 1. Screen Shake
+    if (fx) {
+      if (fx.shakeEnabled) addShake(Number(fx.shakeAmp) || 7, Number(fx.shakeDur) || 0.16);
+    } else if (defaults.shakeAmp) {
+      addShake(defaults.shakeAmp, defaults.shakeDur || 0.16);
+    }
+    // 2. Impact Flash
+    if (fx && fx.flashEnabled) {
+      triggerImpactFrame(fx.flashColor || '#fde047', Number(fx.flashDur) || 0.06);
+    }
+    // 3. Burst Particles
+    if (fx && fx.particlesEnabled) {
+      spawnParticles(actor.x + actor.facing * 20, actor.z - 42, fx.particleColor || '#38bdf8', Math.max(4, Math.min(40, Number(fx.particleCount) || 14)), 240, 6);
+    } else if (defaults.particles) {
+      spawnParticles(actor.x + actor.facing * 20, actor.z - 24, defaults.particles.color, defaults.particles.count || 12, 230, 6);
+    }
+    // 4. Comic Dialogue Bubble
+    const showBubble = fx ? !!fx.bubbleEnabled : !!defaults.text;
+    if (showBubble) {
+      const text = (fx && fx.bubbleText && fx.bubbleText.trim()) || defaults.text || '';
+      if (text) {
+        const style = (fx && fx.bubbleStyle) || defaults.style || 'shout';
+        spawnComicBubble(
+          defaults.x !== undefined ? defaults.x : (actor.x - actor.facing * 18),
+          defaults.y !== undefined ? defaults.y : (actor.z - 198),
+          text,
+          {
+            style,
+            subText: fx ? (fx.bubbleSubText || '') : (defaults.subText || ''),
+            fillA: (fx && fx.bubbleFillA) || defaults.fillA || '#fde047',
+            fillB: (fx && fx.bubbleFillB) || defaults.fillB || '#f97316',
+            textColor: (fx && fx.bubbleTextColor) || defaults.textColor || '#ffffff',
+            rx: style === 'super' ? 142 : (defaults.rx || 98),
+            ry: style === 'super' ? 56 : (defaults.ry || 44),
+            tailDir: defaults.tailDir !== undefined ? defaults.tailDir : -actor.facing,
+            dur: (fx && Number(fx.bubbleDur)) || defaults.dur || 0.66,
+          }
+        );
+      }
+    }
+  }
+
   function drawComicBubble(ctx, b) {
     const t = b.age / b.maxLife;
     // Elastic comic pop-in spring (0.25 -> 1.22 -> 1.0), crisp exit fade
@@ -2573,19 +2627,28 @@
     ctx.save();
     ctx.globalAlpha = alpha;
     ctx.translate(Math.round(b.x), Math.round(b.y - b.age * (b.style === 'burst' ? 28 : 16)));
-    ctx.rotate(b.tilt);
+    if (b.style !== 'classic') ctx.rotate(b.tilt);
     ctx.scale(scale, scale);
 
     const n = b.radii.length;
     const traceBubble = (ox, oy) => {
       ctx.beginPath();
-      for (let i = 0; i < n; i++) {
-        const ang = (i / n) * Math.PI * 2;
-        const r = b.radii[i];
-        const px = Math.cos(ang) * b.rx * r + ox;
-        const py = Math.sin(ang) * b.ry * r + oy;
-        if (i === 0) ctx.moveTo(px, py);
-        else ctx.lineTo(px, py);
+      if (b.style === 'classic') {
+        const x = -b.rx + ox, y = -b.ry + oy, bw = b.rx * 2, bh = b.ry * 2, rad = 22;
+        ctx.moveTo(x + rad, y);
+        ctx.lineTo(x + bw - rad, y); ctx.quadraticCurveTo(x + bw, y, x + bw, y + rad);
+        ctx.lineTo(x + bw, y + bh - rad); ctx.quadraticCurveTo(x + bw, y + bh, x + bw - rad, y + bh);
+        ctx.lineTo(x + rad, y + bh); ctx.quadraticCurveTo(x, y + bh, x, y + bh - rad);
+        ctx.lineTo(x, y + rad); ctx.quadraticCurveTo(x, y, x + rad, y);
+      } else {
+        for (let i = 0; i < n; i++) {
+          const ang = (i / n) * Math.PI * 2;
+          const r = b.radii[i];
+          const px = Math.cos(ang) * b.rx * r + ox;
+          const py = Math.sin(ang) * b.ry * r + oy;
+          if (i === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
       }
       ctx.closePath();
     };
@@ -2595,8 +2658,8 @@
     traceBubble(5, 6);
     ctx.fill();
 
-    // Optional speech pointer tail for shout bubbles (「閃身步!!」「浪子踢球!!」)
-    if (b.style === 'shout') {
+    // Optional speech pointer tail for shout & classic bubbles
+    if (b.style === 'shout' || b.style === 'classic') {
       ctx.beginPath();
       const tx = b.tailDir >= 0 ? -b.rx * 0.28 : b.rx * 0.28;
       ctx.moveTo(tx - 10, b.ry * 0.45);
@@ -2652,18 +2715,21 @@
     // Bold Slanted Comic Lettering
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    const fontSize = b.style === 'super' ? 30 : (b.style === 'shout' ? 23 : 22);
-    ctx.font = `900 italic ${fontSize}px "Noto Sans TC", Impact, sans-serif`;
-    ctx.lineWidth = 6;
-    ctx.strokeStyle = '#090710';
+    const fontSize = b.style === 'super' ? 30 : (b.style === 'shout' || b.style === 'classic' ? 23 : 22);
+    ctx.font = `900 ${b.style === 'classic' ? '' : 'italic '}${fontSize}px "Noto Sans TC", Impact, sans-serif`;
     const textY = b.subText ? -6 : 1;
-    ctx.strokeText(b.text, 0, textY);
+    if (b.style !== 'classic' || (b.textColor || '#ffffff').toLowerCase() === '#ffffff') {
+      ctx.lineWidth = 6;
+      ctx.strokeStyle = '#090710';
+      ctx.strokeText(b.text, 0, textY);
+    }
     ctx.fillStyle = b.textColor;
     ctx.fillText(b.text, 0, textY);
 
     if (b.subText) {
       ctx.font = `900 italic ${b.style === 'super' ? 14 : 11}px Impact, sans-serif`;
       ctx.lineWidth = 3.5;
+      ctx.strokeStyle = '#090710';
       ctx.strokeText(b.subText, 0, 17);
       ctx.fillStyle = '#fef08a';
       ctx.fillText(b.subText, 0, 17);
@@ -3485,6 +3551,9 @@
       this.frame = step === 1 ? 0 : (step === 2 ? 3 : 6);
       sfx.playSwing(step);
       this.x += this.facing * (step === 3 ? 12 : 7);
+      if (step === 1) {
+        triggerActionFx(this, this.hero.id === 'redpanda' ? 'rp_lightAttack' : 'lightAttack', {});
+      }
     }
 
     startHeavyAttack() {
@@ -3496,19 +3565,19 @@
       this.hitIds.clear();
       this.frame = isRp ? 0 : 2;
       sfx.playSwing(3);
-      this.x += this.facing * (isRp ? 18 : 18);
-      if (isRp) {
-        spawnParticles(this.x + this.facing * 20, this.z - 22, '#fde047', 12, 220, 6);
-      }
-      spawnComicBubble(this.x - this.facing * 18, this.z - (isRp ? 206 : 196), this.hero.heavyShout, {
-        style: 'shout',
+      this.x += this.facing * 18;
+      triggerActionFx(this, isRp ? 'rp_attack' : 'heavyAttack', {
+        x: this.x - this.facing * 18,
+        y: this.z - (isRp ? 206 : 196),
+        text: this.hero.heavyShout,
         subText: this.hero.heavySub,
+        style: 'shout',
         fillA: '#fde047',
         fillB: isRp ? '#ea580c' : this.hero.accent,
         rx: isRp ? 98 : 94,
         ry: 44,
-        tailDir: -this.facing,
         dur: isRp ? 0.78 : 0.62,
+        particles: isRp ? { color: '#fde047', count: 12 } : null,
       });
     }
 
@@ -3516,6 +3585,7 @@
      * 衝刺輕攻擊：浪子踢球 / 閃電踢球 (Dash Light Attack — Running + Light Attack!)
      */
     startDashLightAttack() {
+      const isRp = this.hero.id === 'redpanda';
       this.isRunning = false;
       this.state = 'dashLightAttack';
       this.stateTime = 0;
@@ -3523,14 +3593,16 @@
       this.ballLaunched = false;
       this.hitIds.clear();
       sfx.playSwing(2);
-      spawnComicBubble(this.x - this.facing * 20, this.z - 198, this.hero.dashLightShout, {
-        style: 'shout',
+      triggerActionFx(this, isRp ? 'rp_dashLightAttack' : 'dashLightAttack', {
+        x: this.x - this.facing * 20,
+        y: this.z - 198,
+        text: this.hero.dashLightShout,
         subText: this.hero.dashLightSub,
-        fillA: this.hero.accentLight,
-        fillB: this.hero.accentDark,
+        style: 'shout',
+        fillA: isRp ? '#67e8f9' : this.hero.accentLight,
+        fillB: isRp ? '#2563eb' : this.hero.accentDark,
         rx: 96,
         ry: 44,
-        tailDir: -this.facing,
       });
     }
 
@@ -3538,6 +3610,7 @@
      * 衝刺重攻擊：星杖衝刺斬 / 赤焰衝刺撞擊 (Dash Heavy Attack — Running + Heavy Attack!)
      */
     startDashAttack() {
+      const isRp = this.hero.id === 'redpanda';
       this.isRunning = false;
       this.state = 'dashAttack';
       this.stateTime = 0;
@@ -3546,14 +3619,16 @@
       this.hitIds.clear();
       this.hitIdsStage2.clear();
       sfx.playSwing(3);
-      spawnComicBubble(this.x - this.facing * 20, this.z - 198, this.hero.dashHeavyShout, {
-        style: 'shout',
+      triggerActionFx(this, isRp ? 'rp_dashAttack' : 'dashAttack', {
+        x: this.x - this.facing * 20,
+        y: this.z - 198,
+        text: this.hero.dashHeavyShout,
         subText: this.hero.dashHeavySub,
+        style: 'shout',
         fillA: '#fde047',
         fillB: this.hero.accent,
         rx: 108,
         ry: 46,
-        tailDir: -this.facing,
       });
     }
 
@@ -3562,6 +3637,7 @@
      * Multi-hit rising cyclone kick that launches enemies high into the air for follow-up juggles!
      */
     startTornadoKick() {
+      const isRp = this.hero.id === 'redpanda';
       this.isRunning = false;
       this.state = 'tornadoKick';
       this.stateTime = 0;
@@ -3573,24 +3649,27 @@
       this.hitIdsStage3 = new Set();
       sfx.playSwing(3);
       if (typeof GamepadManager !== 'undefined') GamepadManager.rumble(0.45, 0.35, 180);
-      const colA = this.hero.id === 'redpanda' ? '#fde047' : '#e879f9';
-      const colB = this.hero.id === 'redpanda' ? '#ea580c' : '#7e22ce';
-      spawnComicBubble(this.x - this.facing * 12, this.z - 210, this.hero.tornadoShout || '龍捲旋風腳!!', {
-        style: 'shout',
+      const colA = isRp ? '#fde047' : '#e879f9';
+      const colB = isRp ? '#ea580c' : '#7e22ce';
+      triggerActionFx(this, isRp ? 'rp_tornadoKick' : 'tornadoKick', {
+        x: this.x - this.facing * 12,
+        y: this.z - 210,
+        text: this.hero.tornadoShout || '龍捲旋風腳!!',
         subText: this.hero.tornadoSub || 'TORNADO HURRICANE KICK!!',
+        style: 'shout',
         fillA: colA,
         fillB: colB,
         rx: 122,
         ry: 48,
-        tailDir: -this.facing,
         dur: 0.72,
+        particles: { color: colA, count: 14 },
       });
-      spawnParticles(this.x, this.z - 24, colA, 14, 240, 6);
     }
 
     startDash(dir) {
       if (this.dashCd > 0) return;
       if (dir !== 0) this.facing = dir;
+      const isRp = this.hero.id === 'redpanda';
       this.isRunning = false;
       this.state = 'dash';
       this.stateTime = 0;
@@ -3601,14 +3680,16 @@
       sfx.playDash();
       if (typeof GamepadManager !== 'undefined') GamepadManager.rumble(0.15, 0.25, 75);
       // Shout 「閃身步!!」 in a crisp American comic action callout bubble!
-      spawnComicBubble(this.x - this.facing * 18, this.z - 186, '閃身步!!', {
-        style: 'shout',
+      triggerActionFx(this, isRp ? 'rp_dash' : 'dash', {
+        x: this.x - this.facing * 18,
+        y: this.z - 186,
+        text: '閃身步!!',
         subText: 'FLASH STEP!',
+        style: 'shout',
         fillA: '#67e8f9',
         fillB: '#6366f1',
         rx: 84,
         ry: 40,
-        tailDir: -this.facing,
         dur: 0.56,
       });
     }
@@ -3621,6 +3702,7 @@
       this.frame = 0;
       this.hitIds.clear();
       sfx.playSwing(2);
+      if (act) triggerActionFx(this, act.sheetKey || act.id, {});
     }
 
     startSpecial() {
@@ -3628,6 +3710,7 @@
         addFloatText(this.x, this.z - 165, '能量不足!', '#fbbf24', 18);
         return;
       }
+      const isRp = this.hero.id === 'redpanda';
       this.isRunning = false;
       this.energy = Math.max(0, this.energy - 50);
       this.state = 'special';
@@ -3639,16 +3722,20 @@
       this.cannonImpactDone = false;
       this.hitIds.clear();
       sfx.playCharge();
-      addShake(6, 0.25);
       if (typeof GamepadManager !== 'undefined') GamepadManager.rumble(0.75, 0.5, 260);
-      spawnComicBubble(this.x + this.facing * 40, this.z - 210, this.hero.specialShout, {
-        style: 'super',
+      triggerActionFx(this, isRp ? 'rp_special' : 'special', {
+        x: this.x + this.facing * 40,
+        y: this.z - 210,
+        text: this.hero.specialShout,
         subText: this.hero.specialSub,
+        style: 'super',
         fillA: '#fde047',
-        fillB: this.hero.id === 'redpanda' ? '#ea580c' : '#e11d48',
+        fillB: isRp ? '#ea580c' : '#e11d48',
         rx: 142,
         ry: 56,
         dur: 0.92,
+        shakeAmp: 6,
+        shakeDur: 0.25,
       });
     }
 
@@ -3999,10 +4086,16 @@
       const launchAt = isRp ? 0.50 : 0.40;
       if (progress >= launchAt && !this.ballLaunched) {
         this.ballLaunched = true;
+        const actFx = getActionFx(isRp ? 'rp_dashLightAttack' : 'dashLightAttack');
         game.projectiles.push(new SoccerBall(this.x + this.facing * 68, this.z, this.facing, isRp ? 'lightning' : 'gothic'));
         sfx.playHit(true);
-        addShake(7, 0.14);
-        triggerImpactFrame(isRp ? '#fde047' : '#f0abfc', 0.055);
+        if (!actFx) {
+          addShake(7, 0.14);
+          triggerImpactFrame(isRp ? '#fde047' : '#f0abfc', 0.055);
+        } else {
+          if (actFx.shakeEnabled) addShake(Number(actFx.shakeAmp) || 7, Number(actFx.shakeDur) || 0.14);
+          if (actFx.flashEnabled) triggerImpactFrame(actFx.flashColor || '#fde047', Number(actFx.flashDur) || 0.055);
+        }
       }
 
       if (this.stateTime >= totalDur) {
