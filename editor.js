@@ -655,7 +655,13 @@
             }),
           });
           const data = await res.json().catch(() => ({}));
-          if (!res.ok) throw new Error(data.error?.message || `Gemini HTTP ${res.status}`);
+          if (!res.ok) {
+            const rawMsg = data.error?.message || `Gemini HTTP ${res.status}`;
+            if (/quota|limit:\s*0|rate-limit/i.test(rawMsg)) {
+              throw new Error('Google AI Studio 免費方案對此圖像模型設為 limit: 0（需在 Google AI Studio 綁定計費帳號才能透過 API 生圖）。你可以改點下方「🆓 免費免 Key 生圖」或「🌐 複製提示詞並開 Gemini 網頁版」免費生圖後匯入！');
+            }
+            throw new Error(rawMsg);
+          }
           const outParts = data.candidates?.[0]?.content?.parts || [];
           const imgPart = outParts.find((p) => p.inlineData && p.inlineData.data);
           if (!imgPart) throw new Error('模型未回傳圖片，請調整提示詞或改選其他模型再試');
@@ -671,6 +677,44 @@
         } catch (e) {
           genError.value = e.message;
         } finally { generating.value = false; }
+      }
+
+      async function generateWithPollinations() {
+        if (!prompt.value.trim()) { genError.value = '請輸入提示詞'; return; }
+        generating.value = true; genError.value = '';
+        try {
+          const w = Math.min(1536, Math.max(512, (Number(cols.value) || 5) * 256));
+          const h = Math.min(1024, Math.max(512, (Number(rows.value) || 2) * 256));
+          const seed = Math.floor(Math.random() * 1e9);
+          const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(buildFullPrompt())}?width=${w}&height=${h}&seed=${seed}&nologo=true`;
+          const res = await fetch(url);
+          if (!res.ok) throw new Error(`Pollinations HTTP ${res.status}`);
+          const rawBlob = await res.blob();
+          const pngFile = await imageBlobToPngFile(rawBlob, `${props.charId}_${props.actionId}_free_ai.png`);
+          revoke(genUrl);
+          genFile.value = pngFile;
+          genUrl.value = URL.createObjectURL(pngFile);
+          toast('🆓 免費 AI 精靈表生成完成！可在右側預覽動畫', 'success');
+        } catch (e) {
+          genError.value = `免費生圖失敗：${e.message}（可改用「🌐 複製提示詞並開 Gemini 網頁版」）`;
+        } finally { generating.value = false; }
+      }
+
+      async function openGeminiWeb() {
+        await copyPrompt();
+        window.open('https://gemini.google.com/app', '_blank', 'noopener');
+      }
+
+      async function importGeneratedFile(f) {
+        if (!f) return;
+        try {
+          const pngFile = await imageBlobToPngFile(f, `${props.charId}_${props.actionId}_ai.png`);
+          revoke(genUrl);
+          genFile.value = pngFile;
+          genUrl.value = URL.createObjectURL(pngFile);
+          genError.value = '';
+          toast('已匯入生成圖並載入動態預覽！', 'success');
+        } catch (e) { genError.value = `匯入失敗：${e.message}`; }
       }
 
       async function generateWithBackend() {
@@ -715,7 +759,7 @@
         turnaroundFile, turnaroundUrl, actionRefFile, actionRefUrl,
         geminiKey, geminiModel, showKeyInput, generating, genError, genFile, genUrl,
         setRefFile, addChip, useCurrentAsActionRef, copyPrompt, saveGeminiKey,
-        generateWithGemini, generateWithBackend, applyResult,
+        generateWithGemini, generateWithPollinations, openGeminiWeb, importGeneratedFile, generateWithBackend, applyResult,
       };
     },
     template: `
@@ -829,11 +873,21 @@
               <div class="flex flex-wrap gap-2">
                 <button @click="generateWithGemini" :disabled="generating"
                   class="px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-600 to-fuchsia-600 text-white font-semibold text-sm hover:opacity-95 disabled:opacity-40">
-                  {{ generating ? '⏳ AI 生成中…' : '✨ 立即用 AI 生成精靈表' }}
+                  {{ generating ? '⏳ AI 生成中…' : '✨ Gemini API 生成' }}
+                </button>
+                <button @click="generateWithPollinations" :disabled="generating"
+                  class="px-3 py-2 rounded-lg bg-sky-600 text-white font-semibold text-sm hover:bg-sky-700 disabled:opacity-40"
+                  title="免費免 API Key 直接生圖（純文字提示詞）">
+                  🆓 免費免 Key 生圖
+                </button>
+                <button @click="openGeminiWeb"
+                  class="px-3 py-2 rounded-lg border border-indigo-300 bg-white text-indigo-700 text-sm hover:bg-indigo-50"
+                  title="複製完整提示詞並開啟 Gemini 網頁版，免費附圖生成後再匯入右側預覽">
+                  🌐 複製提示詞開 Gemini 網頁版
                 </button>
                 <button v-if="store.mode==='backend'" @click="generateWithBackend" :disabled="generating"
-                  class="px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm disabled:opacity-40">
-                  🖥️ 送至本機 SD 佇列
+                  class="px-3 py-2 rounded-lg bg-emerald-600 text-white text-sm disabled:opacity-40">
+                  🖥️ 本機 SD 佇列
                 </button>
               </div>
             </div>
@@ -845,6 +899,11 @@
                 <sprite-preview :src="genUrl || currentSrc" :cols="cols" :rows="rows" :frames="frames" :fps="fps" :size="260" />
               </div>
               <div class="space-y-2 border-t pt-3">
+                <label class="block w-full py-1.5 px-3 rounded-lg border border-dashed border-indigo-400 bg-white text-indigo-700 text-center text-xs cursor-pointer hover:bg-indigo-50">
+                  📥 匯入外部 AI 生成圖（Gemini 網頁版 / ChatGPT）即時預覽
+                  <input type="file" accept="image/png,image/jpeg,image/webp" class="hidden"
+                         @change="importGeneratedFile($event.target.files[0]); $event.target.value=''" />
+                </label>
                 <button @click="applyResult" :disabled="!genFile"
                   class="w-full py-2 rounded-lg bg-emerald-600 text-white font-semibold text-sm disabled:opacity-40">
                   ✅ 套用此生成圖與格數至編輯器
