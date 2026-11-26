@@ -555,7 +555,7 @@
       frames: Number, fps: { type: Number, default: 12 }, size: { type: Number, default: 220 } },
     setup(props) {
       const canvas = ref(null);
-      const playing = ref(true);
+      const playing = ref(false); // 預設逐幀檢視（暫停），點播放才連續播放
       const frame = ref(0);
       const grid = ref(false);
       const info = ref('');
@@ -563,6 +563,29 @@
       img.crossOrigin = 'anonymous';
       let raf = 0; let last = 0; let ok = false;
       const total = computed(() => Math.max(1, Math.min(props.frames || props.cols * props.rows, props.cols * props.rows)));
+      const currentPos = computed(() => {
+        const f = frame.value % total.value;
+        const c = Math.max(1, Number(props.cols) || 1);
+        return `第 ${Math.floor(f / c) + 1} 列・第 ${(f % c) + 1} 欄`;
+      });
+
+      function prevFrame() {
+        playing.value = false;
+        frame.value = (frame.value - 1 + total.value) % total.value;
+      }
+      function nextFrame() {
+        playing.value = false;
+        frame.value = (frame.value + 1) % total.value;
+      }
+      function goFrame(idx) {
+        playing.value = false;
+        frame.value = Math.max(0, Math.min(total.value - 1, idx));
+      }
+      function onKey(e) {
+        if (e.key === 'ArrowLeft') { e.preventDefault(); prevFrame(); }
+        else if (e.key === 'ArrowRight') { e.preventDefault(); nextFrame(); }
+        else if (e.key === ' ') { e.preventDefault(); playing.value = !playing.value; }
+      }
 
       function draw() {
         const c = canvas.value; if (!c) return;
@@ -601,18 +624,37 @@
       watch(() => [props.src, props.cols, props.rows], load);
       onMounted(() => { load(); raf = requestAnimationFrame(loop); });
       onBeforeUnmount(() => cancelAnimationFrame(raf));
-      return { canvas, playing, frame, grid, info, total };
+      return { canvas, playing, frame, grid, info, total, currentPos, prevFrame, nextFrame, goFrame, onKey };
     },
     template: `
-      <div class="space-y-2">
+      <div class="space-y-2 outline-none" tabindex="0" @keydown="onKey">
         <canvas ref="canvas" :width="size" :height="size" class="checker rounded border pixel block mx-auto"></canvas>
-        <div v-if="src" class="flex items-center gap-2 text-sm">
-          <button class="px-2 py-1 rounded bg-slate-200 hover:bg-slate-300" @click="playing=!playing">{{ playing ? '⏸' : '▶' }}</button>
-          <input type="range" min="0" :max="total-1" v-model.number="frame" @input="playing=false" class="flex-1" />
-          <span class="w-14 text-right tabular-nums">{{ frame+1 }}/{{ total }}</span>
-          <label class="flex items-center gap-1"><input type="checkbox" v-model="grid" />框</label>
+        <div v-if="src" class="space-y-1.5">
+          <div class="flex items-center justify-between gap-1.5 text-xs">
+            <div class="flex items-center gap-1">
+              <button @click="prevFrame" title="上一幀（鍵盤 ←）"
+                class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-white font-bold">◀</button>
+              <button @click="playing=!playing" :title="playing ? '暫停播放（Space）' : '連續播放（Space）'"
+                :class="['px-2.5 py-1 rounded font-semibold', playing ? 'bg-amber-500 hover:bg-amber-600 text-white' : 'bg-indigo-600 hover:bg-indigo-700 text-white']">
+                {{ playing ? '⏸ 暫停' : '▶ 播放' }}
+              </button>
+              <button @click="nextFrame" title="下一幀（鍵盤 →）"
+                class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-white font-bold">▶</button>
+            </div>
+            <span class="font-semibold text-slate-700 tabular-nums">第 {{ frame + 1 }}/{{ total }} 幀</span>
+            <label class="flex items-center gap-1 text-slate-600 cursor-pointer"><input type="checkbox" v-model="grid" />框</label>
+          </div>
+          <input type="range" min="0" :max="total-1" v-model.number="frame" @input="playing=false" class="w-full" />
+          <div class="flex flex-wrap gap-1 justify-center">
+            <button v-for="n in total" :key="n" @click="goFrame(n - 1)"
+              :class="['min-w-[26px] px-1.5 py-0.5 rounded text-xs font-mono border transition',
+                       frame === n - 1 ? 'bg-indigo-600 text-white border-indigo-600 font-bold' : 'bg-white hover:bg-indigo-50 text-slate-700 border-slate-300']">
+              {{ n }}
+            </button>
+          </div>
+          <p class="text-[11px] text-slate-500 text-center">{{ currentPos }} · 點數字或按鍵盤 ← / → 逐幀檢視</p>
         </div>
-        <p v-if="info" class="text-xs text-slate-500">{{ info }}</p>
+        <p v-if="info" class="text-xs text-slate-500 text-center">{{ info }}</p>
         <p v-if="!src" class="text-xs text-slate-400 text-center">尚無圖片</p>
       </div>`,
   };
