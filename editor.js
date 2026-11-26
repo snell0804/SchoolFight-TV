@@ -608,7 +608,7 @@
       <div class="grid grid-cols-12 gap-4">
         <aside class="col-span-12 md:col-span-4 lg:col-span-3 bg-white rounded shadow p-3 space-y-2">
           <div class="flex gap-2">
-            <input v-model="filter" placeholder="搜尋角色（共 {{ allCharacters.length }} 位）…" class="flex-1 border rounded px-2 py-1 text-sm" />
+            <input v-model="filter" :placeholder="'搜尋角色（共 ' + allCharacters.length + ' 位）…'" class="flex-1 border rounded px-2 py-1 text-sm" />
             <button @click="newChar" title="新增自訂角色" class="px-2.5 rounded bg-indigo-600 text-white text-sm">＋</button>
           </div>
           <div class="flex flex-wrap gap-1">
