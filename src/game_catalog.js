@@ -55,7 +55,7 @@
         act('rp_dash', '瞬間衝刺・蒼藍音爆閃身步 (Dash)', 'rp_dash', 'assets/rp_dash_sheet.webp', 24, 'on_move', false),
         act('rp_lightAttack', '輕攻擊・五連閃電連擊 (Light)', 'rp_lightAttack', 'assets/rp_lightAttack_sheet.webp', 18, 'on_attack', false),
         act('rp_attack', '重攻擊・升龍拳 (Heavy)', 'rp_attack', 'assets/rp_attack_sheet.webp', 16, 'on_attack', false),
-        { ...act('rp_dashLightAttack', '衝刺輕攻擊・閃電踢球 (Dash Light)', 'rp_dashLightAttack', 'assets/rp_dashLightAttack_sheet.webp', 24, 'on_attack', false), cols: 5, rows: 4, frames: 20 },
+        act('rp_dashLightAttack', '衝刺輕攻擊・閃電踢球 (Dash Light)', 'rp_dashLightAttack', 'assets/rp_dashLightAttack_sheet.webp', 17, 'on_attack', false),
         act('rp_dashAttack', '衝刺重攻擊・赤焰衝刺撞擊 (Dash Heavy)', 'rp_dashAttack', 'assets/rp_dashAttack_sheet.webp', 18, 'on_attack', false),
         act('rp_tornadoKick', '特殊招式・烈焰龍捲旋風腳 (Tornado Kick)', 'rp_tornadoKick', 'assets/rp_tornadoKick_sheet.webp', 15, 'on_attack', false),
         act('rp_special', '必殺技・赤焰百拳連擊 (Special)', 'rp_special', 'assets/rp_special_sheet.webp', 14, 'on_attack', false),
