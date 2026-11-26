@@ -1289,6 +1289,11 @@
         } catch (_) {}
       }
 
+      // 4. Load custom character actions, backgrounds & items from cloud_manifest.json (IndexedDB cached)
+      if (window.CloudManifestLoader) {
+        await window.CloudManifestLoader.applyToGame(this);
+      }
+
       this.buildPortrait();
       this.ready = true;
       renderControlsLegend();
@@ -5042,9 +5047,28 @@
 
     update(dt) {
       this.animTime += dt;
+      this.spawnAge = (this.spawnAge || 0) + dt;
       if (this.hurtFlash > 0) this.hurtFlash -= dt;
       if (this.attackCd > 0) this.attackCd -= dt;
       if (this.armorToastCd > 0) this.armorToastCd -= dt;
+
+      // Evaluate cloud_manifest.json custom trigger + condition actions
+      if (window.CloudManifestLoader) {
+        const matched = window.CloudManifestLoader.pickCustomAction(this, SpriteBank);
+        if (matched) {
+          if (!this._customAction || this._customAction.sheetKey !== matched.sheetKey) {
+            this._customAction = matched;
+            this._customFrame = 0;
+          } else {
+            const cSheet = SpriteBank.sheets[matched.sheetKey];
+            const cFc = cSheet ? cSheet.frameCount : (matched.frames || 10);
+            const nextF = (this._customFrame || 0) + dt * (matched.fps || 12);
+            this._customFrame = matched.loop ? (nextF % cFc) : Math.min(cFc - 1, nextF);
+          }
+        } else {
+          this._customAction = null;
+        }
+      }
 
       const moveSheet = this.resolveEnemySheet('move');
       const atkSheet = this.resolveEnemySheet('attack');
@@ -5893,10 +5917,16 @@
         sheetKey = this.resolveEnemySheet('ko');
       }
 
+      let drawFrameIdx = this.frame;
+      if (this._customAction && SpriteBank.sheets[this._customAction.sheetKey]) {
+        sheetKey = this._customAction.sheetKey;
+        drawFrameIdx = this._customFrame || 0;
+      }
+
       SpriteBank.drawFrame(
         ctx,
         sheetKey,
-        this.frame,
+        drawFrameIdx,
         this.x,
         this.z - this.jumpY,
         this.facing,
