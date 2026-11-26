@@ -1,6 +1,6 @@
 {
   "format": "schoolfight_cloud_manifest_v1",
-  "updatedAt": 1795680195666,
+  "updatedAt": 1795680485961,
   "sheets": {
     "enemy_wizard_ghost_attack": {
       "file": "assets/enemy_wizard_ghost_attack_sheet.webp",
@@ -8,8 +8,8 @@
       "rows": 4,
       "frameCount": 20,
       "anchorX": 150,
-      "anchorY": 236,
-      "updatedAt": 1795680034260
+      "anchorY": 236.00000000000003,
+      "updatedAt": 1795680485961
     },
     "attack": {
       "file": "assets/attack_sheet.webp",
@@ -816,7 +816,7 @@
       {
         "id": "enemy_wizard_ghost_attack",
         "label": "雙模式攻擊 (Attack A+B)",
-        "fps": 14,
+        "fps": 25.5,
         "key": null,
         "cols": 5,
         "rows": 4,
