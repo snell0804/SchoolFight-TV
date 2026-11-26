@@ -512,9 +512,355 @@
       </div>`,
   };
 
+  /** Full-featured AI Action Modification Modal (prompt, cols/rows/frames, turnaround + action ref uploads). */
+  const AiModifyModal = {
+    components: { SpritePreview },
+    props: {
+      open: Boolean,
+      charId: String,
+      charName: String,
+      actionId: String,
+      actionLabel: String,
+      currentSrc: String,
+      initCols: Number,
+      initRows: Number,
+      initFrames: Number,
+      initFps: Number,
+      trigger: String,
+      condition: String,
+    },
+    emits: ['close', 'apply'],
+    setup(props, { emit }) {
+      const GEMINI_KEY_STORAGE = 'sf_editor_gemini_api_key';
+      const prompt = ref('');
+      const cols = ref(5);
+      const rows = ref(2);
+      const frames = ref(10);
+      const fps = ref(14);
+      const turnaroundFile = ref(null);
+      const turnaroundUrl = ref('');
+      const actionRefFile = ref(null);
+      const actionRefUrl = ref('');
+      const geminiKey = ref(localStorage.getItem(GEMINI_KEY_STORAGE) || '');
+      const geminiModel = ref('gemini-2.5-flash-image');
+      const showKeyInput = ref(false);
+      const generating = ref(false);
+      const genError = ref('');
+      const genFile = ref(null);
+      const genUrl = ref('');
+
+      function revoke(r) { if (r.value && r.value.startsWith('blob:')) URL.revokeObjectURL(r.value); }
+      function setRefFile(targetFile, targetUrl, f) {
+        if (!f) { revoke(targetUrl); targetFile.value = null; targetUrl.value = ''; return; }
+        if (!/^image\/(png|jpeg|webp)$/.test(f.type)) { toast('參考圖只支援 PNG / JPG / WebP', 'error'); return; }
+        if (f.size > 10 * 1024 * 1024) { toast('參考圖超過 10MB', 'error'); return; }
+        revoke(targetUrl);
+        targetFile.value = f;
+        targetUrl.value = URL.createObjectURL(f);
+      }
+
+      watch(() => props.open, (v) => {
+        if (!v) return;
+        cols.value = props.initCols || 5;
+        rows.value = props.initRows || 2;
+        frames.value = props.initFrames || (cols.value * rows.value);
+        fps.value = props.initFps || 14;
+        genError.value = '';
+        if (!prompt.value) {
+          prompt.value = `${props.charName || props.charId} 施展「${props.actionLabel || props.actionId}」的 2D 橫向格鬥遊戲連幀精靈動畫，可愛Q版動漫風格，每格動作流暢連貫，純白背景無文字`;
+        }
+      });
+
+      watch([cols, rows], ([c, r]) => {
+        frames.value = Math.max(1, (Number(c) || 1) * (Number(r) || 1));
+      });
+
+      onBeforeUnmount(() => { revoke(turnaroundUrl); revoke(actionRefUrl); revoke(genUrl); });
+
+      const styleChips = [
+        'Q版2D精靈圖', '純白背景無陰影無文字', '等距整齊網格排列', '高張力發光招式特效', '動作流暢連貫',
+      ];
+      function addChip(c) {
+        if (!prompt.value.includes(c)) prompt.value = prompt.value.trim() ? `${prompt.value.trim()}，${c}` : c;
+      }
+
+      async function useCurrentAsActionRef() {
+        if (!props.currentSrc) { toast('此招式目前沒有既有圖檔', 'error'); return; }
+        try {
+          const res = await fetch(props.currentSrc);
+          const blob = await res.blob();
+          const f = new File([blob], `${props.actionId || 'action'}_ref.png`, { type: blob.type || 'image/png' });
+          setRefFile(actionRefFile, actionRefUrl, f);
+          toast('已帶入目前招式圖作為參考動作圖', 'success');
+        } catch (e) { toast(`帶入失敗：${e.message}`, 'error'); }
+      }
+
+      function buildFullPrompt() {
+        return [
+          `Create a 2D game animation sprite sheet strictly arranged in a clean ${cols.value} columns by ${rows.value} rows grid (${frames.value} sequential animation frames, left-to-right, top-to-bottom).`,
+          `Character: ${props.charName || props.charId}. Action: ${props.actionLabel || props.actionId}.`,
+          `User description: ${prompt.value.trim()}`,
+          turnaroundFile.value ? 'Match the exact character appearance, colors, outfit, and proportions shown in the provided character turnaround reference image.' : '',
+          actionRefFile.value ? 'Follow the motion rhythm, pose progression, and attack arcs shown in the provided reference action image.' : '',
+          'Rules: uniform cell sizing, no borders, no grid lines, no text or numbers, solid pure white background (#FFFFFF) for clean transparency extraction.',
+        ].filter(Boolean).join('\n');
+      }
+
+      async function copyPrompt() {
+        try {
+          await navigator.clipboard.writeText(buildFullPrompt());
+          toast('已複製完整 AI 提示詞（含欄×列與幀數規格）', 'success');
+        } catch { toast('無法自動複製，請手動選取提示詞', 'error'); }
+      }
+
+      function saveGeminiKey() {
+        localStorage.setItem(GEMINI_KEY_STORAGE, geminiKey.value.trim());
+        showKeyInput.value = false;
+        toast('已儲存 Gemini API Key 於本機瀏覽器', 'success');
+      }
+
+      async function fileToInlinePart(f) {
+        const buf = new Uint8Array(await f.arrayBuffer());
+        return { inlineData: { mimeType: f.type || 'image/png', data: bytesToBase64(buf) } };
+      }
+
+      async function imageBlobToPngFile(blob, name) {
+        if (blob.type === 'image/png') return new File([blob], name, { type: 'image/png' });
+        const bmp = await createImageBitmap(blob);
+        const c = document.createElement('canvas');
+        c.width = bmp.width; c.height = bmp.height;
+        c.getContext('2d').drawImage(bmp, 0, 0);
+        bmp.close();
+        const pngBlob = await new Promise((r) => c.toBlob(r, 'image/png'));
+        return new File([pngBlob], name, { type: 'image/png' });
+      }
+
+      async function generateWithGemini() {
+        const key = geminiKey.value.trim();
+        if (!key) { showKeyInput.value = true; genError.value = '請先貼入 Gemini API Key（可在 Google AI Studio 免費取得）'; return; }
+        if (!prompt.value.trim()) { genError.value = '請輸入提示詞'; return; }
+        localStorage.setItem(GEMINI_KEY_STORAGE, key);
+        generating.value = true; genError.value = '';
+        try {
+          const parts = [{ text: buildFullPrompt() }];
+          if (turnaroundFile.value) parts.push(await fileToInlinePart(turnaroundFile.value));
+          if (actionRefFile.value) parts.push(await fileToInlinePart(actionRefFile.value));
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(geminiModel.value)}:generateContent?key=${encodeURIComponent(key)}`;
+          const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts }],
+              generationConfig: { responseModalities: ['TEXT', 'IMAGE'] },
+            }),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) throw new Error(data.error?.message || `Gemini HTTP ${res.status}`);
+          const outParts = data.candidates?.[0]?.content?.parts || [];
+          const imgPart = outParts.find((p) => p.inlineData && p.inlineData.data);
+          if (!imgPart) throw new Error('模型未回傳圖片，請調整提示詞或改選其他模型再試');
+          const bin = atob(imgPart.inlineData.data);
+          const bytes = new Uint8Array(bin.length);
+          for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+          const rawBlob = new Blob([bytes], { type: imgPart.inlineData.mimeType || 'image/png' });
+          const pngFile = await imageBlobToPngFile(rawBlob, `${props.charId}_${props.actionId}_ai.png`);
+          revoke(genUrl);
+          genFile.value = pngFile;
+          genUrl.value = URL.createObjectURL(pngFile);
+          toast('✨ AI 精靈表生成完成！可在右側預覽動畫', 'success');
+        } catch (e) {
+          genError.value = e.message;
+        } finally { generating.value = false; }
+      }
+
+      async function generateWithBackend() {
+        if (!prompt.value.trim()) { genError.value = '請輸入提示詞'; return; }
+        generating.value = true; genError.value = '';
+        try {
+          const body = {
+            prompt: prompt.value.trim(),
+            characterId: props.charId,
+            name: props.charName,
+            actionId: props.actionId,
+            label: props.actionLabel,
+            cols: cols.value,
+            rows: rows.value,
+            frameCount: frames.value,
+            fps: fps.value,
+            trigger: props.trigger,
+            condition: props.condition,
+          };
+          await backendApi('/api/generate', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
+          });
+          toast('已送出至本機 AI 生成佇列（可至「🤖 AI 生成」分頁檢視進度）', 'success');
+          emit('close');
+        } catch (e) { genError.value = e.message; } finally { generating.value = false; }
+      }
+
+      function applyResult() {
+        if (!genFile.value) return;
+        emit('apply', {
+          file: genFile.value,
+          cols: Number(cols.value) || 5,
+          rows: Number(rows.value) || 2,
+          frames: Number(frames.value) || (Number(cols.value) * Number(rows.value)),
+          fps: Number(fps.value) || 14,
+        });
+        emit('close');
+      }
+
+      return {
+        store, prompt, cols, rows, frames, fps, styleChips,
+        turnaroundFile, turnaroundUrl, actionRefFile, actionRefUrl,
+        geminiKey, geminiModel, showKeyInput, generating, genError, genFile, genUrl,
+        setRefFile, addChip, useCurrentAsActionRef, copyPrompt, saveGeminiKey,
+        generateWithGemini, generateWithBackend, applyResult,
+      };
+    },
+    template: `
+      <div v-if="open" class="fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4" @click.self="$emit('close')">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-5xl max-h-[92vh] flex flex-col overflow-hidden">
+          <header class="px-5 py-3 bg-gradient-to-r from-indigo-600 to-fuchsia-600 text-white flex items-center justify-between">
+            <div>
+              <h2 class="text-lg font-bold">✨ AI 招式動畫修改工作台</h2>
+              <p class="text-xs opacity-90">{{ charName }}（#{{ charId }}）→ {{ actionLabel || actionId }}</p>
+            </div>
+            <button @click="$emit('close')" class="px-2.5 py-1 rounded bg-white/20 hover:bg-white/30 text-sm">✕ 關閉</button>
+          </header>
+
+          <div class="p-5 overflow-y-auto grid grid-cols-12 gap-5">
+            <!-- Left: Prompt + Grid + Reference Images -->
+            <div class="col-span-12 lg:col-span-7 space-y-4">
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <label class="text-sm font-semibold">1. 動作提示詞（Prompt）</label>
+                  <button @click="copyPrompt" class="text-xs px-2 py-0.5 rounded border hover:bg-slate-50">📋 複製完整提示詞</button>
+                </div>
+                <textarea v-model="prompt" rows="3" placeholder="描述招式動作、特效顏色、鏡頭張力與畫風…"
+                  class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-400 outline-none"></textarea>
+                <div class="flex flex-wrap gap-1 mt-1.5">
+                  <button v-for="c in styleChips" :key="c" @click="addChip(c)"
+                    class="text-xs px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 hover:bg-indigo-100">＋ {{ c }}</button>
+                </div>
+              </div>
+
+              <div>
+                <p class="text-sm font-semibold mb-1.5">2. 精靈表規格（欄 × 列 × 幀數）</p>
+                <div class="grid grid-cols-4 gap-2">
+                  <label class="text-xs bg-slate-50 p-2 rounded border">欄 (Cols)
+                    <input type="number" min="1" max="20" v-model.number="cols" class="w-full border rounded px-2 py-1 mt-1 bg-white text-sm" /></label>
+                  <label class="text-xs bg-slate-50 p-2 rounded border">列 (Rows)
+                    <input type="number" min="1" max="20" v-model.number="rows" class="w-full border rounded px-2 py-1 mt-1 bg-white text-sm" /></label>
+                  <label class="text-xs bg-slate-50 p-2 rounded border">總幀數
+                    <input type="number" min="1" :max="cols*rows" v-model.number="frames" class="w-full border rounded px-2 py-1 mt-1 bg-white text-sm" /></label>
+                  <label class="text-xs bg-slate-50 p-2 rounded border">FPS
+                    <input type="number" min="1" max="60" v-model.number="fps" class="w-full border rounded px-2 py-1 mt-1 bg-white text-sm" /></label>
+                </div>
+              </div>
+
+              <div>
+                <p class="text-sm font-semibold mb-1.5">3. 上傳參考圖（選填，可大幅提升角色一致性）</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <!-- Turnaround Sheet -->
+                  <div class="border rounded-lg p-3 bg-slate-50 space-y-2">
+                    <div class="flex items-center justify-between">
+                      <span class="text-xs font-semibold">🧍 角色三視圖</span>
+                      <button v-if="turnaroundFile" @click="setRefFile(turnaroundFile, turnaroundUrl, null)" class="text-xs text-red-500">清除</button>
+                    </div>
+                    <label class="block cursor-pointer">
+                      <input type="file" accept="image/png,image/jpeg,image/webp" class="hidden"
+                             @change="setRefFile(turnaroundFile, turnaroundUrl, $event.target.files[0]); $event.target.value=''" />
+                      <div v-if="turnaroundUrl" class="checker rounded border h-28 flex items-center justify-center overflow-hidden">
+                        <img :src="turnaroundUrl" class="max-h-full max-w-full object-contain" />
+                      </div>
+                      <div v-else class="border-2 border-dashed border-slate-300 hover:border-indigo-400 rounded h-28 flex flex-col items-center justify-center text-xs text-slate-500 text-center p-2">
+                        點擊上傳正面／側面／背面<br>角色設定三視圖
+                      </div>
+                    </label>
+                  </div>
+
+                  <!-- Action Reference -->
+                  <div class="border rounded-lg p-3 bg-slate-50 space-y-2">
+                    <div class="flex items-center justify-between gap-1">
+                      <span class="text-xs font-semibold">🎬 參考動作圖</span>
+                      <div class="flex gap-2">
+                        <button v-if="currentSrc" @click="useCurrentAsActionRef" class="text-[11px] text-indigo-600 hover:underline">📎 帶入目前招式圖</button>
+                        <button v-if="actionRefFile" @click="setRefFile(actionRefFile, actionRefUrl, null)" class="text-xs text-red-500">清除</button>
+                      </div>
+                    </div>
+                    <label class="block cursor-pointer">
+                      <input type="file" accept="image/png,image/jpeg,image/webp" class="hidden"
+                             @change="setRefFile(actionRefFile, actionRefUrl, $event.target.files[0]); $event.target.value=''" />
+                      <div v-if="actionRefUrl" class="checker rounded border h-28 flex items-center justify-center overflow-hidden">
+                        <img :src="actionRefUrl" class="max-h-full max-w-full object-contain" />
+                      </div>
+                      <div v-else class="border-2 border-dashed border-slate-300 hover:border-indigo-400 rounded h-28 flex flex-col items-center justify-center text-xs text-slate-500 text-center p-2">
+                        點擊上傳動作參考草圖<br>或點右上角帶入原招式圖
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Gemini API key bar -->
+              <div class="border rounded-lg p-3 bg-indigo-50/50 space-y-2">
+                <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                  <span class="font-semibold text-indigo-900">⚡ AI 雲端引擎（Gemini 圖像生成）</span>
+                  <div class="flex items-center gap-2">
+                    <select v-model="geminiModel" class="border rounded px-1.5 py-0.5 bg-white text-xs">
+                      <option value="gemini-2.5-flash-image">gemini-2.5-flash-image</option>
+                      <option value="gemini-2.0-flash-exp-image-generation">gemini-2.0-flash-exp-image-generation</option>
+                    </select>
+                    <button @click="showKeyInput=!showKeyInput" class="px-2 py-0.5 rounded border bg-white hover:bg-slate-50">
+                      {{ geminiKey ? '🔑 已設 API Key' : '🔑 設定 Gemini Key' }}
+                    </button>
+                  </div>
+                </div>
+                <div v-if="showKeyInput || !geminiKey" class="flex gap-2">
+                  <input type="password" v-model.trim="geminiKey" placeholder="貼入 Google AI Studio 的 Gemini API Key（僅存於本機瀏覽器）"
+                    class="flex-1 border rounded px-2 py-1 text-xs font-mono bg-white" />
+                  <button @click="saveGeminiKey" class="px-3 py-1 rounded bg-indigo-600 text-white text-xs">儲存 Key</button>
+                </div>
+              </div>
+
+              <p v-if="genError" class="text-xs text-red-600 bg-red-50 border border-red-200 rounded p-2">✗ {{ genError }}</p>
+
+              <div class="flex flex-wrap gap-2">
+                <button @click="generateWithGemini" :disabled="generating"
+                  class="px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-600 to-fuchsia-600 text-white font-semibold text-sm hover:opacity-95 disabled:opacity-40">
+                  {{ generating ? '⏳ AI 生成中…' : '✨ 立即用 AI 生成精靈表' }}
+                </button>
+                <button v-if="store.mode==='backend'" @click="generateWithBackend" :disabled="generating"
+                  class="px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm disabled:opacity-40">
+                  🖥️ 送至本機 SD 佇列
+                </button>
+              </div>
+            </div>
+
+            <!-- Right: Live Preview of Generated (or Current) Animation -->
+            <div class="col-span-12 lg:col-span-5 flex flex-col justify-between bg-slate-50 rounded-lg border p-4 space-y-3">
+              <div>
+                <p class="text-sm font-semibold mb-2 text-center">{{ genUrl ? '🎉 AI 生成結果預覽' : '目前招式預覽（生成後將顯示於此）' }}</p>
+                <sprite-preview :src="genUrl || currentSrc" :cols="cols" :rows="rows" :frames="frames" :fps="fps" :size="260" />
+              </div>
+              <div class="space-y-2 border-t pt-3">
+                <button @click="applyResult" :disabled="!genFile"
+                  class="w-full py-2 rounded-lg bg-emerald-600 text-white font-semibold text-sm disabled:opacity-40">
+                  ✅ 套用此生成圖與格數至編輯器
+                </button>
+                <a v-if="genUrl" :href="genUrl" :download="charId + '_' + actionId + '_ai.png'"
+                  class="block text-center text-xs text-indigo-600 hover:underline">⬇ 下載生成 PNG 備份</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>`,
+  };
+
   // ---------- Characters tab ----------
   const CharactersTab = {
-    components: { SpritePreview, DropZone, ConditionEditor },
+    components: { SpritePreview, DropZone, ConditionEditor, AiModifyModal },
     setup() {
       const selectedId = ref(null);
       const selectedActionId = ref(null);
@@ -528,6 +874,7 @@
       const condOk = ref(true);
       const filter = ref('');
       const roleFilter = ref('all'); // 'all' | 'hero' | 'boss' | 'monster' | 'custom'
+      const aiModalOpen = ref(false);
 
       const allCharacters = computed(() => getMergedCharacters());
       const characters = computed(() => allCharacters.value.filter((c) => {
@@ -561,6 +908,14 @@
       }
       function newAction() {
         isNewAction.value = true; selectedActionId.value = null; file.value = null; Object.assign(actionForm, blankAction());
+      }
+      function onAiApply(payload) {
+        actionForm.cols = payload.cols;
+        actionForm.rows = payload.rows;
+        actionForm.frames = payload.frames;
+        actionForm.fps = payload.fps;
+        file.value = payload.file;
+        toast('已套用 AI 生成結果！請點「💾 儲存並建立 PR」同步至遊戲', 'success');
       }
       watch(() => [actionForm.cols, actionForm.rows], ([c, r]) => {
         if (actionForm.frames > c * r || isNewAction.value) actionForm.frames = c * r;
@@ -601,8 +956,8 @@
         { k: 'monster', t: '怪物' }, { k: 'custom', t: '✨自訂' },
       ];
       return { store, allCharacters, characters, current, currentAction, selectedId, selectedActionId, isNewChar, charForm, actionForm, isNewAction,
-        file, condOk, filter, roleFilter, roleTabs, previewSrc, canSave, TRIGGER_LABELS,
-        selectChar, newChar, selectAction, newAction, save, removeAction, removeChar };
+        file, condOk, filter, roleFilter, roleTabs, aiModalOpen, previewSrc, canSave, TRIGGER_LABELS,
+        selectChar, newChar, selectAction, newAction, onAiApply, save, removeAction, removeChar };
     },
     template: `
       <div class="grid grid-cols-12 gap-4">
@@ -672,9 +1027,14 @@
               </div>
               <drop-zone v-model:file="file" :hint="isNewAction ? '新動作必須上傳精靈表 PNG' : '留空 = 沿用目前圖檔，或上傳新 PNG 覆寫'" />
             </div>
-            <div class="col-span-12 lg:col-span-5">
+            <div class="col-span-12 lg:col-span-5 space-y-3">
+              <button id="btnOpenAiModify" @click="aiModalOpen=true"
+                class="w-full py-2.5 px-3 rounded-lg bg-gradient-to-r from-indigo-600 to-fuchsia-600 text-white font-semibold text-sm shadow hover:opacity-95 transition flex items-center justify-center gap-2">
+                <span>✨ 啟動 AI 修改此招式</span>
+                <span class="text-[11px] font-normal bg-white/20 px-1.5 py-0.5 rounded">提示詞 / 三視圖 / 參考動作</span>
+              </button>
               <sprite-preview :src="previewSrc" :cols="actionForm.cols" :rows="actionForm.rows" :frames="actionForm.frames" :fps="actionForm.fps" :size="260" />
-              <p v-if="currentAction && !isNewAction" class="text-xs text-slate-400 mt-2 font-mono break-all">
+              <p v-if="currentAction && !isNewAction" class="text-xs text-slate-400 font-mono break-all">
                 <span :class="['inline-block px-1.5 py-0.5 rounded mr-1 font-sans', currentAction.builtin ? 'bg-slate-200 text-slate-600' : 'bg-emerald-100 text-emerald-700']">{{ currentAction.builtin ? '內建動畫' : '雲端自訂' }}</span>
                 {{ currentAction.sheetKey }}<br>{{ currentAction.png }}
               </p>
@@ -688,6 +1048,23 @@
             <button v-if="current && !current.builtin" @click="removeChar" :disabled="store.busy" class="px-3 py-2 rounded border text-red-600 ml-auto">刪除自訂角色</button>
           </div>
         </section>
+
+        <ai-modify-modal
+          :open="aiModalOpen"
+          :char-id="charForm.id || 'custom'"
+          :char-name="charForm.name || charForm.id || '角色'"
+          :action-id="actionForm.id || 'action'"
+          :action-label="actionForm.label || actionForm.id || '招式'"
+          :current-src="previewSrc"
+          :init-cols="actionForm.cols"
+          :init-rows="actionForm.rows"
+          :init-frames="actionForm.frames"
+          :init-fps="actionForm.fps"
+          :trigger="actionForm.trigger"
+          :condition="actionForm.condition"
+          @close="aiModalOpen=false"
+          @apply="onAiApply"
+        />
       </div>`,
   };
 

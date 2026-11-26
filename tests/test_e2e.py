@@ -154,6 +154,16 @@ class SchoolFightE2ETest(unittest.TestCase):
             # Built-in game characters should be listed immediately (23 characters)
             page.wait_for_selector("text=呆呆伶")
             self.assertGreaterEqual(page.locator("aside ul li").count(), 23)
+
+            # Open AI Modify Modal for the selected action, upload turnaround & action ref images
+            page.click("#btnOpenAiModify")
+            page.wait_for_selector("text=AI 招式動畫修改工作台")
+            modal = page.locator("div.fixed.inset-0")
+            modal.locator('input[type="file"]').nth(0).set_input_files(str(self.sheet_10x4))
+            modal.locator('input[type="file"]').nth(1).set_input_files(str(self.sheet_10x4))
+            modal.locator('button:has-text("關閉")').click()
+            page.wait_for_selector("text=AI 招式動畫修改工作台", state="hidden")
+
             page.click('aside button[title="新增自訂角色"]')
 
             page.locator('input[placeholder="red_panda"]').fill("my_panda")
