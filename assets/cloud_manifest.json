@@ -1,6 +1,6 @@
 {
   "format": "schoolfight_cloud_manifest_v1",
-  "updatedAt": 1795680767453,
+  "updatedAt": 1795681705133,
   "sheets": {
     "enemy_wizard_ghost_attack": {
       "file": "assets/enemy_wizard_ghost_attack_sheet.webp",
@@ -55,6 +55,24 @@
       "anchorX": 150,
       "anchorY": 236,
       "updatedAt": 1795680195666
+    },
+    "enemy_donghua_boss_attack": {
+      "file": "assets/enemy_donghua_boss_attack_sheet.webp",
+      "cols": 5,
+      "rows": 4,
+      "frameCount": 20,
+      "anchorX": 150,
+      "anchorY": 242,
+      "updatedAt": 1795681705133
+    },
+    "enemy_donghua_boss_move": {
+      "file": "assets/enemy_donghua_boss_move_sheet.webp",
+      "cols": 5,
+      "rows": 2,
+      "frameCount": 10,
+      "anchorX": 150,
+      "anchorY": 242,
+      "updatedAt": 1795681705133
     }
   },
   "allOverrides": {
@@ -381,8 +399,8 @@
         "fps": 14,
         "key": null,
         "cols": 5,
-        "rows": 2,
-        "frameCount": 10,
+        "rows": 4,
+        "frameCount": 20,
         "custom": false,
         "sheetKey": "enemy_donghua_boss_attack",
         "triggerDesc": "前半幀：「武」字黃金正拳＋太極震地氣勁 ｜ 後半幀：三連黃金氣功波＋流星飛躍碎地斬"
