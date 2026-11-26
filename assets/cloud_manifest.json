@@ -1,6 +1,1339 @@
 {
   "format": "schoolfight_cloud_manifest_v1",
-  "updatedAt": 0,
-  "sheets": {},
-  "allOverrides": {}
+  "updatedAt": 1795680034260,
+  "sheets": {
+    "enemy_wizard_ghost_attack": {
+      "file": "assets/enemy_wizard_ghost_attack_sheet.webp",
+      "cols": 5,
+      "rows": 4,
+      "frameCount": 20,
+      "anchorX": 150,
+      "anchorY": 236,
+      "updatedAt": 1795680034260
+    },
+    "attack": {
+      "file": "assets/attack_sheet.webp",
+      "cols": 5,
+      "rows": 2,
+      "frameCount": 10,
+      "anchorX": 177,
+      "anchorY": 404,
+      "updatedAt": 1795680034260
+    },
+    "rp_dashLightAttack": {
+      "file": "assets/rp_dashLightAttack_sheet.webp",
+      "cols": 5,
+      "rows": 2,
+      "frameCount": 10,
+      "anchorX": 136,
+      "anchorY": 242,
+      "updatedAt": 1795680034260
+    },
+    "enemy_wizard_ghost_move": {
+      "file": "assets/enemy_wizard_ghost_move_sheet.webp",
+      "cols": 5,
+      "rows": 4,
+      "frameCount": 20,
+      "anchorX": 150,
+      "anchorY": 236,
+      "updatedAt": 1795680034260
+    }
+  },
+  "allOverrides": {
+    "kuromi": [
+      {
+        "id": "idle",
+        "label": "待機動畫 (Idle)",
+        "fps": 8.5,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "idle",
+        "triggerDesc": "靜止自動循環"
+      },
+      {
+        "id": "walk",
+        "label": "走路動畫 (Walk)",
+        "fps": 11,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "walk",
+        "triggerDesc": "獨立 10 幀直立走路（一般 WASD / 方向鍵）"
+      },
+      {
+        "id": "run",
+        "label": "跑步動畫 (Run)",
+        "fps": 17,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "run",
+        "triggerDesc": "連按兩次 AA / DD / ←← / →→"
+      },
+      {
+        "id": "dash",
+        "label": "瞬間衝刺・閃身步 (Dash)",
+        "fps": 25,
+        "key": "ShiftLeft",
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "dash",
+        "triggerDesc": "喊出「閃身步」並瞬間突進一大段距離"
+      },
+      {
+        "id": "lightAttack",
+        "label": "輕攻擊・揮拳連擊 (Light)",
+        "fps": 17,
+        "key": "Numpad4",
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "lightAttack",
+        "triggerDesc": "徒手三段拳擊（直拳→勾拳→上勾拳）"
+      },
+      {
+        "id": "heavyAttack",
+        "label": "重攻擊・寒冰重擊 (Heavy)",
+        "fps": 14,
+        "key": "Numpad5",
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "attack",
+        "triggerDesc": "獨立 10 幀冰川尖刺爆發與暴風雪重砸＋擊飛"
+      },
+      {
+        "id": "dashLightAttack",
+        "label": "衝刺輕攻擊・浪子踢球 (Dash Light)",
+        "fps": 17,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "dashLightAttack",
+        "triggerDesc": "獨立 10 幀！跑步中 按 輕攻擊 發動，踢出能量足球"
+      },
+      {
+        "id": "dashAttack",
+        "label": "衝刺重攻擊・星杖衝刺斬 (Dash Heavy)",
+        "fps": 18,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "dashAttack",
+        "triggerDesc": "獨立 10 幀！跑步中 按 重攻擊 發動星光衝刺斬"
+      },
+      {
+        "id": "tornadoKick",
+        "label": "特殊招式・龍捲旋風腳 (Tornado Kick)",
+        "fps": 15,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "tornadoKick",
+        "triggerDesc": "按住 ↑ 再按 重攻擊（W+Num5 / 手把 ↑+重攻）發動！多段旋風擊飛浮空可空中追打"
+      },
+      {
+        "id": "special",
+        "label": "能量砲十連發 (Special)",
+        "fps": 12,
+        "key": "Numpad0",
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "special",
+        "triggerDesc": "霸體集氣・全螢幕十連擊光砲＋美漫衝擊幀"
+      },
+      {
+        "id": "jump",
+        "label": "跳躍 (Jump)",
+        "fps": 12,
+        "key": "Space",
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "jump",
+        "triggerDesc": "原地／移動跳躍（空中可揮杖追打）"
+      },
+      {
+        "id": "hurt",
+        "label": "受傷／受擊 (Hurt)",
+        "fps": 15,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "hurt",
+        "triggerDesc": "高解析 10 幀受傷硬直、踉蹌與回復"
+      },
+      {
+        "id": "victory",
+        "label": "戰鬥勝利動作 (Victory)",
+        "fps": 10,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "victory",
+        "triggerDesc": "過關結算專屬 10 幀魔杖星光歡慶勝利動畫"
+      }
+    ],
+    "redpanda": [
+      {
+        "id": "rp_idle",
+        "label": "待機動畫 (Idle)",
+        "fps": 8.5,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "rp_idle",
+        "triggerDesc": "10 幀呼吸、眨眼與條紋尾擺動"
+      },
+      {
+        "id": "rp_walk",
+        "label": "走路動畫 (Walk)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "rp_walk",
+        "triggerDesc": "獨立 10 幀直立健步走（WASD / 方向鍵）"
+      },
+      {
+        "id": "rp_run",
+        "label": "奔跑動畫 (Run)",
+        "fps": 17,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "rp_run",
+        "triggerDesc": "連按兩次 AA / DD / ←← / →→"
+      },
+      {
+        "id": "rp_dash",
+        "label": "瞬間衝刺・蒼藍音爆閃身步 (Dash)",
+        "fps": 24,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "rp_dash",
+        "triggerDesc": "10 幀極速蒼藍音爆破風瞬間突進（Shift 觸發）"
+      },
+      {
+        "id": "rp_lightAttack",
+        "label": "輕攻擊・五連閃電連擊 (Light)",
+        "fps": 18,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "rp_lightAttack",
+        "triggerDesc": "金色閃電高速連拳（共用輕攻鍵）"
+      },
+      {
+        "id": "rp_attack",
+        "label": "重攻擊・升龍拳 (Heavy)",
+        "fps": 16,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "rp_attack",
+        "triggerDesc": "獨立 10 幀！發招大喊「升龍拳」躍起黃金能量上鉤拳，把敵人高高打飛至空中（可接空中追打）"
+      },
+      {
+        "id": "rp_dashLightAttack",
+        "label": "衝刺輕攻擊・閃電踢球 (Dash Light)",
+        "fps": 24,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "rp_dashLightAttack",
+        "triggerDesc": "獨立 10 連幀！跑步中 按 輕攻鍵 聚雷成形抽射閃電足球"
+      },
+      {
+        "id": "rp_dashAttack",
+        "label": "衝刺重攻擊・赤焰衝刺撞擊 (Dash Heavy)",
+        "fps": 18,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "rp_dashAttack",
+        "triggerDesc": "獨立 10 幀！跑步中 按 重攻鍵 發動赤焰高速撞擊"
+      },
+      {
+        "id": "rp_tornadoKick",
+        "label": "特殊招式・烈焰龍捲旋風腳 (Tornado Kick)",
+        "fps": 15,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "rp_tornadoKick",
+        "triggerDesc": "按住 ↑ 再按 重攻擊（W+Num5 / 手把 ↑+重攻）發動！烈焰旋風打浮空可空中追打"
+      },
+      {
+        "id": "rp_special",
+        "label": "必殺技・赤焰百拳連擊 (Special)",
+        "fps": 14,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "rp_special",
+        "triggerDesc": "霸體狂暴 10 連擊烈焰百烈拳（共用必殺鍵）"
+      },
+      {
+        "id": "rp_hurt",
+        "label": "受傷／受擊 (Hurt)",
+        "fps": 14,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "rp_hurt",
+        "triggerDesc": "可上傳獨立 10 幀受傷精靈表"
+      },
+      {
+        "id": "rp_victory",
+        "label": "戰鬥勝利動作 (Victory)",
+        "fps": 10,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "rp_victory",
+        "triggerDesc": "過關結算專屬 10 幀金星慶祝勝利動畫"
+      }
+    ],
+    "enemy_donghua_boss": [
+      {
+        "id": "enemy_donghua_boss_move",
+        "label": "移動動畫 (Move)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_donghua_boss_move",
+        "triggerDesc": "連續幀移動巡邏循環"
+      },
+      {
+        "id": "enemy_donghua_boss_attack",
+        "label": "雙模式攻擊 (Attack A+B)",
+        "fps": 14,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_donghua_boss_attack",
+        "triggerDesc": "前半幀：「武」字黃金正拳＋太極震地氣勁 ｜ 後半幀：三連黃金氣功波＋流星飛躍碎地斬"
+      },
+      {
+        "id": "enemy_donghua_boss_hurt",
+        "label": "受傷動畫 (Hurt)",
+        "fps": 14,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_donghua_boss_hurt",
+        "triggerDesc": "受擊硬直、踉蹌與回復動作"
+      },
+      {
+        "id": "enemy_donghua_boss_ko",
+        "label": "被打敗動畫 (KO)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_donghua_boss_ko",
+        "triggerDesc": "受擊飛退 → 翻滾墜地 → 暈眩倒地"
+      }
+    ],
+    "enemy_star_boss": [
+      {
+        "id": "enemy_star_boss_move",
+        "label": "移動動畫 (Move)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_star_boss_move",
+        "triggerDesc": "連續幀移動巡邏循環"
+      },
+      {
+        "id": "enemy_star_boss_attack",
+        "label": "雙模式攻擊 (Attack A+B)",
+        "fps": 14,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_star_boss_attack",
+        "triggerDesc": "前半幀：巨型迴旋霸體衝撞 ｜ 後半幀：三向扇形宇宙星彈齊射"
+      },
+      {
+        "id": "enemy_star_boss_ko",
+        "label": "受擊與被打倒 (Hurt / KO)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_star_boss_ko",
+        "triggerDesc": "受擊飛退 → 翻滾墜地 → 暈眩倒地"
+      }
+    ],
+    "enemy_zebra_rush": [
+      {
+        "id": "enemy_zebra_rush_move",
+        "label": "移動動畫 (Move)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_zebra_rush_move",
+        "triggerDesc": "連續幀移動巡邏循環"
+      },
+      {
+        "id": "enemy_zebra_rush_attack",
+        "label": "雙模式攻擊 (Attack A+B)",
+        "fps": 14,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_zebra_rush_attack",
+        "triggerDesc": "前半幀：轉身後腿雙蹄反踢（近身震退） ｜ 後半幀：蓄力蹬蹄破風頭槌猛衝（5色：墨白/灰/棕/白金/藍）"
+      },
+      {
+        "id": "enemy_zebra_rush_hurt",
+        "label": "受傷動畫 (Hurt)",
+        "fps": 14,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_zebra_rush_hurt",
+        "triggerDesc": "受擊硬直、踉蹌與回復動作"
+      },
+      {
+        "id": "enemy_zebra_rush_ko",
+        "label": "被打敗動畫 (KO)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_zebra_rush_ko",
+        "triggerDesc": "受擊飛退 → 翻滾墜地 → 暈眩倒地"
+      }
+    ],
+    "enemy_joey_kangaroo": [
+      {
+        "id": "enemy_joey_kangaroo_move",
+        "label": "移動動畫 (Move)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_joey_kangaroo_move",
+        "triggerDesc": "連續幀移動巡邏循環"
+      },
+      {
+        "id": "enemy_joey_kangaroo_attack",
+        "label": "雙模式攻擊 (Attack A+B)",
+        "fps": 14,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_joey_kangaroo_attack",
+        "triggerDesc": "前半幀：衝天翻滾墜地重踩震波 (AOE) ｜ 後半幀：投擲育兒袋小袋鼠回力球（飛出再折返・5色變色）"
+      },
+      {
+        "id": "enemy_joey_kangaroo_hurt",
+        "label": "受傷動畫 (Hurt)",
+        "fps": 14,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_joey_kangaroo_hurt",
+        "triggerDesc": "受擊硬直、踉蹌與回復動作"
+      },
+      {
+        "id": "enemy_joey_kangaroo_ko",
+        "label": "被打敗動畫 (KO)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_joey_kangaroo_ko",
+        "triggerDesc": "受擊飛退 → 翻滾墜地 → 暈眩倒地"
+      }
+    ],
+    "enemy_kangaroo": [
+      {
+        "id": "enemy_kangaroo_move",
+        "label": "移動動畫 (Move)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_kangaroo_move",
+        "triggerDesc": "連續幀移動巡邏循環"
+      },
+      {
+        "id": "enemy_kangaroo_attack",
+        "label": "雙模式攻擊 (Attack A+B)",
+        "fps": 14,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_kangaroo_attack",
+        "triggerDesc": "前半幀：極速三連刺拳連擊 ｜ 後半幀：彈簧飛躍重勾拳衝刺"
+      },
+      {
+        "id": "enemy_kangaroo_hurt",
+        "label": "受傷動畫 (Hurt)",
+        "fps": 14,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_kangaroo_hurt",
+        "triggerDesc": "受擊硬直、踉蹌與回復動作"
+      },
+      {
+        "id": "enemy_kangaroo_ko",
+        "label": "被打敗動畫 (KO)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_kangaroo_ko",
+        "triggerDesc": "受擊飛退 → 翻滾墜地 → 暈眩倒地"
+      }
+    ],
+    "enemy_zebra": [
+      {
+        "id": "enemy_zebra_move",
+        "label": "移動動畫 (Move)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_zebra_move",
+        "triggerDesc": "連續幀移動巡邏循環"
+      },
+      {
+        "id": "enemy_zebra_attack",
+        "label": "雙模式攻擊 (Attack A+B)",
+        "fps": 14,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_zebra_attack",
+        "triggerDesc": "前半幀：霓虹滑板極速衝刺斬 ｜ 後半幀：巨型粉紅泡泡糖波浪炸彈"
+      },
+      {
+        "id": "enemy_zebra_hurt",
+        "label": "受傷動畫 (Hurt)",
+        "fps": 14,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_zebra_hurt",
+        "triggerDesc": "受擊硬直、踉蹌與回復動作"
+      },
+      {
+        "id": "enemy_zebra_ko",
+        "label": "被打敗動畫 (KO)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_zebra_ko",
+        "triggerDesc": "受擊飛退 → 翻滾墜地 → 暈眩倒地"
+      }
+    ],
+    "enemy_koala": [
+      {
+        "id": "enemy_koala_move",
+        "label": "移動動畫 (Move)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_koala_move",
+        "triggerDesc": "連續幀移動巡邏循環"
+      },
+      {
+        "id": "enemy_koala_attack",
+        "label": "雙模式攻擊 (Attack A+B)",
+        "fps": 14,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_koala_attack",
+        "triggerDesc": "前半幀：霓虹耳機重低音震盪環 (AOE) ｜ 後半幀：全息電玩青藍衝擊波"
+      },
+      {
+        "id": "enemy_koala_hurt",
+        "label": "受傷動畫 (Hurt)",
+        "fps": 14,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_koala_hurt",
+        "triggerDesc": "受擊硬直、踉蹌與回復動作"
+      },
+      {
+        "id": "enemy_koala_ko",
+        "label": "被打敗動畫 (KO)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_koala_ko",
+        "triggerDesc": "受擊飛退 → 翻滾墜地 → 暈眩倒地"
+      }
+    ],
+    "enemy_capybara": [
+      {
+        "id": "enemy_capybara_move",
+        "label": "移動動畫 (Move)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_capybara_move",
+        "triggerDesc": "連續幀移動巡邏循環"
+      },
+      {
+        "id": "enemy_capybara_attack",
+        "label": "雙模式攻擊 (Attack A+B)",
+        "fps": 14,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_capybara_attack",
+        "triggerDesc": "前半幀：佛系肚皮震地壓頂衝擊 ｜ 後半幀：淡定吐草飛葉三連扇"
+      },
+      {
+        "id": "enemy_capybara_hurt",
+        "label": "受傷動畫 (Hurt)",
+        "fps": 14,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_capybara_hurt",
+        "triggerDesc": "受擊硬直、踉蹌與回復動作"
+      },
+      {
+        "id": "enemy_capybara_ko",
+        "label": "被打敗動畫 (KO)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_capybara_ko",
+        "triggerDesc": "受擊飛退 → 翻滾墜地 → 暈眩倒地"
+      }
+    ],
+    "enemy_cactus": [
+      {
+        "id": "enemy_cactus_move",
+        "label": "移動動畫 (Move)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_cactus_move",
+        "triggerDesc": "連續幀移動巡邏循環"
+      },
+      {
+        "id": "enemy_cactus_attack",
+        "label": "雙模式攻擊 (Attack A+B)",
+        "fps": 14,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_cactus_attack",
+        "triggerDesc": "前半幀：旋風縮球萬針爆衝斬 ｜ 後半幀：巨型仙人掌棒＋三向金針齊射"
+      },
+      {
+        "id": "enemy_cactus_hurt",
+        "label": "受傷動畫 (Hurt)",
+        "fps": 14,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_cactus_hurt",
+        "triggerDesc": "受擊硬直、踉蹌與回復動作"
+      },
+      {
+        "id": "enemy_cactus_ko",
+        "label": "被打敗動畫 (KO)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_cactus_ko",
+        "triggerDesc": "受擊飛退 → 翻滾墜地 → 暈眩倒地"
+      }
+    ],
+    "enemy_wizard_ghost": [
+      {
+        "id": "enemy_wizard_ghost_move",
+        "label": "移動動畫 (Move)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 4,
+        "frameCount": 20,
+        "custom": false,
+        "sheetKey": "enemy_wizard_ghost_move",
+        "triggerDesc": "連續幀移動巡邏循環"
+      },
+      {
+        "id": "enemy_wizard_ghost_attack",
+        "label": "雙模式攻擊 (Attack A+B)",
+        "fps": 14,
+        "key": null,
+        "cols": 5,
+        "rows": 4,
+        "frameCount": 20,
+        "custom": false,
+        "sheetKey": "enemy_wizard_ghost_attack",
+        "triggerDesc": "前半幀：星辰爆裂新星震波 (AOE) ｜ 後半幀：黑洞傳送門流星雨彈幕"
+      },
+      {
+        "id": "enemy_wizard_ghost_hurt",
+        "label": "受傷動畫 (Hurt)",
+        "fps": 14,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_wizard_ghost_hurt",
+        "triggerDesc": "受擊硬直、踉蹌與回復動作"
+      },
+      {
+        "id": "enemy_wizard_ghost_ko",
+        "label": "被打敗動畫 (KO)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_wizard_ghost_ko",
+        "triggerDesc": "受擊飛退 → 翻滾墜地 → 暈眩倒地"
+      }
+    ],
+    "enemy_pengking": [
+      {
+        "id": "enemy_pengking_move",
+        "label": "移動動畫 (Move)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_pengking_move",
+        "triggerDesc": "連續幀移動巡邏循環"
+      },
+      {
+        "id": "enemy_pengking_attack",
+        "label": "攻擊動畫 (Attack)",
+        "fps": 14,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_pengking_attack",
+        "triggerDesc": "王者滑冰飛撲猛撞（含蓄力金光與急煞）"
+      },
+      {
+        "id": "enemy_pengking_hurt",
+        "label": "受傷動畫 (Hurt)",
+        "fps": 14,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_pengking_hurt",
+        "triggerDesc": "受擊硬直、踉蹌與回復動作"
+      },
+      {
+        "id": "enemy_pengking_ko",
+        "label": "被打敗動畫 (KO)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_pengking_ko",
+        "triggerDesc": "受擊飛退 → 翻滾墜地 → 暈眩倒地"
+      }
+    ],
+    "enemy_pengice": [
+      {
+        "id": "enemy_pengice_move",
+        "label": "移動動畫 (Move)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_pengice_move",
+        "triggerDesc": "連續幀移動巡邏循環"
+      },
+      {
+        "id": "enemy_pengice_attack",
+        "label": "攻擊動畫 (Attack)",
+        "fps": 14,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_pengice_attack",
+        "triggerDesc": "寒冰滑衝＋冰錐爆發震波"
+      },
+      {
+        "id": "enemy_pengice_hurt",
+        "label": "受傷動畫 (Hurt)",
+        "fps": 14,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_pengice_hurt",
+        "triggerDesc": "受擊硬直、踉蹌與回復動作"
+      },
+      {
+        "id": "enemy_pengice_ko",
+        "label": "被打敗動畫 (KO)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_pengice_ko",
+        "triggerDesc": "受擊飛退 → 翻滾墜地 → 暈眩倒地"
+      }
+    ],
+    "enemy_rabbit": [
+      {
+        "id": "enemy_rabbit_move",
+        "label": "移動動畫 (Move)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_rabbit_move",
+        "triggerDesc": "連續幀移動巡邏循環"
+      },
+      {
+        "id": "enemy_rabbit_attack",
+        "label": "攻擊動畫 (Attack)",
+        "fps": 14,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_rabbit_attack",
+        "triggerDesc": "極速跳躍撲咬突進（支援雪白/粉櫻/奶茶/芋紫/薄荷 5 色）"
+      },
+      {
+        "id": "enemy_rabbit_hurt",
+        "label": "受傷動畫 (Hurt)",
+        "fps": 14,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_rabbit_hurt",
+        "triggerDesc": "受擊硬直、踉蹌與回復動作"
+      },
+      {
+        "id": "enemy_rabbit_ko",
+        "label": "被打敗動畫 (KO)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_rabbit_ko",
+        "triggerDesc": "受擊飛退 → 翻滾墜地 → 暈眩倒地"
+      }
+    ],
+    "enemy_ghost": [
+      {
+        "id": "enemy_ghost_move",
+        "label": "移動動畫 (Move)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_ghost_move",
+        "triggerDesc": "連續幀移動巡邏循環"
+      },
+      {
+        "id": "enemy_ghost_attack",
+        "label": "攻擊動畫 (Attack)",
+        "fps": 14,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_ghost_attack",
+        "triggerDesc": "飄浮鬼火彈發射（支援蒼白/冰藍/紫焰/螢光綠/櫻粉 5 色）"
+      },
+      {
+        "id": "enemy_ghost_hurt",
+        "label": "受傷動畫 (Hurt)",
+        "fps": 14,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_ghost_hurt",
+        "triggerDesc": "受擊硬直、踉蹌與回復動作"
+      },
+      {
+        "id": "enemy_ghost_ko",
+        "label": "被打敗動畫 (KO)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_ghost_ko",
+        "triggerDesc": "受擊飛退 → 翻滾墜地 → 暈眩倒地"
+      }
+    ],
+    "enemy_sheep": [
+      {
+        "id": "enemy_sheep_move",
+        "label": "移動動畫 (Move)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_sheep_move",
+        "triggerDesc": "連續幀移動巡邏循環"
+      },
+      {
+        "id": "enemy_sheep_attack",
+        "label": "攻擊動畫 (Attack)",
+        "fps": 14,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_sheep_attack",
+        "triggerDesc": "暴躁綿羊彎角衝刺猛撞（支援雲白/粉莓/黃金/天藍/薄荷 5 色）"
+      },
+      {
+        "id": "enemy_sheep_hurt",
+        "label": "受傷動畫 (Hurt)",
+        "fps": 14,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_sheep_hurt",
+        "triggerDesc": "受擊硬直、踉蹌與回復動作"
+      },
+      {
+        "id": "enemy_sheep_ko",
+        "label": "被打敗動畫 (KO)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_sheep_ko",
+        "triggerDesc": "受擊飛退 → 翻滾墜地 → 暈眩倒地"
+      }
+    ],
+    "enemy_pig": [
+      {
+        "id": "enemy_pig_move",
+        "label": "移動動畫 (Move)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_pig_move",
+        "triggerDesc": "連續幀移動巡邏循環"
+      },
+      {
+        "id": "enemy_pig_attack",
+        "label": "攻擊動畫 (Attack)",
+        "fps": 14,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_pig_attack",
+        "triggerDesc": "近身衝刺攻擊：蹬蹄蓄力 → 躍起狂奔 → 極速猛撞 → 急煞"
+      },
+      {
+        "id": "enemy_pig_ko",
+        "label": "受擊與被打倒 (Hurt / KO)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_pig_ko",
+        "triggerDesc": "受擊飛退 → 翻滾墜地 → 暈眩倒地"
+      }
+    ],
+    "enemy_slime": [
+      {
+        "id": "enemy_slime_idle",
+        "label": "夢幻待機 (Idle)",
+        "fps": 8,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_slime_idle",
+        "triggerDesc": "打盹水泡待機循環"
+      },
+      {
+        "id": "enemy_slime_move",
+        "label": "跳躍奔跑 (Move)",
+        "fps": 13,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_slime_move",
+        "triggerDesc": "彈跳水花奔跑循環"
+      },
+      {
+        "id": "enemy_slime_angry",
+        "label": "憤怒反應／蓄力 (Angry)",
+        "fps": 14,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_slime_angry",
+        "triggerDesc": "驚嚇「！」→ 冒煙生氣起手預告"
+      },
+      {
+        "id": "enemy_slime_attack",
+        "label": "果凍衝刺撞擊 (Attack)",
+        "fps": 16,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_slime_attack",
+        "triggerDesc": "高速水花衝刺 → 爆擊撞擊 → 煞車"
+      },
+      {
+        "id": "enemy_slime_ko",
+        "label": "受擊與融化倒地 (Hurt / KO)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_slime_ko",
+        "triggerDesc": "受擊翻滾 → 墜地濺水 → 暈眩融化（倒地分裂）"
+      }
+    ],
+    "enemy_slime_mini": [
+      {
+        "id": "enemy_slime_mini_move",
+        "label": "移動動畫 (Move)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_slime_mini_move",
+        "triggerDesc": "連續幀移動巡邏循環"
+      },
+      {
+        "id": "enemy_slime_mini_attack",
+        "label": "攻擊動畫 (Attack)",
+        "fps": 14,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_slime_mini_attack",
+        "triggerDesc": "迷你果凍跳躍撞擊"
+      },
+      {
+        "id": "enemy_slime_mini_ko",
+        "label": "受擊與被打倒 (Hurt / KO)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_slime_mini_ko",
+        "triggerDesc": "受擊飛退 → 翻滾墜地 → 暈眩倒地"
+      }
+    ],
+    "enemy_mushroom": [
+      {
+        "id": "enemy_mushroom_move",
+        "label": "移動動畫 (Move)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_mushroom_move",
+        "triggerDesc": "連續幀移動巡邏循環"
+      },
+      {
+        "id": "enemy_mushroom_attack",
+        "label": "攻擊動畫 (Attack)",
+        "fps": 14,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_mushroom_attack",
+        "triggerDesc": "蓄力金光 → 飛躍頭頂 → 重砸爆發孢子彈"
+      },
+      {
+        "id": "enemy_mushroom_ko",
+        "label": "受擊與被打倒 (Hurt / KO)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_mushroom_ko",
+        "triggerDesc": "受擊飛退 → 翻滾墜地 → 暈眩倒地"
+      }
+    ],
+    "enemy_puffer": [
+      {
+        "id": "enemy_puffer_move",
+        "label": "移動動畫 (Move)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_puffer_move",
+        "triggerDesc": "連續幀移動巡邏循環"
+      },
+      {
+        "id": "enemy_puffer_attack",
+        "label": "攻擊動畫 (Attack)",
+        "fps": 14,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_puffer_attack",
+        "triggerDesc": "吸氣膨脹霸體 → 尖刺水花衝刺 → 閃電撞擊"
+      },
+      {
+        "id": "enemy_puffer_ko",
+        "label": "受擊與被打倒 (Hurt / KO)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_puffer_ko",
+        "triggerDesc": "受擊飛退 → 翻滾墜地 → 暈眩倒地"
+      }
+    ],
+    "enemy_star": [
+      {
+        "id": "enemy_star_move",
+        "label": "移動動畫 (Move)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_star_move",
+        "triggerDesc": "連續幀移動巡邏循環"
+      },
+      {
+        "id": "enemy_star_attack",
+        "label": "雙模式攻擊 (Attack A+B)",
+        "fps": 14,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_star_attack",
+        "triggerDesc": "前半幀：高速迴旋衝撞 ｜ 後半幀：寶石念力星彈"
+      },
+      {
+        "id": "enemy_star_ko",
+        "label": "受擊與被打倒 (Hurt / KO)",
+        "fps": 12,
+        "key": null,
+        "cols": 5,
+        "rows": 2,
+        "frameCount": 10,
+        "custom": false,
+        "sheetKey": "enemy_star_ko",
+        "triggerDesc": "受擊飛退 → 翻滾墜地 → 暈眩倒地"
+      }
+    ]
+  },
+  "combatParams": {}
 }
