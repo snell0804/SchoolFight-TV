@@ -1535,7 +1535,8 @@
             if (sc1 > bestCScore) { bestCScore = sc1; bestC = 1; }
             continue;
           }
-          let sumMc = 0, sumMv = 0, maxMx = 0, validRows = 0;
+          let sumMc = 0, sumMv = 0, validRows = 0;
+          const allValleys = [];
           let valid = true;
           for (let r = 0; r < effRows; r++) {
             const cp = perRowCols[r];
@@ -1553,24 +1554,26 @@
             if (r < effRows - 1 && nonEmptyCount < C) { valid = false; break; }
             if (nonEmptyCount === 0) continue;
             const mc = sumRowC / nonEmptyCount;
-            let sumV = 0, mxV = 0;
+            let sumV = 0;
             for (let c = 1; c < C; c++) {
-              const v = minValley(cp, sw, c * cellW, cellW * 0.12);
+              // Wider ±22% valley search (matches Step 4's ±28% split) so uneven margins or wide slashes still find the true gap
+              const v = minValley(cp, sw, c * cellW, cellW * 0.22);
               sumV += v;
-              if (v > mxV) mxV = v;
+              allValleys.push(v);
             }
             sumMc += mc;
             sumMv += sumV / (C - 1);
-            if (mxV > maxMx) maxMx = mxV;
             validRows++;
           }
           if (!valid || validRows === 0) continue;
           const mcAll = sumMc / validRows;
           const mvAll = sumMv / validRows;
-          if (maxMx > mcAll * 0.45) continue;
+          allValleys.sort((a, b) => a - b);
+          const p85V = allValleys[Math.min(allValleys.length - 1, Math.floor(allValleys.length * 0.85))] || 0;
+          if (mvAll > mcAll * 0.45 || p85V > mcAll * 0.65) continue;
           const contrast = (mcAll - mvAll) / Math.max(1, mcAll);
           const aspectBonus = -Math.abs(aspect - 1.10) * 0.06;
-          const score = contrast - (maxMx / Math.max(1, mcAll)) * 0.35 + Math.min(0.45, C * 0.038) + aspectBonus + (C === effCols ? 0.02 : 0);
+          const score = contrast - (p85V / Math.max(1, mcAll)) * 0.30 + Math.min(0.45, C * 0.038) + aspectBonus + (C === effCols ? 0.02 : 0);
           if (score > bestCScore) {
             bestCScore = score;
             bestC = C;
@@ -9154,7 +9157,9 @@
       statusBadge.className = `slot-status ${statusClass}`;
       statusBadge.textContent = statusText;
 
-      const syncGridLive = (autoMatchTotal = false) => {
+      let userEditedGrid = false;
+      const syncGridLive = async (autoMatchTotal = false) => {
+        userEditedGrid = true;
         const cVal = Math.max(1, Math.min(32, parseInt(inCols.value, 10) || 5));
         const rVal = Math.max(1, Math.min(24, parseInt(inRows.value, 10) || 2));
         const maxF = cVal * rVal;
@@ -9166,11 +9171,39 @@
         act.rows = rVal;
         act.frameCount = fVal;
         const sh = SpriteBank.sheets[act.sheetKey];
-        if (sh && sh.img) {
+        if (sh && sh._rawImg) {
+          // Re-slice from original uploaded PNG with the user's exact cols × rows!
+          const rawImg = sh._rawImg;
+          const procOpts = sh._procOpts || { isEnemy: isEnemyChar, isBoss: isBossChar };
+          const reprocessed = SpriteBank.processUploadedSheet(rawImg, cVal, rVal, fVal, {
+            isEnemy: procOpts.isEnemy,
+            isBoss: procOpts.isBoss,
+            autoDetect: false,
+          });
+          reprocessed._rawImg = rawImg;
+          reprocessed._procOpts = procOpts;
+          SpriteBank.sheets[act.sheetKey] = reprocessed;
+          SpriteBank.tintedCache = {};
+          statusBadge.textContent = `✨自訂 ${reprocessed.cols}×${reprocessed.rows} (${reprocessed.frameCount}幀)`;
+          if (act.sheetKey === 'idle' || act.sheetKey === 'rp_idle') SpriteBank.buildPortrait();
+          const cleanDataUrl = SpriteBank.exportSheetToDataUrl(reprocessed);
+          CustomSpriteDB.putSheet(act.sheetKey, {
+            dataUrl: cleanDataUrl,
+            cols: reprocessed.cols,
+            rows: reprocessed.rows,
+            frameCount: reprocessed.frameCount,
+            anchorX: reprocessed.anchorX,
+            anchorY: reprocessed.anchorY,
+          }).catch(() => {});
+        } else if (sh && sh.img) {
+          const oldCellW = sh.cellW || 300;
+          const oldCellH = sh.cellH || 264;
           sh.cols = cVal;
           sh.rows = rVal;
           sh.cellW = sh.img.width / cVal;
           sh.cellH = sh.img.height / rVal;
+          sh.anchorX = sh.cellW * ((sh.anchorX || oldCellW * 0.5) / oldCellW);
+          sh.anchorY = sh.cellH * ((sh.anchorY || oldCellH * 0.9) / oldCellH);
           sh.frameCount = fVal;
           SpriteBank.tintedCache = {};
           statusBadge.textContent = `${sh.custom ? '✨自訂 ' : '已載入 '}${cVal}×${rVal} (${fVal}幀)`;
@@ -9253,11 +9286,15 @@
             const fVal = Math.max(1, Math.min(maxF, parseInt(inFrames.value, 10) || maxF));
             const img = new Image();
             img.onload = async () => {
+              // If the user explicitly edited cols/rows before uploading, strictly honor their grid!
+              const useAuto = CloudSyncManager.smartAutoGrid && !userEditedGrid;
+              const procOpts = { isEnemy: isEnemyChar, isBoss: isBossChar };
               const processed = SpriteBank.processUploadedSheet(img, cVal, rVal, fVal, {
-                isEnemy: isEnemyChar,
-                isBoss: isBossChar,
-                autoDetect: CloudSyncManager.smartAutoGrid,
+                ...procOpts,
+                autoDetect: useAuto,
               });
+              processed._rawImg = img;
+              processed._procOpts = procOpts;
               SpriteBank.sheets[act.sheetKey] = processed;
               SpriteBank.tintedCache = {};
               act.cols = processed.cols;
@@ -9488,7 +9525,12 @@
           item.pState.frame = (item.pState.frame + dt * item.act.fps) % sheet.frameCount;
         }
         const fIdx = Math.floor(item.pState.frame) % sheet.frameCount;
-        SpriteBank.drawFrame(pctx, item.sheetKey, fIdx, sheet.anchorX, sheet.anchorY, 1, 1.0, false, item.variant || null);
+        const fitScale = (sheet.cellW !== 300 || sheet.cellH !== 264)
+          ? Math.min(300 / Math.max(1, sheet.cellW), 264 / Math.max(1, sheet.cellH))
+          : 1.0;
+        const drawX = (300 - sheet.cellW * fitScale) / 2 + sheet.anchorX * fitScale;
+        const drawY = (264 - sheet.cellH * fitScale) / 2 + sheet.anchorY * fitScale;
+        SpriteBank.drawFrame(pctx, item.sheetKey, fIdx, drawX, drawY, 1, fitScale, false, item.variant || null);
         item.badge.textContent = `F ${fIdx + 1}/${sheet.frameCount}`;
       } else {
         pctx.fillStyle = '#64748b';
