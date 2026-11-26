@@ -361,6 +361,60 @@
         hurt: 'rp_idle',
       },
     },
+    {
+      id: 'adailing',
+      name: '阿呆伶',
+      hudName: '阿呆伶',
+      badge: '🎒 海星小學生',
+      subtitle: '海星三連拍 · 海星飛星斬 · 旋風踢 · 全校星光砲',
+      accent: '#10b981',
+      accentLight: '#6ee7b7',
+      accentDark: '#065f46',
+      stats: { power: 4, speed: 5, range: 5 },
+      walkSpeed: 245,
+      runSpeed: 398,
+      specialType: 'beam',
+      specialLabel: '星光波動砲',
+      specialShout: '海星全校星光砲!!',
+      specialSub: 'STARFISH NOVA CANNON!!',
+      heavyShout: '海星飛星斬!!',
+      heavySub: 'STARFISH CRESCENT!!',
+      dashLightShout: '操場黃金抽射!!',
+      dashLightSub: 'GOLDEN VOLLEY!!',
+      dashHeavyShout: '翠綠流星衝刺!!',
+      dashHeavySub: 'EMERALD METEOR!!',
+      tornadoShout: '海星旋風踢!!',
+      tornadoSub: 'STARFISH CYCLONE!!',
+      sparkColor: '#34d399',
+      heavySparkColor: '#fde047',
+      sheets: {
+        idle: 'ad_idle',
+        walk: 'ad_walk',
+        run: 'ad_run',
+        dash: 'ad_dash',
+        lightAttack: 'ad_lightAttack',
+        attack: 'ad_attack',
+        dashLightAttack: 'ad_dashLightAttack',
+        dashAttack: 'ad_dashAttack',
+        tornadoKick: 'ad_tornadoKick',
+        special: 'ad_special',
+        hurt: 'ad_hurt',
+        victory: 'ad_victory',
+      },
+      fallbacks: {
+        walk: 'ad_idle',
+        run: 'ad_idle',
+        dash: 'ad_idle',
+        lightAttack: 'ad_idle',
+        attack: 'ad_idle',
+        dashLightAttack: 'ad_idle',
+        dashAttack: 'ad_idle',
+        tornadoKick: 'ad_idle',
+        special: 'ad_idle',
+        hurt: 'ad_idle',
+        victory: 'ad_idle',
+      },
+    },
   ];
 
   function getSelectedHero() {
@@ -392,6 +446,7 @@
     { key: 'rp_tornadoKick', file: 'assets/rp_tornadoKick_sheet.webp', cols: 5, rows: 2, anchorX: 136, anchorY: 242 },
     { key: 'rp_special', file: 'assets/rp_special_sheet.webp', cols: 5, rows: 2, anchorX: 136, anchorY: 242 },
     { key: 'rp_victory', file: 'assets/rp_victory_sheet.webp', cols: 5, rows: 2, anchorX: 136, anchorY: 242 },
+    { key: 'ad_idle', file: 'assets/ad_idle_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 242 },
     // Wave 3 Brand-New Unique Monsters + Donghua Martial Grandmaster Final Boss (2x Hero Size!)
     { key: 'enemy_kangaroo_move', file: 'assets/enemy_kangaroo_move_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
     { key: 'enemy_kangaroo_attack', file: 'assets/enemy_kangaroo_attack_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
@@ -533,10 +588,28 @@
     };
   }
 
+  function createDefaultAdailingActions() {
+    return [
+      { id: 'ad_idle', label: '待機動畫 (Idle)', triggerDesc: '海星國小制服元氣待機呼吸', sheetKey: 'ad_idle', fallbackSheet: null, fps: 8.5, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
+      { id: 'ad_walk', label: '走路動畫 (Walk)', triggerDesc: '輕快上學步伐走路（WASD / 方向鍵）', sheetKey: 'ad_walk', fallbackSheet: 'ad_idle', fps: 12, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
+      { id: 'ad_run', label: '奔跑動畫 (Run)', triggerDesc: '操場百米衝刺奔跑', sheetKey: 'ad_run', fallbackSheet: 'ad_idle', fps: 17, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
+      { id: 'ad_dash', label: '課間衝刺・疾風步 (Dash)', triggerDesc: '翠綠清風瞬間突進閃避', sheetKey: 'ad_dash', fallbackSheet: 'ad_idle', fps: 24, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
+      { id: 'ad_lightAttack', label: '輕攻擊・海星三連拍 (Light)', triggerDesc: '元氣三連擊（直拍→反拍→跳拍）', sheetKey: 'ad_lightAttack', fallbackSheet: 'ad_idle', fps: 17, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
+      { id: 'ad_attack', label: '重攻擊・海星飛星斬 (Heavy)', triggerDesc: '揮出翠綠星光月牙斬並釋放貫穿劍氣波', sheetKey: 'ad_attack', fallbackSheet: 'ad_idle', fps: 16, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
+      { id: 'ad_dashLightAttack', label: '衝刺輕攻擊・操場黃金抽射 (Dash Light)', triggerDesc: '跑步中按輕攻踢出黃金星光足球', sheetKey: 'ad_dashLightAttack', fallbackSheet: 'ad_idle', fps: 17, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
+      { id: 'ad_dashAttack', label: '衝刺重攻擊・翠綠流星衝刺 (Dash Heavy)', triggerDesc: '跑步中按重攻發動翠綠流星突破斬', sheetKey: 'ad_dashAttack', fallbackSheet: 'ad_idle', fps: 18, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
+      { id: 'ad_tornadoKick', label: '特殊招式・海星旋風踢 (Tornado Kick)', triggerDesc: '↑+重攻發動翠綠旋風踢將敵人浮空', sheetKey: 'ad_tornadoKick', fallbackSheet: 'ad_idle', fps: 15, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
+      { id: 'ad_special', label: '必殺技・海星全校星光砲 (Special)', triggerDesc: '霸體集氣・全螢幕翠綠星光波動砲十連擊', sheetKey: 'ad_special', fallbackSheet: 'ad_idle', fps: 12, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
+      { id: 'ad_hurt', label: '受傷／受擊 (Hurt)', triggerDesc: '受擊踉蹌與回復', sheetKey: 'ad_hurt', fallbackSheet: 'ad_idle', fps: 15, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
+      { id: 'ad_victory', label: '戰鬥勝利動作 (Victory)', triggerDesc: '海星國小過關比YA歡慶勝利', sheetKey: 'ad_victory', fallbackSheet: 'ad_idle', fps: 10, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
+    ];
+  }
+
   function createDefaultCharacters() {
     return [
       { id: 'kuromi', name: '😈 呆呆伶（主角 1）', role: 'hero', heroId: 'kuromi', actions: createDefaultHeroActions() },
       { id: 'redpanda', name: '🦊 超級帆（主角 2）', role: 'hero', heroId: 'redpanda', actions: createDefaultRedPandaActions() },
+      { id: 'adailing', name: '🎒 阿呆伶（主角 3）', role: 'hero', heroId: 'adailing', actions: createDefaultAdailingActions() },
       createEnemyCharProfile('enemy_donghua_boss', '🥋 冬花武聖大宗師（冬花 FINAL BOSS）', 'enemy_donghua_boss', '「武」字黃金正拳＋太極震地氣勁', '三連黃金氣功波＋流星飛躍碎地斬', true, { role: 'boss', enemyKey: 'donghua_boss' }),
       createEnemyCharProfile('enemy_star_boss', '⭐ 宇宙海星大霸王（關卡 BOSS）', 'enemy_star_boss', '巨型迴旋霸體衝撞', '三向扇形宇宙星彈齊射', false, { role: 'boss', enemyKey: 'boss', fallbackPrefix: 'enemy_star' }),
       createEnemyCharProfile('enemy_zebra_rush', '🦓 暴衝斑馬怪（設定稿・5色變色）', 'enemy_zebra_rush', '轉身後腿雙蹄反踢（近身震退）', '蓄力蹬蹄破風頭槌猛衝（5色：墨白/灰/棕/白金/藍）', true, { enemyKey: 'zebra_rush' }),
@@ -1343,6 +1416,7 @@
       };
       this.portraits.kuromi = makeHead(this.sheets.idle || this.sheets.special || this.sheets.run, 56, 36, 162, 162);
       this.portraits.redpanda = makeHead(this.sheets.rp_idle || this.sheets.rp_run, 72, 66, 152, 152);
+      this.portraits.adailing = makeHead(this.sheets.ad_idle, 72, 48, 156, 156);
       this.portraitCanvas = this.portraits.kuromi;
     },
 
@@ -2098,17 +2172,24 @@
     }
 
     if (game.state === 'title') {
-      if (e.code === 'ArrowLeft' || e.code === 'KeyA' || e.code === 'Digit1') {
-        if (game.selectedHeroId !== HERO_ROSTER[0].id) {
-          game.selectedHeroId = HERO_ROSTER[0].id;
-          sfx.init();
-          sfx.playPickup('coin');
-        }
+      if (e.code === 'ArrowLeft' || e.code === 'KeyA') {
+        const idx = HERO_ROSTER.findIndex((h) => h.id === game.selectedHeroId);
+        game.selectedHeroId = HERO_ROSTER[(idx - 1 + HERO_ROSTER.length) % HERO_ROSTER.length].id;
+        sfx.init();
+        sfx.playPickup('coin');
         return;
       }
-      if (e.code === 'ArrowRight' || e.code === 'KeyD' || e.code === 'Digit2') {
-        if (game.selectedHeroId !== HERO_ROSTER[1].id) {
-          game.selectedHeroId = HERO_ROSTER[1].id;
+      if (e.code === 'ArrowRight' || e.code === 'KeyD') {
+        const idx = HERO_ROSTER.findIndex((h) => h.id === game.selectedHeroId);
+        game.selectedHeroId = HERO_ROSTER[(idx + 1) % HERO_ROSTER.length].id;
+        sfx.init();
+        sfx.playPickup('coin');
+        return;
+      }
+      if (e.code === 'Digit1' || e.code === 'Digit2' || e.code === 'Digit3') {
+        const targetIdx = e.code === 'Digit1' ? 0 : (e.code === 'Digit2' ? 1 : 2);
+        if (HERO_ROSTER[targetIdx] && game.selectedHeroId !== HERO_ROSTER[targetIdx].id) {
+          game.selectedHeroId = HERO_ROSTER[targetIdx].id;
           sfx.init();
           sfx.playPickup('coin');
         }
@@ -2150,8 +2231,9 @@
 
   const SELECT_UI = {
     cards: [
-      { id: 'kuromi', x: 64, y: 90, w: 426, h: 274 },
-      { id: 'redpanda', x: 534, y: 90, w: 426, h: 274 },
+      { id: 'kuromi', x: 36, y: 90, w: 304, h: 274 },
+      { id: 'redpanda', x: 360, y: 90, w: 304, h: 274 },
+      { id: 'adailing', x: 684, y: 90, w: 304, h: 274 },
     ],
     stagePills: [
       { idx: 0, x: 182, y: 374, w: 208, h: 32 },
@@ -7710,12 +7792,13 @@
 
       ctx.font = '700 12.5px "Noto Sans TC", sans-serif';
       ctx.fillStyle = '#cbd5e1';
-      ctx.fillText('SELECT YOUR FIGHTER & SCHOOL  ·  ←/→ 切換主角（呆呆伶 / 超級帆）｜ ↑/↓ 或點擊選擇三大關卡！', CANVAS_W / 2, 72);
+      ctx.fillText('SELECT YOUR FIGHTER & SCHOOL  ·  ←/→ 切換主角（呆呆伶 / 超級帆 / 阿呆伶）｜ ↑/↓ 或點擊選擇三大關卡！', CANVAS_W / 2, 72);
 
-      // Draw 2 Interactive Hero Cards!
+      // Draw 3 Interactive Hero Cards!
       for (let i = 0; i < HERO_ROSTER.length; i++) {
         const hero = HERO_ROSTER[i];
         const card = SELECT_UI.cards[i];
+        if (!card) continue;
         const isSelected = game.selectedHeroId === hero.id;
         const isHovered = game.hoverHeroId === hero.id;
 
@@ -7723,7 +7806,9 @@
         // Card Background with radial hero spotlight
         const cardGrad = ctx.createLinearGradient(card.x, card.y, card.x, card.y + card.h);
         if (isSelected) {
-          cardGrad.addColorStop(0, hero.id === 'redpanda' ? 'rgba(154, 52, 18, 0.78)' : 'rgba(131, 24, 67, 0.78)');
+          const topCol = hero.id === 'redpanda' ? 'rgba(154, 52, 18, 0.78)'
+            : (hero.id === 'adailing' ? 'rgba(6, 95, 70, 0.82)' : 'rgba(131, 24, 67, 0.78)');
+          cardGrad.addColorStop(0, topCol);
           cardGrad.addColorStop(1, 'rgba(15, 11, 28, 0.94)');
         } else {
           cardGrad.addColorStop(0, isHovered ? 'rgba(42, 30, 68, 0.85)' : 'rgba(22, 17, 40, 0.78)');
@@ -7750,12 +7835,12 @@
         // Top-Left Hero Tag Pill
         ctx.fillStyle = isSelected ? hero.accent : 'rgba(255,255,255,0.12)';
         ctx.beginPath();
-        ctx.roundRect(card.x + 14, card.y + 12, 128, 25, 8);
+        ctx.roundRect(card.x + 12, card.y + 12, 116, 24, 8);
         ctx.fill();
         ctx.textAlign = 'center';
         ctx.fillStyle = '#ffffff';
-        ctx.font = '800 12px "Noto Sans TC", sans-serif';
-        ctx.fillText(hero.badge, card.x + 78, card.y + 29);
+        ctx.font = '800 11.5px "Noto Sans TC", sans-serif';
+        ctx.fillText(hero.badge, card.x + 70, card.y + 28);
 
         // Top-Right "P1 SELECTED" Bouncing Badge
         if (isSelected) {
@@ -7764,34 +7849,36 @@
           ctx.strokeStyle = '#090710';
           ctx.lineWidth = 3;
           ctx.beginPath();
-          ctx.roundRect(card.x + card.w - 118, card.y + 10 + bounce, 104, 26, 8);
+          ctx.roundRect(card.x + card.w - 102, card.y + 10 + bounce, 90, 24, 8);
           ctx.fill();
           ctx.stroke();
           ctx.fillStyle = '#090710';
-          ctx.font = '900 12px "Noto Sans TC", sans-serif';
-          ctx.fillText('★ P1 選擇中', card.x + card.w - 66, card.y + 27 + bounce);
+          ctx.font = '900 11px "Noto Sans TC", sans-serif';
+          ctx.fillText('★ P1 選擇中', card.x + card.w - 57, card.y + 26 + bounce);
         } else {
           ctx.textAlign = 'right';
           ctx.fillStyle = 'rgba(203,213,225,0.55)';
           ctx.font = '700 11px monospace';
-          ctx.fillText(`KEY [${i + 1}]`, card.x + card.w - 16, card.y + 29);
+          ctx.fillText(`KEY [${i + 1}]`, card.x + card.w - 14, card.y + 28);
         }
 
         // Spotlight stage circle under live hero sprite
-        const stageX = card.x + 114;
+        const stageX = card.x + 76;
         const stageY = card.y + 206;
-        const spot = ctx.createRadialGradient(stageX, stageY - 56, 12, stageX, stageY - 56, 92);
-        spot.addColorStop(0, isSelected ? (hero.id === 'redpanda' ? 'rgba(251, 146, 60, 0.36)' : 'rgba(244, 114, 182, 0.36)') : 'rgba(148, 163, 184, 0.12)');
+        const spot = ctx.createRadialGradient(stageX, stageY - 52, 10, stageX, stageY - 52, 74);
+        const spotCol = hero.id === 'redpanda' ? 'rgba(251, 146, 60, 0.36)'
+          : (hero.id === 'adailing' ? 'rgba(52, 211, 153, 0.36)' : 'rgba(244, 114, 182, 0.36)');
+        spot.addColorStop(0, isSelected ? spotCol : 'rgba(148, 163, 184, 0.12)');
         spot.addColorStop(1, 'rgba(0, 0, 0, 0)');
         ctx.fillStyle = spot;
         ctx.beginPath();
-        ctx.arc(stageX, stageY - 56, 92, 0, Math.PI * 2);
+        ctx.arc(stageX, stageY - 52, 74, 0, Math.PI * 2);
         ctx.fill();
 
         // Ground shadow ellipse
         ctx.fillStyle = 'rgba(5, 3, 12, 0.55)';
         ctx.beginPath();
-        ctx.ellipse(stageX, stageY + 2, 54, 12, 0, 0, Math.PI * 2);
+        ctx.ellipse(stageX, stageY + 2, 44, 10, 0, 0, Math.PI * 2);
         ctx.fill();
 
         // Live Animated Hero Preview
@@ -7799,44 +7886,47 @@
         let demoFps = 8.5;
         if (isSelected) {
           const cycle = Math.floor(game.time / 2.2) % 2;
-          demoKey = cycle === 0 ? hero.sheets.lightAttack : hero.sheets.run;
-          demoFps = 15;
+          const tryKey = cycle === 0 ? hero.sheets.lightAttack : hero.sheets.run;
+          if (SpriteBank.sheets[tryKey]) {
+            demoKey = tryKey;
+            demoFps = 15;
+          }
         }
         const demoSheet = SpriteBank.sheets[demoKey] || SpriteBank.sheets[hero.sheets.idle];
         if (demoSheet) {
           const fIdx = Math.floor(game.time * demoFps) % demoSheet.frameCount;
-          SpriteBank.drawFrame(ctx, demoKey, fIdx, stageX, stageY, 1, isSelected ? 0.9 : 0.82, false);
+          SpriteBank.drawFrame(ctx, demoKey, fIdx, stageX, stageY, 1, isSelected ? 0.78 : 0.70, false);
         }
 
         // Right Column: Hero Name, Style & 3 Stat Bars
-        const infoX = card.x + 216;
+        const infoX = card.x + 148;
         ctx.textAlign = 'left';
         ctx.lineWidth = 4;
         ctx.strokeStyle = '#090710';
-        ctx.font = '900 28px "Noto Sans TC", sans-serif';
+        ctx.font = '900 24px "Noto Sans TC", sans-serif';
         ctx.strokeText(hero.name, infoX, card.y + 82);
         ctx.fillStyle = isSelected ? '#ffffff' : '#e2e8f0';
         ctx.fillText(hero.name, infoX, card.y + 82);
 
-        ctx.font = '700 12px "Noto Sans TC", sans-serif';
+        ctx.font = '700 11px "Noto Sans TC", sans-serif';
         ctx.fillStyle = hero.accentLight;
-        ctx.fillText(`必殺技：${hero.specialShout.replace(/!/g, '')}`, infoX, card.y + 108);
+        ctx.fillText(`必殺：${hero.specialLabel}`, infoX, card.y + 106);
 
         const statRows = [
-          { label: '力量 POW', val: hero.stats.power, color: '#f97316' },
-          { label: '速度 SPD', val: hero.stats.speed, color: '#38bdf8' },
-          { label: '範圍 RNG', val: hero.stats.range, color: '#e879f9' },
+          { label: 'POW', val: hero.stats.power, color: '#f97316' },
+          { label: 'SPD', val: hero.stats.speed, color: '#38bdf8' },
+          { label: 'RNG', val: hero.stats.range, color: '#e879f9' },
         ];
         for (let s = 0; s < statRows.length; s++) {
-          const sy = card.y + 136 + s * 27;
+          const sy = card.y + 134 + s * 25;
           ctx.fillStyle = '#cbd5e1';
-          ctx.font = '700 11px monospace';
+          ctx.font = '700 10.5px monospace';
           ctx.fillText(statRows[s].label, infoX, sy);
           for (let b = 0; b < 5; b++) {
-            const bx = infoX + 70 + b * 24;
+            const bx = infoX + 34 + b * 21;
             ctx.fillStyle = b < statRows[s].val ? statRows[s].color : 'rgba(255,255,255,0.12)';
             ctx.beginPath();
-            ctx.roundRect(bx, sy - 10, 19, 11, 3);
+            ctx.roundRect(bx, sy - 9, 17, 10, 3);
             ctx.fill();
           }
         }
@@ -7844,12 +7934,12 @@
         // Bottom Moves Strip inside Card
         ctx.fillStyle = 'rgba(8, 5, 18, 0.65)';
         ctx.beginPath();
-        ctx.roundRect(card.x + 14, card.y + card.h - 42, card.w - 28, 30, 8);
+        ctx.roundRect(card.x + 10, card.y + card.h - 40, card.w - 20, 28, 8);
         ctx.fill();
         ctx.textAlign = 'center';
         ctx.fillStyle = '#f1f5f9';
-        ctx.font = '600 12px "Noto Sans TC", sans-serif';
-        ctx.fillText(hero.subtitle, card.x + card.w / 2, card.y + card.h - 23);
+        ctx.font = '600 10.5px "Noto Sans TC", sans-serif';
+        ctx.fillText(hero.subtitle, card.x + card.w / 2, card.y + card.h - 22);
 
         ctx.restore();
       }
@@ -10396,12 +10486,14 @@
 
       // 4. Screen Navigation (Title Character/Stage Select / StageClear / Pause / GameOver)
       if (game.state === 'title') {
-        if (horizEdgeLeft && game.selectedHeroId !== HERO_ROSTER[0].id) {
-          game.selectedHeroId = HERO_ROSTER[0].id;
+        if (horizEdgeLeft) {
+          const idx = HERO_ROSTER.findIndex((h) => h.id === game.selectedHeroId);
+          game.selectedHeroId = HERO_ROSTER[(idx - 1 + HERO_ROSTER.length) % HERO_ROSTER.length].id;
           sfx.init();
           sfx.playPickup('coin');
-        } else if (horizEdgeRight && game.selectedHeroId !== HERO_ROSTER[1].id) {
-          game.selectedHeroId = HERO_ROSTER[1].id;
+        } else if (horizEdgeRight) {
+          const idx = HERO_ROSTER.findIndex((h) => h.id === game.selectedHeroId);
+          game.selectedHeroId = HERO_ROSTER[(idx + 1) % HERO_ROSTER.length].id;
           sfx.init();
           sfx.playPickup('coin');
         }
