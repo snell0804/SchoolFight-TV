@@ -8,7 +8,7 @@
 
   const CFG_KEY = 'schoolfight_cloud_sync_cfg_v1';
   const MANIFEST_PATH = 'cloud_manifest.json';
-  const ID_RE = /^[a-z0-9_]{1,40}$/;
+  const ID_RE = /^[A-Za-z0-9_]{1,40}$/;
 
   const TRIGGER_LABELS = {
     on_idle: '待機時', on_move: '移動時', on_attack: '攻擊時', on_hurt: '受傷時',
@@ -18,6 +18,127 @@
     { v: 'heal', t: '❤️ 回血' }, { v: 'power', t: '⚡ 能量' }, { v: 'score', t: '⭐ 分數' },
     { v: 'shield', t: '🛡️ 護盾' }, { v: 'speed', t: '👟 加速' },
   ];
+
+  // ---------------- Local Game Save DB (shared with game.js CustomSpriteDB) ----------------
+  const LocalGameDB = {
+    dbName: 'SchoolFightCustomSpritesDB_v1',
+    storeName: 'sheets',
+    open() {
+      return new Promise((resolve, reject) => {
+        if (typeof indexedDB === 'undefined') return reject(new Error('此瀏覽器不支援 IndexedDB'));
+        const req = indexedDB.open(this.dbName, 1);
+        req.onupgradeneeded = () => {
+          const db = req.result;
+          if (!db.objectStoreNames.contains(this.storeName)) {
+            db.createObjectStore(this.storeName, { keyPath: 'sheetKey' });
+          }
+        };
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    },
+    async putSheet(sheetKey, record) {
+      const db = await this.open();
+      return await new Promise((resolve, reject) => {
+        const tx = db.transaction(this.storeName, 'readwrite');
+        tx.objectStore(this.storeName).put({ sheetKey, ...record });
+        tx.oncomplete = () => { db.close(); resolve(true); };
+        tx.onerror = () => { db.close(); reject(tx.error); };
+      });
+    },
+    async deleteSheet(sheetKey) {
+      const db = await this.open();
+      return await new Promise((resolve) => {
+        const tx = db.transaction(this.storeName, 'readwrite');
+        tx.objectStore(this.storeName).delete(sheetKey);
+        tx.oncomplete = () => { db.close(); resolve(true); };
+        tx.onerror = () => { db.close(); resolve(false); };
+      });
+    },
+    async getAllSheets() {
+      try {
+        const db = await this.open();
+        return await new Promise((resolve) => {
+          const tx = db.transaction(this.storeName, 'readonly');
+          const req = tx.objectStore(this.storeName).getAll();
+          req.onsuccess = () => { db.close(); resolve(req.result || []); };
+          req.onerror = () => { db.close(); resolve([]); };
+        });
+      } catch { return []; }
+    },
+  };
+
+  /** Remove solid near-white background via per-cell border flood fill (only if corners are opaque white). */
+  function stripWhiteBgCanvas(canvas, cols = 1, rows = 1) {
+    const w = canvas.width;
+    const h = canvas.height;
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    const imgData = ctx.getImageData(0, 0, w, h);
+    const d = imgData.data;
+    const isNearWhite = (idx) => {
+      const r = d[idx], g = d[idx + 1], b = d[idx + 2], a = d[idx + 3];
+      if (a < 200) return false;
+      const mx = Math.max(r, g, b), mn = Math.min(r, g, b);
+      return r >= 230 && g >= 230 && b >= 230 && (mx - mn) <= 24;
+    };
+    const corners = [0, (w - 1) * 4, ((h - 1) * w) * 4, ((h - 1) * w + (w - 1)) * 4];
+    const whiteCorners = corners.filter(isNearWhite).length;
+    if (whiteCorners < 2) return canvas;
+
+    const visited = new Uint8Array(w * h);
+    const queue = new Int32Array(w * h);
+    const cw = Math.max(1, Math.floor(w / Math.max(1, cols)));
+    const ch = Math.max(1, Math.floor(h / Math.max(1, rows)));
+
+    for (let rIdx = 0; rIdx < Math.max(1, rows); rIdx++) {
+      const y0 = Math.floor((rIdx * h) / Math.max(1, rows));
+      const y1 = Math.min(h - 1, Math.floor(((rIdx + 1) * h) / Math.max(1, rows)) - 1);
+      for (let cIdx = 0; cIdx < Math.max(1, cols); cIdx++) {
+        const x0 = Math.floor((cIdx * w) / Math.max(1, cols));
+        const x1 = Math.min(w - 1, Math.floor(((cIdx + 1) * w) / Math.max(1, cols)) - 1);
+        let head = 0, tail = 0;
+        const push = (x, y) => {
+          const p = y * w + x;
+          if (visited[p]) return;
+          if (!isNearWhite(p * 4)) return;
+          visited[p] = 1;
+          queue[tail++] = p;
+        };
+        for (let x = x0; x <= x1; x++) { push(x, y0); push(x, y1); }
+        for (let y = y0; y <= y1; y++) { push(x0, y); push(x1, y); }
+        while (head < tail) {
+          const p = queue[head++];
+          d[p * 4 + 3] = 0;
+          const x = p % w;
+          const y = (p - x) / w;
+          if (x > x0) push(x - 1, y);
+          if (x < x1) push(x + 1, y);
+          if (y > y0) push(x, y - 1);
+          if (y < y1) push(x, y + 1);
+        }
+      }
+    }
+    ctx.putImageData(imgData, 0, 0);
+    return canvas;
+  }
+
+  async function renderSpriteToCanvas(fileOrUrl, { cols = 5, rows = 2, removeWhiteBg = false } = {}) {
+    let bmp;
+    if (fileOrUrl instanceof Blob) {
+      bmp = await createImageBitmap(fileOrUrl);
+    } else {
+      const res = await fetch(fileOrUrl);
+      if (!res.ok) throw new Error('無法讀取既有圖檔');
+      bmp = await createImageBitmap(await res.blob());
+    }
+    const c = document.createElement('canvas');
+    c.width = bmp.width;
+    c.height = bmp.height;
+    c.getContext('2d').drawImage(bmp, 0, 0);
+    bmp.close();
+    if (removeWhiteBg) stripWhiteBgCanvas(c, cols, rows);
+    return c;
+  }
 
   // ---------------- Config (shared with game.js CloudSyncManager) ----------------
   function loadGhConfig() {
@@ -43,12 +164,22 @@
     showSettings: false,
     status: null,
     manifest: { version: 1, characters: [], backgrounds: [], items: [] },
+    localOverrides: {}, // sheetKey -> { dataUrl, cols, rows, frameCount, fps, updatedAt, ... }
     loading: false,
     busy: false,
     toasts: [],
     history: JSON.parse(localStorage.getItem('editorPrHistory') || '[]'),
     jobs: [],
   });
+
+  async function loadLocalOverrides() {
+    const all = await LocalGameDB.getAllSheets();
+    const map = {};
+    for (const rec of all) {
+      if (rec && rec.sheetKey) map[rec.sheetKey] = rec;
+    }
+    store.localOverrides = map;
+  }
 
   function toast(msg, kind = 'info') {
     const t = { id: Math.random(), msg, kind };
@@ -99,23 +230,47 @@
     return `https://raw.githubusercontent.com/${store.ghRepo}/${store.ghBranch}/${p}${q}`;
   }
 
-  /** Merge built-in GameCatalog entries with cloud_manifest.json custom overrides. */
+  /** Merge built-in GameCatalog entries with cloud_manifest.json and local IndexedDB overrides. */
   function getMergedCharacters() {
     const builtin = (window.GameCatalog && window.GameCatalog.characters) || [];
     const customMap = new Map((store.manifest.characters || []).map((c) => [c.id, c]));
+    const localMap = store.localOverrides || {};
+    const applyLocal = (a) => {
+      const key = a.sheetKey || a.id;
+      const ov = localMap[key];
+      if (!ov) return a;
+      return {
+        ...a,
+        cols: ov.cols || a.cols,
+        rows: ov.rows || a.rows,
+        frames: ov.frameCount || a.frames,
+        fps: typeof ov.fps === 'number' ? ov.fps : a.fps,
+        label: ov.label || a.label,
+        trigger: ov.trigger || a.trigger,
+        condition: typeof ov.condition === 'string' ? ov.condition : a.condition,
+        priority: typeof ov.priority === 'number' ? ov.priority : a.priority,
+        loop: typeof ov.loop === 'boolean' ? ov.loop : a.loop,
+        localSaved: true,
+        localDataUrl: ov.dataUrl || null,
+        localUpdatedAt: ov.updatedAt || null,
+      };
+    };
     const merged = builtin.map((bc) => {
       const cc = customMap.get(bc.id);
-      if (!cc) return { ...bc, hasCustom: false };
+      if (!cc) {
+        const actions = bc.actions.map(applyLocal);
+        return { ...bc, actions, hasCustom: actions.some((a) => a.localSaved) };
+      }
       customMap.delete(bc.id);
       const customActs = new Map((cc.actions || []).map((a) => [a.id, { ...a, builtin: false, customized: true }]));
       const actions = bc.actions.map((ba) => {
         if (customActs.has(ba.id)) {
           const ov = customActs.get(ba.id);
           customActs.delete(ba.id);
-          return ov;
+          return applyLocal(ov);
         }
-        return ba;
-      }).concat([...customActs.values()]);
+        return applyLocal(ba);
+      }).concat([...customActs.values()].map(applyLocal));
       return {
         ...bc,
         name: cc.name || bc.name,
@@ -130,7 +285,7 @@
       merged.push({
         id: cc.id, name: cc.name || cc.id, role: 'custom', builtin: false, hasCustom: true,
         turnaround: cc.turnaround || null, turnaroundBuiltin: false, turnaroundUpdatedAt: cc.turnaroundUpdatedAt || null,
-        actions: (cc.actions || []).map((a) => ({ ...a, builtin: false, customized: true })),
+        actions: (cc.actions || []).map((a) => applyLocal({ ...a, builtin: false, customized: true })),
       });
     }
     return merged;
@@ -165,23 +320,27 @@
     return new TextDecoder().decode(bytes);
   }
 
-  /** Read PNG file → { pngB64, webpB64, width, height } in the browser. */
+  /** Read PNG/JPG/WebP file → { pngB64, webpB64, width, height } in the browser. */
   async function encodePngAndWebp(file) {
-    const buf = new Uint8Array(await file.arrayBuffer());
-    if (buf.length < 24 || buf[0] !== 0x89 || buf[1] !== 0x50 || buf[2] !== 0x4e || buf[3] !== 0x47) {
-      throw new Error('只接受 PNG 檔案');
+    const bmp = await createImageBitmap(file);
+    const width = bmp.width;
+    const height = bmp.height;
+    const c = document.createElement('canvas');
+    c.width = width; c.height = height;
+    c.getContext('2d').drawImage(bmp, 0, 0);
+    bmp.close();
+
+    let pngB64;
+    const rawBuf = new Uint8Array(await file.arrayBuffer());
+    const isPng = rawBuf.length >= 24 && rawBuf[0] === 0x89 && rawBuf[1] === 0x50 && rawBuf[2] === 0x4e && rawBuf[3] === 0x47;
+    if (isPng) {
+      pngB64 = bytesToBase64(rawBuf);
+    } else {
+      const pngBlob = await new Promise((r) => c.toBlob(r, 'image/png'));
+      pngB64 = bytesToBase64(new Uint8Array(await pngBlob.arrayBuffer()));
     }
-    const dv = new DataView(buf.buffer, buf.byteOffset, buf.byteLength);
-    const width = dv.getUint32(16);
-    const height = dv.getUint32(20);
-    const pngB64 = bytesToBase64(buf);
     let webpB64 = null;
     try {
-      const bmp = await createImageBitmap(file);
-      const c = document.createElement('canvas');
-      c.width = width; c.height = height;
-      c.getContext('2d').drawImage(bmp, 0, 0);
-      bmp.close();
       const blob = await new Promise((r) => c.toBlob(r, 'image/webp', 0.94));
       if (blob && blob.type === 'image/webp') webpB64 = bytesToBase64(new Uint8Array(await blob.arrayBuffer()));
     } catch { /* browser without webp encoder; skip */ }
@@ -210,7 +369,7 @@
   async function ghCommitAndOpenPR(files, title) {
     if (!store.ghToken) {
       store.showSettings = true;
-      throw new Error('請先點上方「🔑 GitHub Token」貼入 Personal Access Token 才能儲存並建立 PR');
+      throw new Error('請先點上方「🔑 GitHub Token」貼入 Personal Access Token 才能建立 PR（或改點綠色「💾 存檔（套用到遊戲）」直接本機存檔免 Token）');
     }
     const repoInfo = await ghApi('');
     const base = repoInfo.default_branch || store.ghBranch || 'main';
@@ -246,6 +405,7 @@
   }
 
   async function detectAndLoad() {
+    await loadLocalOverrides();
     try {
       const st = await backendApi('/api/status');
       store.mode = 'backend';
@@ -301,9 +461,9 @@
 
         let prTitle;
         if (section === 'characters') {
-          if (!ID_RE.test(payload.id || '')) throw new Error('角色 ID 只能用小寫英數與底線');
+          if (!ID_RE.test(payload.id || '')) throw new Error('角色 ID 只能用英數與底線');
           const a = payload.action || {};
-          if (!ID_RE.test(a.id || '')) throw new Error('動作 ID 只能用小寫英數與底線');
+          if (!ID_RE.test(a.id || '')) throw new Error('動作 ID 只能用英數與底線');
           const chk = CP.validateCondition(a.condition || '');
           if (!chk.ok) throw new Error(`條件式錯誤：${chk.error}`);
           let ch = manifest.characters.find((c) => c.id === payload.id);
@@ -313,7 +473,7 @@
           const asset = await attach(`char_${payload.id}_${a.id}`);
           const fallbackPng = prev?.png || a.png || null;
           const fallbackWebp = prev?.webp || a.webp || null;
-          if (!asset && !fallbackPng) throw new Error('新動作需要上傳 PNG 精靈表');
+          if (!asset && !fallbackPng) throw new Error('新動作需要上傳精靈表圖片');
           const cols = Math.max(1, Math.min(20, Number(a.cols) || prev?.cols || 5));
           const rows = Math.max(1, Math.min(20, Number(a.rows) || prev?.rows || 2));
           const next = {
@@ -328,13 +488,13 @@
           ch.actions = ch.actions.filter((x) => x.id !== a.id).concat(next);
           prTitle = `Editor: update character ${payload.id}/${a.id}`;
         } else {
-          if (!ID_RE.test(payload.id || '')) throw new Error('ID 只能用小寫英數與底線');
+          if (!ID_RE.test(payload.id || '')) throw new Error('ID 只能用英數與底線');
           const list = manifest[section];
           const prev = list.find((e) => e.id === payload.id);
           const asset = await attach(`${section === 'backgrounds' ? 'bg' : 'item'}_${payload.id}`);
           const fallbackPng = prev?.png || payload.png || null;
           const fallbackWebp = prev?.webp || payload.webp || null;
-          if (!asset && !fallbackPng) throw new Error('新項目需要上傳 PNG');
+          if (!asset && !fallbackPng) throw new Error('新項目需要上傳圖片');
           const next = section === 'backgrounds'
             ? { id: payload.id, name: String(payload.name || prev?.name || payload.id).slice(0, 60),
                 stage: Math.max(1, Number(payload.stage) || 1), parallax: Math.max(0, Math.min(2, Number(payload.parallax) ?? 1)),
@@ -465,8 +625,8 @@
       const input = ref(null);
       function take(f) {
         if (!f) return;
-        if (f.type !== 'image/png') { toast('只接受 PNG 檔案', 'error'); return; }
-        if (f.size > 8 * 1024 * 1024) { toast('檔案超過 8MB', 'error'); return; }
+        if (!/^image\/(png|jpeg|webp)$/.test(f.type)) { toast('只接受 PNG / JPG / WebP 圖片', 'error'); return; }
+        if (f.size > 12 * 1024 * 1024) { toast('檔案超過 12MB', 'error'); return; }
         emit('update:file', f);
       }
       return { over, input, take };
@@ -476,10 +636,10 @@
            @drop.prevent="over=false; take($event.dataTransfer.files[0])"
            :class="['border-2 border-dashed rounded p-4 text-center cursor-pointer text-sm transition',
                     over ? 'border-indigo-500 bg-indigo-50' : 'border-slate-300 hover:border-indigo-400']">
-        <input ref="input" type="file" accept="image/png" class="hidden" @change="take($event.target.files[0]); $event.target.value=''" />
+        <input ref="input" type="file" accept="image/png,image/jpeg,image/webp" class="hidden" @change="take($event.target.files[0]); $event.target.value=''" />
         <div v-if="file">📄 {{ file.name }} <span class="text-slate-400">({{ (file.size/1024).toFixed(0) }} KB)</span>
           <button class="ml-2 text-red-500" @click.stop="$emit('update:file', null)">✕</button></div>
-        <div v-else class="text-slate-500">拖曳 PNG 到這裡，或點擊選擇<br><span class="text-xs">{{ hint }}</span></div>
+        <div v-else class="text-slate-500">拖曳 PNG / JPG / WebP 到這裡，或點擊選擇<br><span class="text-xs">{{ hint }}</span></div>
       </div>`,
   };
 
@@ -983,10 +1143,12 @@
       const previewSrc = computed(() => {
         if (localUrl.value) return localUrl.value;
         if (currentAction.value && !isNewAction.value) {
+          if (currentAction.value.localDataUrl) return currentAction.value.localDataUrl;
           return rawUrl(currentAction.value.png || currentAction.value.webp, currentAction.value.updatedAt, !!currentAction.value.builtin);
         }
         return '';
       });
+      const autoRemoveWhiteBg = ref(true);
 
       watch(file, (f) => { if (localUrl.value) URL.revokeObjectURL(localUrl.value); localUrl.value = f ? URL.createObjectURL(f) : ''; });
       watch(selectedId, () => {
@@ -1052,7 +1214,7 @@
         actionForm.frames = payload.frames;
         actionForm.fps = payload.fps;
         file.value = payload.file;
-        toast('已套用 AI 生成結果！請點「💾 儲存並建立 PR」同步至遊戲', 'success');
+        toast('已套用 AI 生成結果！請點「💾 存檔（套用到遊戲）」或「☁️ 儲存並建立 PR」', 'success');
       }
       watch(() => [actionForm.cols, actionForm.rows], ([c, r]) => {
         if (actionForm.frames > c * r || isNewAction.value) actionForm.frames = c * r;
@@ -1064,12 +1226,90 @@
         }
       });
 
-      const canSave = computed(() => !store.busy && condOk.value && ID_RE.test(charForm.id)
-        && ID_RE.test(actionForm.id) && (file.value || !isNewAction.value));
+      const saveBlockReason = computed(() => {
+        if (store.busy) return '處理中…';
+        if (!ID_RE.test(charForm.id || '')) return '請輸入有效角色 ID（英數與底線）';
+        if (!ID_RE.test(actionForm.id || '')) return '請輸入有效動作 ID（英數與底線）';
+        if (!condOk.value) return '觸發條件式語法有誤';
+        if (!file.value && isNewAction.value) return '新動作請先上傳精靈表圖片';
+        return '';
+      });
+      const canSave = computed(() => !saveBlockReason.value);
+
+      async function prepareUploadFile() {
+        if (!file.value) return null;
+        if (!autoRemoveWhiteBg.value) return file.value;
+        const c = await renderSpriteToCanvas(file.value, {
+          cols: Number(actionForm.cols) || 5,
+          rows: Number(actionForm.rows) || 2,
+          removeWhiteBg: true,
+        });
+        const pngBlob = await new Promise((r) => c.toBlob(r, 'image/png'));
+        return new File([pngBlob], `${actionForm.id || 'sprite'}.png`, { type: 'image/png' });
+      }
+
+      async function saveLocal() {
+        if (!canSave.value) return;
+        store.busy = true;
+        try {
+          const cols = Math.max(1, Math.min(20, Number(actionForm.cols) || 5));
+          const rows = Math.max(1, Math.min(20, Number(actionForm.rows) || 2));
+          const frames = Math.max(1, Math.min(cols * rows, Number(actionForm.frames) || cols * rows));
+          const fps = Math.max(1, Math.min(60, Number(actionForm.fps) || 14));
+          const src = file.value || previewSrc.value;
+          if (!src) throw new Error('沒有可儲存的精靈表圖片');
+          const c = await renderSpriteToCanvas(src, { cols, rows, removeWhiteBg: !!file.value && autoRemoveWhiteBg.value });
+          const dataUrl = c.toDataURL('image/png');
+          const cellW = c.width / cols;
+          const cellH = c.height / rows;
+          const sheetKey = actionForm.sheetKey || actionForm.id;
+          await LocalGameDB.putSheet(sheetKey, {
+            dataUrl,
+            cols,
+            rows,
+            frameCount: frames,
+            fps,
+            anchorX: Math.round(cellW * 0.5),
+            anchorY: Math.round(cellH * 0.91),
+            label: actionForm.label || actionForm.id,
+            trigger: actionForm.trigger || 'on_attack',
+            condition: (actionForm.condition || '').trim(),
+            priority: Number(actionForm.priority) || 0,
+            loop: !!actionForm.loop,
+            charId: charForm.id,
+            actionId: actionForm.id,
+            updatedAt: Date.now(),
+          });
+          await loadLocalOverrides();
+          file.value = null;
+          const updated = allCharacters.value.find((ch) => ch.id === charForm.id)?.actions.find((a) => a.id === actionForm.id);
+          if (updated) selectAction(updated);
+          toast('💾 存檔成功！已套用到本機遊戲，點左上「← 返回大亂鬥」即可立即試玩', 'success');
+        } catch (e) {
+          toast(`存檔失敗：${e.message}`, 'error');
+        } finally { store.busy = false; }
+      }
+
+      async function revertLocal() {
+        const sheetKey = currentAction.value?.sheetKey || actionForm.sheetKey || actionForm.id;
+        if (!sheetKey) return;
+        if (!confirm(`確定要還原「${actionForm.label || actionForm.id}」為預設動畫？`)) return;
+        store.busy = true;
+        try {
+          await LocalGameDB.deleteSheet(sheetKey);
+          await loadLocalOverrides();
+          const orig = allCharacters.value.find((ch) => ch.id === charForm.id)?.actions.find((a) => a.id === actionForm.id);
+          if (orig) selectAction(orig);
+          toast('↩ 已還原為預設動畫', 'info');
+        } catch (e) {
+          toast(`還原失敗：${e.message}`, 'error');
+        } finally { store.busy = false; }
+      }
 
       async function save() {
+        const processedFile = await prepareUploadFile();
         const payload = { id: charForm.id, name: charForm.name || charForm.id, action: { ...actionForm } };
-        const ok = await submitEntry('characters', payload, file.value, `角色 ${charForm.id} / 動作 ${actionForm.id}`);
+        const ok = await submitEntry('characters', payload, processedFile, `角色 ${charForm.id} / 動作 ${actionForm.id}`);
         if (ok) {
           const cid = charForm.id; const aid = actionForm.id;
           isNewChar.value = false; selectedId.value = cid;
@@ -1093,8 +1333,8 @@
         { k: 'monster', t: '怪物' }, { k: 'custom', t: '✨自訂' },
       ];
       return { store, allCharacters, characters, current, currentAction, selectedId, selectedActionId, isNewChar, charForm, actionForm, isNewAction,
-        file, condOk, filter, roleFilter, roleTabs, aiModalOpen, turnaroundSrc, turnaroundZoom, previewSrc, canSave, TRIGGER_LABELS,
-        selectChar, newChar, selectAction, newAction, uploadTurnaround, onAiApply, save, removeAction, removeChar };
+        file, condOk, filter, roleFilter, roleTabs, aiModalOpen, turnaroundSrc, turnaroundZoom, previewSrc, autoRemoveWhiteBg, saveBlockReason, canSave, TRIGGER_LABELS,
+        selectChar, newChar, selectAction, newAction, uploadTurnaround, onAiApply, saveLocal, revertLocal, save, removeAction, removeChar };
     },
     template: `
       <div class="grid grid-cols-12 gap-4">
@@ -1158,7 +1398,8 @@
             <button v-for="a in current.actions" :key="a.id" @click="selectAction(a)"
                     :class="['px-3 py-1 rounded-full text-xs border transition', a.id===selectedActionId ? 'bg-indigo-600 text-white border-indigo-600' : 'hover:bg-slate-100']">
               {{ a.label || a.id }}
-              <span v-if="a.customized" class="ml-1 opacity-90">✨</span>
+              <span v-if="a.localSaved" class="ml-1" title="已存檔於本機遊戲">💾</span>
+              <span v-else-if="a.customized" class="ml-1 opacity-90">✨</span>
             </button>
             <button @click="newAction" :class="['px-3 py-1 rounded-full text-xs border border-dashed', isNewAction ? 'border-indigo-500 text-indigo-600 font-semibold' : '']">＋ 新動作</button>
           </div>
@@ -1188,7 +1429,11 @@
                 <p class="text-sm mb-1">觸發條件式</p>
                 <condition-editor v-model="actionForm.condition" @valid="condOk=$event" />
               </div>
-              <drop-zone v-model:file="file" :hint="isNewAction ? '新動作必須上傳精靈表 PNG' : '留空 = 沿用目前圖檔，或上傳新 PNG 覆寫'" />
+              <drop-zone v-model:file="file" :hint="isNewAction ? '新動作必須上傳精靈表圖片' : '留空 = 沿用目前圖檔，或上傳新圖覆寫'" />
+              <label class="inline-flex items-center gap-2 text-xs text-slate-600 select-none">
+                <input type="checkbox" v-model="autoRemoveWhiteBg" />
+                上傳白底圖時自動去除純白背景（若已是透明去背 PNG 則保留原樣）
+              </label>
             </div>
             <div class="col-span-12 lg:col-span-5 space-y-3">
               <button id="btnOpenAiModify" @click="aiModalOpen=true"
@@ -1198,17 +1443,25 @@
               </button>
               <sprite-preview :src="previewSrc" :cols="actionForm.cols" :rows="actionForm.rows" :frames="actionForm.frames" :fps="actionForm.fps" :size="260" />
               <p v-if="currentAction && !isNewAction" class="text-xs text-slate-400 font-mono break-all">
-                <span :class="['inline-block px-1.5 py-0.5 rounded mr-1 font-sans', currentAction.builtin ? 'bg-slate-200 text-slate-600' : 'bg-emerald-100 text-emerald-700']">{{ currentAction.builtin ? '內建動畫' : '雲端自訂' }}</span>
+                <span v-if="currentAction.localSaved" class="inline-block px-1.5 py-0.5 rounded mr-1 font-sans bg-emerald-100 text-emerald-700 font-semibold">💾 本機已存檔</span>
+                <span :class="['inline-block px-1.5 py-0.5 rounded mr-1 font-sans', currentAction.builtin ? 'bg-slate-200 text-slate-600' : 'bg-indigo-100 text-indigo-700']">{{ currentAction.builtin ? '內建動畫' : '雲端自訂' }}</span>
                 {{ currentAction.sheetKey }}<br>{{ currentAction.png }}
               </p>
             </div>
           </div>
 
-          <div class="flex gap-2 border-t pt-3">
-            <button @click="save" :disabled="!canSave" class="px-4 py-2 rounded bg-indigo-600 text-white disabled:opacity-40">
-              {{ store.busy ? '處理中…' : '💾 儲存並建立 PR' }}</button>
-            <button v-if="!isNewAction && currentAction && !currentAction.builtin" @click="removeAction" :disabled="store.busy" class="px-3 py-2 rounded border text-red-600">刪除自訂動作</button>
-            <button v-if="current && !current.builtin" @click="removeChar" :disabled="store.busy" class="px-3 py-2 rounded border text-red-600 ml-auto">刪除自訂角色</button>
+          <div class="flex flex-wrap items-center gap-2 border-t pt-3">
+            <button id="btnSaveLocal" @click="saveLocal" :disabled="!canSave"
+              class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm shadow-sm disabled:opacity-40">
+              {{ store.busy ? '處理中…' : '💾 存檔（套用到遊戲）' }}</button>
+            <button id="btnSavePr" @click="save" :disabled="!canSave"
+              class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm disabled:opacity-40">
+              {{ store.busy ? '處理中…' : '☁️ 儲存並建立 PR' }}</button>
+            <button v-if="currentAction && currentAction.localSaved" @click="revertLocal" :disabled="store.busy"
+              class="px-3 py-2 rounded-lg border border-amber-400 text-amber-700 hover:bg-amber-50 text-sm">↩ 還原預設</button>
+            <span v-if="saveBlockReason" class="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded px-2 py-1">⚠️ {{ saveBlockReason }}</span>
+            <button v-if="!isNewAction && currentAction && !currentAction.builtin" @click="removeAction" :disabled="store.busy" class="px-3 py-2 rounded border text-red-600 text-sm">刪除自訂動作</button>
+            <button v-if="current && !current.builtin" @click="removeChar" :disabled="store.busy" class="px-3 py-2 rounded border text-red-600 text-sm ml-auto">刪除自訂角色</button>
           </div>
         </section>
 

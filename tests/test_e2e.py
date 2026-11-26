@@ -164,6 +164,16 @@ class SchoolFightE2ETest(unittest.TestCase):
             modal.locator('button:has-text("關閉")').click()
             page.wait_for_selector("text=AI 招式動畫修改工作台", state="hidden")
 
+            # Select Red Panda -> camelCase action rp_dashLightAttack and verify save buttons are enabled + local save works
+            page.locator("aside ul li", has_text="超級帆").click()
+            page.locator("button", has_text="閃電踢球").click()
+            self.assertFalse(page.locator("#btnSaveLocal").is_disabled())
+            self.assertFalse(page.locator("#btnSavePr").is_disabled())
+            page.locator('div.border-dashed input[type="file"]').set_input_files(str(self.sheet_10x4))
+            page.wait_for_selector("text=1000×340px")
+            page.click("#btnSaveLocal")
+            page.wait_for_selector("text=本機已存檔")
+
             page.click('aside button[title="新增自訂角色"]')
 
             page.locator('input[placeholder="red_panda"]').fill("my_panda")
@@ -171,13 +181,15 @@ class SchoolFightE2ETest(unittest.TestCase):
             cond = page.locator('input[placeholder^="例如：hp"]')
             cond.fill("alert(1)")
             page.wait_for_selector("text=Unsupported identifier")
-            self.assertTrue(page.locator('button:has-text("儲存並建立 PR")').is_disabled())
+            self.assertTrue(page.locator('#btnSavePr').is_disabled())
+            self.assertTrue(page.locator('#btnSaveLocal').is_disabled())
 
             cond.fill("hp < 30 && state === 'hurt'")
             page.wait_for_selector("text=TRUE 觸發")
-            page.set_input_files('input[type="file"][accept="image/png"]', str(self.sheet_10x4))
+            page.locator('div.border-dashed input[type="file"]').set_input_files(str(self.sheet_10x4))
             page.wait_for_selector("text=1000×340px")
-            self.assertFalse(page.locator('button:has-text("儲存並建立 PR")').is_disabled())
+            self.assertFalse(page.locator('#btnSavePr').is_disabled())
+            self.assertFalse(page.locator('#btnSaveLocal').is_disabled())
 
             for tab_name in ["背景", "道具", "AI 生成", "PR 紀錄"]:
                 page.click(f'nav button:has-text("{tab_name}")')

@@ -1290,6 +1290,13 @@
             frameCount: rec.frameCount || (cols * rows),
             custom: true,
           };
+          const studioAct = StudioState.getAction(rec.sheetKey);
+          if (studioAct) {
+            if (typeof rec.fps === 'number' && rec.fps > 0) studioAct.fps = rec.fps;
+            studioAct.cols = cols;
+            studioAct.rows = rows;
+            studioAct.frameCount = rec.frameCount || (cols * rows);
+          }
           this.tintedCache = {};
         } catch (_) {}
       }
