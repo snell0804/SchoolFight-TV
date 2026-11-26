@@ -1,6 +1,6 @@
 {
   "format": "schoolfight_cloud_manifest_v1",
-  "updatedAt": 1795680173327,
+  "updatedAt": 1795680177726,
   "sheets": {
     "enemy_wizard_ghost_attack": {
       "file": "assets/enemy_wizard_ghost_attack_sheet.webp",
@@ -18,7 +18,7 @@
       "frameCount": 10,
       "anchorX": 177,
       "anchorY": 404,
-      "updatedAt": 1795680173326
+      "updatedAt": 1795680034260
     },
     "rp_dashLightAttack": {
       "file": "assets/rp_dashLightAttack_sheet.webp",
@@ -27,7 +27,7 @@
       "frameCount": 10,
       "anchorX": 136,
       "anchorY": 242,
-      "updatedAt": 1795680034260
+      "updatedAt": 1795680177726
     },
     "enemy_wizard_ghost_move": {
       "file": "assets/enemy_wizard_ghost_move_sheet.webp",
@@ -45,7 +45,7 @@
       "frameCount": 10,
       "anchorX": 150,
       "anchorY": 236,
-      "updatedAt": 1795680173327
+      "updatedAt": 1795680177726
     },
     "enemy_wizard_ghost_ko": {
       "file": "assets/enemy_wizard_ghost_ko_sheet.webp",
@@ -54,7 +54,7 @@
       "frameCount": 10,
       "anchorX": 150,
       "anchorY": 236,
-      "updatedAt": 1795680173327
+      "updatedAt": 1795680177726
     }
   },
   "allOverrides": {
