@@ -517,9 +517,10 @@
     { key: 'enemy_sheep_hurt', file: 'assets/enemy_sheep_hurt_sheet.webp', cols: 10, rows: 1, anchorX: 210, anchorY: 304 },
     { key: 'enemy_sheep_ko', file: 'assets/enemy_sheep_ko_sheet.webp', cols: 10, rows: 1, anchorX: 210, anchorY: 304 },
     // Classic Monsters: Full 10-Frame Hand-Drawn HD Sprite Sheets (Pig, Slime, Mushroom, Pufferfish)
-    { key: 'enemy_pig_move', file: 'assets/enemy_pig_move_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
-    { key: 'enemy_pig_attack', file: 'assets/enemy_pig_attack_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
-    { key: 'enemy_pig_ko', file: 'assets/enemy_pig_ko_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
+    { key: 'enemy_pig_move', file: 'assets/enemy_pig_move_sheet.webp', cols: 10, rows: 1, anchorX: 210, anchorY: 304 },
+    { key: 'enemy_pig_attack', file: 'assets/enemy_pig_attack_sheet.webp', cols: 10, rows: 1, anchorX: 210, anchorY: 304 },
+    { key: 'enemy_pig_hurt', file: 'assets/enemy_pig_hurt_sheet.webp', cols: 10, rows: 1, anchorX: 210, anchorY: 304 },
+    { key: 'enemy_pig_ko', file: 'assets/enemy_pig_ko_sheet.webp', cols: 10, rows: 1, anchorX: 210, anchorY: 304 },
     { key: 'enemy_slime_idle', file: 'assets/enemy_slime_idle_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
     { key: 'enemy_slime_move', file: 'assets/enemy_slime_move_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
     { key: 'enemy_slime_attack', file: 'assets/enemy_slime_attack_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
