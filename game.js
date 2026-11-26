@@ -414,7 +414,7 @@
     { key: 'enemy_cactus_hurt', file: 'assets/enemy_cactus_hurt_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
     { key: 'enemy_cactus_ko', file: 'assets/enemy_cactus_ko_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
     { key: 'enemy_wizard_ghost_move', file: 'assets/enemy_wizard_ghost_move_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
-    { key: 'enemy_wizard_ghost_attack', file: 'assets/enemy_wizard_ghost_attack_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
+    { key: 'enemy_wizard_ghost_attack', file: 'assets/enemy_wizard_ghost_attack_sheet.webp', cols: 5, rows: 4, anchorX: 150, anchorY: 236 },
     { key: 'enemy_wizard_ghost_hurt', file: 'assets/enemy_wizard_ghost_hurt_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
     { key: 'enemy_wizard_ghost_ko', file: 'assets/enemy_wizard_ghost_ko_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
     { key: 'enemy_donghua_boss_move', file: 'assets/enemy_donghua_boss_move_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 242 },

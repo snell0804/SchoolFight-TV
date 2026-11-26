@@ -72,7 +72,12 @@
     enemyChar('enemy_koala', '🎧 電競無尾熊（賽博DJ怪）', 'enemy_koala', true, { enemyKey: 'koala' }),
     enemyChar('enemy_capybara', '🍊 佛系水豚君（霸體坦克怪）', 'enemy_capybara', true, { enemyKey: 'capybara' }),
     enemyChar('enemy_cactus', '🌵 針刺仙人掌（條紋針刺怪）', 'enemy_cactus', true, { enemyKey: 'cactus' }),
-    enemyChar('enemy_wizard_ghost', '🧙‍♂️ 星空巫師幽靈（星辰法師怪）', 'enemy_wizard_ghost', true, { enemyKey: 'wizard_ghost' }),
+    (() => {
+      const wg = enemyChar('enemy_wizard_ghost', '🧙‍♂️ 星空巫師幽靈（星辰法師怪）', 'enemy_wizard_ghost', true, { enemyKey: 'wizard_ghost' });
+      const atk = wg.actions.find((a) => a.id === 'enemy_wizard_ghost_attack');
+      if (atk) Object.assign(atk, { cols: 5, rows: 4, frames: 20, fps: 18 });
+      return wg;
+    })(),
     enemyChar('enemy_pengking', '👑 王者企鵝（海洋敵人）', 'enemy_pengking', true, { enemyKey: 'penguin_king' }),
     enemyChar('enemy_pengice', '❄️ 冰雪企鵝（海洋敵人）', 'enemy_pengice', true, { enemyKey: 'penguin_ice' }),
     enemyChar('enemy_rabbit', '🐰 兔兔怪（5色共用）', 'enemy_rabbit', true, { enemyKey: 'rabbit' }),
