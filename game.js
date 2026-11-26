@@ -5258,6 +5258,8 @@
       this.dashVel = 0;
       this.isLaunched = false;
       this.airJuggleCount = 0;
+      this.enteredScreen = false;
+      this.wallBounceCd = 0;
     }
 
     resolveEnemySheet(slot, fallbackSlot = null) {
@@ -5521,6 +5523,7 @@
       if (this.state === 'dead') {
         this.stateTime += dt;
         this.frame = Math.min(koFc - 1, Math.floor(this.stateTime * koFps));
+        this.applyScreenWallBounds(dt);
         if (this.jumpY === 0 && this.stateTime > Math.max(1.05, (koFc / koFps) * 0.9)) {
           this.deadFade -= dt * 1.4;
         }
@@ -6249,9 +6252,62 @@
         }
       }
 
-      // Clamp Z & loose horizontal bounds
+      // Clamp Z & keep entered enemies strictly inside the player's current screen with wall-bounce on knockback
       this.z = Math.max(Z_MIN, Math.min(Z_MAX, this.z));
-      this.x = Math.max(game.camMinX - 80, Math.min(game.camMaxX + CANVAS_W + 80, this.x));
+      this.applyScreenWallBounds(dt);
+    }
+
+    applyScreenWallBounds(dt) {
+      this.wallBounceCd = Math.max(0, (this.wallBounceCd || 0) - dt);
+      const margin = 48;
+      const wallMinX = Math.max(margin, game.camX + margin);
+      const wallMaxX = Math.min(STAGE_W - margin, game.camX + CANVAS_W - margin);
+
+      if (!this.enteredScreen) {
+        if (this.x >= wallMinX && this.x <= wallMaxX) {
+          this.enteredScreen = true;
+        } else {
+          // Even before fully entering, never let knockback launch them further off-screen
+          const outerMin = game.camX - 90;
+          const outerMax = game.camX + CANVAS_W + 90;
+          if (this.x < outerMin) {
+            this.x = outerMin;
+            if (this.vx < 0) this.vx = Math.abs(this.vx) * 0.5;
+          } else if (this.x > outerMax) {
+            this.x = outerMax;
+            if (this.vx > 0) this.vx = -Math.abs(this.vx) * 0.5;
+          }
+          return;
+        }
+      }
+
+      const hitLeft = this.x < wallMinX;
+      const hitRight = this.x > wallMaxX;
+      if (!hitLeft && !hitRight) return;
+
+      this.x = hitLeft ? wallMinX : wallMaxX;
+      const impactSpeed = Math.abs(this.vx);
+      const isKnockedOrFlying = this.state === 'knocked' || this.state === 'hurt' || this.state === 'dead' || this.jumpY > 0;
+
+      if (isKnockedOrFlying && impactSpeed > 85 && this.wallBounceCd <= 0) {
+        // Classic arcade wall-slam rebound!
+        const reboundVx = Math.min(340, Math.max(165, impactSpeed * 0.54));
+        this.vx = hitLeft ? reboundVx : -reboundVx;
+        this.vy = Math.max(this.vy, 210);
+        if (this.jumpY < 8) this.jumpY = 8;
+        this.wallBounceCd = 0.22;
+        const wallFxX = hitLeft ? game.camX + 18 : game.camX + CANVAS_W - 18;
+        spawnParticles(wallFxX, this.z - this.jumpY - 64, '#f8fafc', 12, 220, 6);
+        spawnParticles(wallFxX, this.z - this.jumpY - 64, '#fde047', 6, 180, 5);
+        addShake(6, 0.12);
+        sfx.playHit(false);
+        if (this.state !== 'dead') {
+          addFloatText(this.x, this.z - this.jumpY - 125, '撞牆!!', '#fde047', 20);
+        }
+      } else {
+        if ((hitLeft && this.vx < 0) || (hitRight && this.vx > 0)) this.vx = 0;
+        if ((hitLeft && this.dashVel < 0) || (hitRight && this.dashVel > 0)) this.dashVel = 0;
+      }
     }
 
     draw(ctx) {
