@@ -1433,10 +1433,10 @@
      * 4. Flood-fill + interior pocket background removal + 1px anti-aliased edge feathering.
      * 5. UNIFORM AUTO-SCALING into 300x264 cells (clamped with safety margin) so high-res uploads NEVER overflow or slice!
      */
-    processUploadedSheet(img, cols = 5, rows = 2, frameCount = null, opts = null) {
+    processUploadedSheet(img, cols = 10, rows = 1, frameCount = null, opts = null) {
       const rawW = img.width;
       const rawH = img.height;
-      const maxDim = 2200;
+      const maxDim = 8400; // Supports wide 10~20 col x 1 row HD strips without downscaling!
       const preScale = Math.max(rawW, rawH) > maxDim ? (maxDim / Math.max(rawW, rawH)) : 1;
       const sw = Math.max(16, Math.round(rawW * preScale));
       const sh = Math.max(16, Math.round(rawH * preScale));
@@ -1444,11 +1444,12 @@
       const isBoss = !!(opts && opts.isBoss);
       const autoDetect = !!(opts && opts.autoDetect);
 
-      const outCellW = 300;
-      const outCellH = 264;
-      const targetCx = isEnemy ? 150 : 136;
-      const targetFootY = isBoss ? 242 : (isEnemy ? 236 : 242);
-      const targetBodyH = isBoss ? 186 : (isEnemy ? 150 : 167);
+      // Generous wide-action cell canvas (420x340) so big slashes/jumps/kicks never clip at cell edges!
+      const outCellW = 420;
+      const outCellH = 340;
+      const targetCx = 210;
+      const targetFootY = 304;
+      const targetBodyH = isBoss ? 186 : (isEnemy ? 156 : 186);
 
       const srcCanvas = document.createElement('canvas');
       srcCanvas.width = sw;

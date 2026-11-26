@@ -122,7 +122,50 @@
     return canvas;
   }
 
-  async function renderSpriteToCanvas(fileOrUrl, { cols = 5, rows = 2, removeWhiteBg = false } = {}) {
+  const WIDE_CELL_W = 420;
+  const WIDE_CELL_H = 340;
+  const WIDE_ANCHOR_X = 210;
+  const WIDE_ANCHOR_Y = 304;
+  const GRID_PRESETS = [
+    { label: '10×1（標準長條）', cols: 10, rows: 1, frames: 10 },
+    { label: '12×1', cols: 12, rows: 1, frames: 12 },
+    { label: '16×1', cols: 16, rows: 1, frames: 16 },
+    { label: '20×1', cols: 20, rows: 1, frames: 20 },
+    { label: '5×2（雙列）', cols: 5, rows: 2, frames: 10 },
+  ];
+
+  function padSheetToWideCells(srcCanvas, cols, rows, frames) {
+    const total = Math.max(1, Math.min(cols * rows, Number(frames) || cols * rows));
+    const sw = srcCanvas.width / cols;
+    const sh = srcCanvas.height / rows;
+    const out = document.createElement('canvas');
+    out.width = cols * WIDE_CELL_W;
+    out.height = rows * WIDE_CELL_H;
+    const octx = out.getContext('2d');
+    octx.imageSmoothingEnabled = true;
+    octx.imageSmoothingQuality = 'high';
+
+    // Scale uniformly so each cell fits comfortably inside 420x340 with generous margins for big actions
+    const targetH = 220;
+    const baseScale = Math.min(targetH / Math.max(1, sh), (WIDE_CELL_W - 40) / Math.max(1, sw), (WIDE_CELL_H - 36) / Math.max(1, sh));
+    const dw = Math.round(sw * baseScale);
+    const dh = Math.round(sh * baseScale);
+    const ox = Math.round((WIDE_CELL_W - dw) / 2);
+    const oy = Math.max(8, Math.min(WIDE_CELL_H - dh - 8, WIDE_ANCHOR_Y - dh));
+
+    for (let i = 0; i < total; i++) {
+      const cIdx = i % cols;
+      const rIdx = Math.floor(i / cols);
+      octx.drawImage(
+        srcCanvas,
+        cIdx * sw, rIdx * sh, sw, sh,
+        cIdx * WIDE_CELL_W + ox, rIdx * WIDE_CELL_H + oy, dw, dh
+      );
+    }
+    return out;
+  }
+
+  async function renderSpriteToCanvas(fileOrUrl, { cols = 10, rows = 1, frames = null, removeWhiteBg = false, padWideCell = false } = {}) {
     let bmp;
     if (fileOrUrl instanceof Blob) {
       bmp = await createImageBitmap(fileOrUrl);
@@ -137,6 +180,9 @@
     c.getContext('2d').drawImage(bmp, 0, 0);
     bmp.close();
     if (removeWhiteBg) stripWhiteBgCanvas(c, cols, rows);
+    if (padWideCell && (c.width / cols < WIDE_CELL_W || c.height / rows < WIDE_CELL_H)) {
+      return padSheetToWideCells(c, cols, rows, frames || cols * rows);
+    }
     return c;
   }
 
@@ -1156,7 +1202,7 @@
           `User description: ${prompt.value.trim()}`,
           turnaroundFile.value ? 'Match the exact character appearance, colors, outfit, and proportions shown in the provided character turnaround reference image.' : '',
           actionRefFile.value ? 'Follow the motion rhythm, pose progression, and attack arcs shown in the provided reference action image.' : '',
-          'Rules: uniform cell sizing, no borders, no grid lines, no text or numbers, solid pure white background (#FFFFFF) for clean transparency extraction.',
+          'Continuity & framing rules: each adjacent frame must change only slightly and smoothly with motion evenly distributed across all frames; leave generous empty margin around the character inside every cell so large kicks, jumps, and weapon slashes NEVER touch or get clipped by cell edges; uniform cell sizing, no borders, no grid lines, no text or numbers, solid pure white background (#FFFFFF) for clean transparency extraction.',
         ].filter(Boolean).join('\n');
       }
 
@@ -1479,7 +1525,7 @@
       const selectedActionId = ref(null);
       const isNewChar = ref(false);
       const charForm = reactive({ id: '', name: '' });
-      const blankAction = () => ({ id: '', label: '', cols: 5, rows: 2, frames: 10, fps: 12, loop: false, trigger: 'on_attack', condition: '', priority: 0, png: null, webp: null, sheetKey: null, fx: defaultFxForAction() });
+      const blankAction = () => ({ id: '', label: '', cols: 10, rows: 1, frames: 10, fps: 14, loop: false, trigger: 'on_attack', condition: '', priority: 0, png: null, webp: null, sheetKey: null, fx: defaultFxForAction() });
       const actionForm = reactive(blankAction());
       const isNewAction = ref(true);
       const file = ref(null);
@@ -1516,6 +1562,12 @@
         return '';
       });
       const autoRemoveWhiteBg = ref(true);
+      const autoPadWideCell = ref(true);
+      function applyGridPreset(p) {
+        actionForm.cols = p.cols;
+        actionForm.rows = p.rows;
+        actionForm.frames = p.frames;
+      }
 
       watch(file, (f) => { if (localUrl.value) URL.revokeObjectURL(localUrl.value); localUrl.value = f ? URL.createObjectURL(f) : ''; });
       watch(selectedId, () => {
@@ -1607,11 +1659,13 @@
 
       async function prepareUploadFile() {
         if (!file.value) return null;
-        if (!autoRemoveWhiteBg.value) return file.value;
+        if (!autoRemoveWhiteBg.value && !autoPadWideCell.value) return file.value;
         const c = await renderSpriteToCanvas(file.value, {
-          cols: Number(actionForm.cols) || 5,
-          rows: Number(actionForm.rows) || 2,
-          removeWhiteBg: true,
+          cols: Number(actionForm.cols) || 10,
+          rows: Number(actionForm.rows) || 1,
+          frames: Number(actionForm.frames) || null,
+          removeWhiteBg: autoRemoveWhiteBg.value,
+          padWideCell: autoPadWideCell.value,
         });
         const pngBlob = await new Promise((r) => c.toBlob(r, 'image/png'));
         return new File([pngBlob], `${actionForm.id || 'sprite'}.png`, { type: 'image/png' });
@@ -1621,16 +1675,23 @@
         if (!canSave.value) return;
         store.busy = true;
         try {
-          const cols = Math.max(1, Math.min(20, Number(actionForm.cols) || 5));
-          const rows = Math.max(1, Math.min(20, Number(actionForm.rows) || 2));
+          const cols = Math.max(1, Math.min(24, Number(actionForm.cols) || 10));
+          const rows = Math.max(1, Math.min(20, Number(actionForm.rows) || 1));
           const frames = Math.max(1, Math.min(cols * rows, Number(actionForm.frames) || cols * rows));
           const fps = Math.max(1, Math.min(60, Number(actionForm.fps) || 14));
           const src = file.value || previewSrc.value;
           if (!src) throw new Error('沒有可儲存的精靈表圖片');
-          const c = await renderSpriteToCanvas(src, { cols, rows, removeWhiteBg: !!file.value && autoRemoveWhiteBg.value });
+          const c = await renderSpriteToCanvas(src, {
+            cols,
+            rows,
+            frames,
+            removeWhiteBg: !!file.value && autoRemoveWhiteBg.value,
+            padWideCell: !!file.value && autoPadWideCell.value,
+          });
           const dataUrl = c.toDataURL('image/png');
           const cellW = c.width / cols;
           const cellH = c.height / rows;
+          const isWidePadded = cellW === WIDE_CELL_W && cellH === WIDE_CELL_H;
           const sheetKey = actionForm.sheetKey || actionForm.id;
           await LocalGameDB.putSheet(sheetKey, {
             dataUrl,
@@ -1638,8 +1699,8 @@
             rows,
             frameCount: frames,
             fps,
-            anchorX: Math.round(cellW * 0.5),
-            anchorY: Math.round(cellH * 0.91),
+            anchorX: isWidePadded ? WIDE_ANCHOR_X : Math.round(cellW * 0.5),
+            anchorY: isWidePadded ? WIDE_ANCHOR_Y : Math.round(cellH * 0.91),
             label: actionForm.label || actionForm.id,
             trigger: actionForm.trigger || 'on_attack',
             condition: (actionForm.condition || '').trim(),
@@ -1703,7 +1764,7 @@
         { k: 'monster', t: '怪物' }, { k: 'custom', t: '✨自訂' },
       ];
       return { store, allCharacters, characters, current, currentAction, selectedId, selectedActionId, isNewChar, charForm, actionForm, isNewAction,
-        file, condOk, filter, roleFilter, roleTabs, aiModalOpen, turnaroundSrc, turnaroundZoom, previewSrc, autoRemoveWhiteBg, saveBlockReason, canSave, TRIGGER_LABELS,
+        file, condOk, filter, roleFilter, roleTabs, aiModalOpen, turnaroundSrc, turnaroundZoom, previewSrc, autoRemoveWhiteBg, autoPadWideCell, GRID_PRESETS, applyGridPreset, saveBlockReason, canSave, TRIGGER_LABELS,
         selectChar, newChar, selectAction, newAction, uploadTurnaround, onAiApply, saveLocal, revertLocal, save, removeAction, removeChar };
     },
     template: `
@@ -1782,11 +1843,18 @@
                 <label class="text-sm">名稱 <input v-model="actionForm.label" placeholder="升龍拳" class="w-full border rounded px-2 py-1" /></label>
               </div>
               <div class="grid grid-cols-5 gap-2">
-                <label class="text-sm">欄 <input type="number" min="1" max="20" v-model.number="actionForm.cols" class="w-full border rounded px-1" /></label>
+                <label class="text-sm">欄 <input type="number" min="1" max="24" v-model.number="actionForm.cols" class="w-full border rounded px-1" /></label>
                 <label class="text-sm">列 <input type="number" min="1" max="20" v-model.number="actionForm.rows" class="w-full border rounded px-1" /></label>
                 <label class="text-sm">幀數 <input type="number" min="1" :max="actionForm.cols*actionForm.rows" v-model.number="actionForm.frames" class="w-full border rounded px-1" /></label>
                 <label class="text-sm">FPS <input type="number" min="1" max="60" v-model.number="actionForm.fps" class="w-full border rounded px-1" /></label>
                 <label class="text-sm">優先度 <input type="number" min="-100" max="100" v-model.number="actionForm.priority" class="w-full border rounded px-1" /></label>
+              </div>
+              <div class="flex flex-wrap items-center gap-1 text-[11px]">
+                <span class="text-slate-500">📐 規格快選：</span>
+                <button v-for="p in GRID_PRESETS" :key="p.label" @click="applyGridPreset(p)"
+                  :class="['px-2 py-0.5 rounded border transition', actionForm.cols===p.cols && actionForm.rows===p.rows ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-slate-50 hover:bg-indigo-50 text-slate-700']">
+                  {{ p.label }}
+                </button>
               </div>
               <div class="grid grid-cols-2 gap-3 items-end">
                 <label class="text-sm">觸發時機
@@ -1799,11 +1867,17 @@
                 <p class="text-sm mb-1">觸發條件式</p>
                 <condition-editor v-model="actionForm.condition" @valid="condOk=$event" />
               </div>
-              <drop-zone v-model:file="file" :hint="isNewAction ? '新動作必須上傳精靈表圖片' : '留空 = 沿用目前圖檔，或上傳新圖覆寫'" />
-              <label class="inline-flex items-center gap-2 text-xs text-slate-600 select-none">
-                <input type="checkbox" v-model="autoRemoveWhiteBg" />
-                上傳白底圖時自動去除純白背景（若已是透明去背 PNG 則保留原樣）
-              </label>
+              <drop-zone v-model:file="file" :hint="isNewAction ? '新動作必須上傳精靈表圖片（推薦 10~20 欄 × 1 列）' : '留空 = 沿用目前圖檔，或上傳新圖覆寫'" />
+              <div class="flex flex-col gap-1">
+                <label class="inline-flex items-center gap-2 text-xs text-slate-600 select-none">
+                  <input type="checkbox" v-model="autoRemoveWhiteBg" />
+                  上傳白底圖時自動去除純白背景（若已是透明去背 PNG 則保留原樣）
+                </label>
+                <label class="inline-flex items-center gap-2 text-xs text-slate-600 select-none">
+                  <input type="checkbox" v-model="autoPadWideCell" />
+                  📐 自動補寬每格畫布為 420×340（保留充裕留白，大動作不超出邊界被裁切）
+                </label>
+              </div>
             </div>
             <div class="col-span-12 lg:col-span-5 space-y-3">
               <button id="btnOpenAiModify" @click="aiModalOpen=true"

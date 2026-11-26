@@ -139,7 +139,7 @@ class SchoolFightE2ETest(unittest.TestCase):
                 await new Promise(r => { img.onload = r; img.src = rec.dataUrl; });
                 return { cols: rec.cols, rows: rec.rows, fc: rec.frameCount, w: img.width, h: img.height };
             }""")
-            self.assertEqual(db_info, {"cols": 10, "rows": 4, "fc": 40, "w": 3000, "h": 1056})
+            self.assertEqual(db_info, {"cols": 10, "rows": 4, "fc": 40, "w": 4200, "h": 1360})
             self.assertEqual(errors, [])
         finally:
             ctx.close()
