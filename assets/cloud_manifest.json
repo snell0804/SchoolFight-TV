@@ -1,6 +1,6 @@
 {
   "format": "schoolfight_cloud_manifest_v1",
-  "updatedAt": 1795680564684,
+  "updatedAt": 1795680767453,
   "sheets": {
     "enemy_wizard_ghost_attack": {
       "file": "assets/enemy_wizard_ghost_attack_sheet.webp",
@@ -292,7 +292,7 @@
       {
         "id": "rp_dashLightAttack",
         "label": "衝刺輕攻擊・閃電踢球 (Dash Light)",
-        "fps": 12,
+        "fps": 17,
         "key": null,
         "cols": 5,
         "rows": 2,
