@@ -36,7 +36,7 @@
         act('run', '跑步動畫 (Run)', 'run', 'assets/run_sheet.webp', 17, 'on_move', true),
         act('dash', '瞬間衝刺・閃身步 (Dash)', 'dash', 'assets/dash_sheet.webp', 25, 'on_move', false),
         act('lightAttack', '輕攻擊・揮拳連擊 (Light)', 'lightAttack', 'assets/lightAttack_sheet.webp', 17, 'on_attack', false),
-        act('heavyAttack', '重攻擊・寒冰重擊 (Heavy)', 'attack', 'assets/attack_sheet.webp', 14, 'on_attack', false),
+        act('heavyAttack', '重攻擊・月牙天沖 (Heavy)', 'attack', 'assets/attack_sheet.webp', 16, 'on_attack', false),
         act('dashLightAttack', '衝刺輕攻擊・浪子踢球 (Dash Light)', 'dashLightAttack', 'assets/dashLightAttack_sheet.webp', 17, 'on_attack', false),
         act('dashAttack', '衝刺重攻擊・星杖衝刺斬 (Dash Heavy)', 'dashAttack', 'assets/dashAttack_sheet.webp', 18, 'on_attack', false),
         act('tornadoKick', '特殊招式・龍捲旋風腳 (Tornado Kick)', 'tornadoKick', 'assets/tornadoKick_sheet.webp', 15, 'on_attack', false),

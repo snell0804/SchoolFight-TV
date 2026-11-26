@@ -291,8 +291,8 @@
       specialLabel: '能量砲',
       specialShout: '能量砲十連發!!',
       specialSub: 'MEGA CANNON BLAST!!',
-      heavyShout: '寒冰重擊!!',
-      heavySub: 'FROST GLACIER CRUSH!!',
+      heavyShout: '月牙天沖!!',
+      heavySub: 'GETSUGA TENSHO!!',
       dashLightShout: '浪子踢球!!',
       dashLightSub: 'ROGUE SHOOT!!',
       dashHeavyShout: '星杖衝刺斬!!',
@@ -479,7 +479,7 @@
       { id: 'run', label: '跑步動畫 (Run)', triggerDesc: '連按兩次 AA / DD / ←← / →→', sheetKey: 'run', fallbackSheet: null, fps: 17, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
       { id: 'dash', label: '瞬間衝刺・閃身步 (Dash)', triggerDesc: '喊出「閃身步」並瞬間突進一大段距離', sheetKey: 'dash', fallbackSheet: 'run', fps: 25, cols: 5, rows: 2, key: 'ShiftLeft', altKeys: ['ShiftRight'], rebindable: true },
       { id: 'lightAttack', label: '輕攻擊・揮拳連擊 (Light)', triggerDesc: '徒手三段拳擊（直拳→勾拳→上勾拳）', sheetKey: 'lightAttack', fallbackSheet: 'attack', fps: 17, cols: 5, rows: 2, key: 'Numpad4', altKeys: ['KeyJ', 'KeyZ'], rebindable: true },
-      { id: 'heavyAttack', label: '重攻擊・寒冰重擊 (Heavy)', triggerDesc: '獨立 10 幀冰川尖刺爆發與暴風雪重砸＋擊飛', sheetKey: 'attack', fallbackSheet: null, fps: 14, cols: 5, rows: 2, key: 'Numpad5', altKeys: ['KeyU', 'KeyC'], rebindable: true },
+      { id: 'heavyAttack', label: '重攻擊・月牙天沖 (Heavy)', triggerDesc: '獨立 10 連幀！躍起揮出冰藍月牙斬擊並釋放貫穿月牙天沖劍氣波', sheetKey: 'attack', fallbackSheet: null, fps: 16, cols: 5, rows: 2, frameCount: 10, key: 'Numpad5', altKeys: ['KeyU', 'KeyC'], rebindable: true },
       { id: 'dashLightAttack', label: '衝刺輕攻擊・浪子踢球 (Dash Light)', triggerDesc: '獨立 10 幀！跑步中 按 輕攻擊 發動，踢出能量足球', sheetKey: 'dashLightAttack', fallbackSheet: null, fps: 17, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
       { id: 'dashAttack', label: '衝刺重攻擊・星杖衝刺斬 (Dash Heavy)', triggerDesc: '獨立 10 幀！跑步中 按 重攻擊 發動星光衝刺斬', sheetKey: 'dashAttack', fallbackSheet: null, fps: 18, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
       { id: 'tornadoKick', label: '特殊招式・龍捲旋風腳 (Tornado Kick)', triggerDesc: '按住 ↑ 再按 重攻擊（W+Num5 / 手把 ↑+重攻）發動！多段旋風擊飛浮空可空中追打', sheetKey: 'tornadoKick', fallbackSheet: 'dashAttack', fps: 15, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
@@ -3019,6 +3019,144 @@
     }
   }
 
+  // --------------------------------------------------------------------------
+  // KUROMI GETSUGA TENSHO CRESCENT WAVE PROJECTILE (月牙天沖!!)
+  // --------------------------------------------------------------------------
+  class GetsugaWave {
+    constructor(x, z, facing) {
+      this.x = x;
+      this.z = z;
+      this.facing = facing;
+      this.vx = facing * 660;
+      this.life = 0.56;
+      this.maxLife = 0.56;
+      this.age = 0;
+      this.hitsLeft = 5;
+      this.hitIds = new Set();
+      this.dead = false;
+    }
+
+    update(dt) {
+      this.age += dt;
+      this.life -= dt;
+      if (this.life <= 0) { this.dead = true; return; }
+      this.x += this.vx * dt;
+
+      if (Math.random() < 0.85) {
+        game.particles.push({
+          x: this.x - this.facing * 12,
+          y: this.z - 86 + (Math.random() - 0.5) * 96,
+          vx: -this.facing * 120,
+          vy: (Math.random() - 0.5) * 45,
+          size: 4 + Math.random() * 4.5,
+          color: Math.random() < 0.55 ? '#67e8f9' : '#ffffff',
+          life: 0.18,
+          maxLife: 0.18,
+          gravity: 0,
+        });
+      }
+
+      for (const e of game.enemies) {
+        if (e.dead || this.hitIds.has(e.id)) continue;
+        if (Math.abs(e.x - this.x) < 68 && Math.abs(e.z - this.z) <= 52) {
+          this.hitIds.add(e.id);
+          this.hitsLeft--;
+          e.takeHit(34, this.facing, true, 350, '#67e8f9', '月牙天沖!!');
+          sfx.playHit(true);
+          game.hitstop = 0.04;
+          addShake(7, 0.14);
+          spawnParticles(e.x, e.z - 68, '#67e8f9', 10, 240, 5.5);
+          if (this.hitsLeft <= 0) {
+            this.dead = true;
+            return;
+          }
+        }
+      }
+      for (const prop of game.props) {
+        if (prop.broken || this.hitIds.has(prop.id)) continue;
+        if (Math.abs(prop.x - this.x) < 60 && Math.abs(prop.z - this.z) <= 48) {
+          this.hitIds.add(prop.id);
+          prop.hit(45);
+        }
+      }
+      if (this.x < game.camX - 120 || this.x > game.camX + CANVAS_W + 120) {
+        this.dead = true;
+      }
+    }
+
+    draw(ctx) {
+      const t = this.life / this.maxLife;
+      const alpha = Math.min(1, t * 2.4);
+      const cy = this.z - 88;
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.translate(Math.round(this.x), Math.round(cy));
+      ctx.scale(this.facing, 1);
+
+      // Soft cyan energy trail
+      const trail = ctx.createLinearGradient(16, 0, -92, 0);
+      trail.addColorStop(0, 'rgba(103, 232, 249, 0.72)');
+      trail.addColorStop(0.55, 'rgba(56, 189, 248, 0.35)');
+      trail.addColorStop(1, 'rgba(56, 189, 248, 0)');
+      ctx.fillStyle = trail;
+      ctx.beginPath();
+      ctx.moveTo(10, -76);
+      ctx.quadraticCurveTo(48, 0, 10, 76);
+      ctx.lineTo(-92, 34);
+      ctx.lineTo(-92, -34);
+      ctx.closePath();
+      ctx.fill();
+
+      // Outer icy-cyan glowing crescent blade
+      ctx.shadowColor = '#38bdf8';
+      ctx.shadowBlur = 18;
+      ctx.fillStyle = '#38bdf8';
+      ctx.beginPath();
+      ctx.moveTo(-22, -82);
+      ctx.quadraticCurveTo(64, 0, -22, 82);
+      ctx.quadraticCurveTo(18, 0, -22, -82);
+      ctx.closePath();
+      ctx.fill();
+
+      // Bright cyan-white inner crescent core
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = '#e0f2fe';
+      ctx.beginPath();
+      ctx.moveTo(-14, -74);
+      ctx.quadraticCurveTo(54, 0, -14, 74);
+      ctx.quadraticCurveTo(22, 0, -14, -74);
+      ctx.closePath();
+      ctx.fill();
+
+      // Pure white razor edge highlight
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.moveTo(-4, -62);
+      ctx.quadraticCurveTo(44, 0, -4, 62);
+      ctx.quadraticCurveTo(26, 0, -4, -62);
+      ctx.closePath();
+      ctx.fill();
+
+      // 4-point anime star glints on the crescent tips
+      const drawStar = (sx, sy, sr) => {
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        for (let i = 0; i < 8; i++) {
+          const a = (i / 8) * Math.PI * 2;
+          const r = i % 2 === 0 ? sr : sr * 0.28;
+          const px = sx + Math.cos(a) * r;
+          const py = sy + Math.sin(a) * r;
+          if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+        }
+        ctx.closePath();
+        ctx.fill();
+      };
+      drawStar(22, -46, 11);
+      drawStar(28, 38, 9);
+      ctx.restore();
+    }
+  }
+
   // Enemy Ranged Attack Projectiles (Star, Water, Spore, Ghost Orb + 6 New Signature Projectiles!)
   class EnemyProjectile {
     constructor(x, z, facing, kind = 'star', dmg = 14, vz = 0, color = null, owner = null) {
@@ -3562,6 +3700,7 @@
       this.state = 'heavy';
       this.stateTime = 0;
       this.comboQueued = null;
+      this.getsugaLaunched = false;
       this.hitIds.clear();
       this.frame = 0;
       sfx.playSwing(3);
@@ -3572,12 +3711,12 @@
         text: this.hero.heavyShout,
         subText: this.hero.heavySub,
         style: 'shout',
-        fillA: '#fde047',
-        fillB: isRp ? '#ea580c' : this.hero.accent,
-        rx: isRp ? 98 : 94,
+        fillA: isRp ? '#fde047' : '#67e8f9',
+        fillB: isRp ? '#ea580c' : '#2563eb',
+        rx: isRp ? 98 : 102,
         ry: 44,
-        dur: isRp ? 0.78 : 0.62,
-        particles: isRp ? { color: '#fde047', count: 12 } : null,
+        dur: isRp ? 0.78 : 0.66,
+        particles: isRp ? { color: '#fde047', count: 12 } : { color: '#67e8f9', count: 10 },
       });
     }
 
@@ -4268,12 +4407,34 @@
             this.state = 'idle';
           }
         } else {
-          // 😈 KUROMI HEAVY ATTACK: 寒冰重擊 (10-frame Ice Crystal Magic sequence — plays all frames 0..9!)
-          const dur = Math.max(0.45, heavyFc / heavyFps);
+          // 😈 KUROMI HEAVY ATTACK: 月牙天沖 (10-frame Getsuga Tensho — F1-F3 wind-up, F4-F6 crescent slash + wave, F7-F10 recovery!)
+          const dur = Math.max(0.50, heavyFc / heavyFps);
           const prog = Math.min(0.999, this.stateTime / dur);
           this.frame = Math.min(heavyFc - 1, Math.floor(prog * heavyFc));
-          if (prog >= 0.30 && prog <= 0.78) {
-            this.performMeleeHitbox(176, 42, true, 340);
+          // Slight forward lunge during the crescent slash (F4-F6)
+          if (prog >= 0.30 && prog <= 0.58) {
+            this.x += this.facing * 135 * dt;
+          }
+          // Active crescent slash melee hitbox precisely synced to F4-F6 (30%..65%)
+          if (prog >= 0.30 && prog <= 0.65) {
+            this.performMeleeHitbox(192, 44, true, 360, this.hitIds, {
+              wideBack: 28,
+              customWord: '月牙斬!!',
+            });
+          }
+          // Launch piercing Getsuga Tensho crescent energy wave on F5 (prog >= 0.42)!
+          if (prog >= 0.42 && !this.getsugaLaunched) {
+            this.getsugaLaunched = true;
+            const actFx = getActionFx('heavyAttack');
+            game.projectiles.push(new GetsugaWave(this.x + this.facing * 72, this.z, this.facing));
+            sfx.playSwing(3);
+            if (!actFx) {
+              addShake(8, 0.16);
+              triggerImpactFrame('#67e8f9', 0.055);
+            } else {
+              if (actFx.shakeEnabled) addShake(Number(actFx.shakeAmp) || 8, Number(actFx.shakeDur) || 0.16);
+              if (actFx.flashEnabled) triggerImpactFrame(actFx.flashColor || '#67e8f9', Number(actFx.flashDur) || 0.055);
+            }
           }
           if (this.stateTime >= dur) {
             this.state = 'idle';
