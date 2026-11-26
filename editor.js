@@ -85,11 +85,54 @@
     return out;
   }
 
-  function rawUrl(p, v) {
+  function rawUrl(p, v, isBuiltin = false) {
     if (!p) return '';
+    if (isBuiltin) return `./${p.replace(/^\.?\//, '')}`;
     if (store.mode === 'backend') return `/api/raw?path=${encodeURIComponent(p)}&v=${encodeURIComponent(v || '')}`;
     const q = v ? `?v=${encodeURIComponent(v)}` : '';
     return `https://raw.githubusercontent.com/${store.ghRepo}/${store.ghBranch}/${p}${q}`;
+  }
+
+  /** Merge built-in GameCatalog entries with cloud_manifest.json custom overrides. */
+  function getMergedCharacters() {
+    const builtin = (window.GameCatalog && window.GameCatalog.characters) || [];
+    const customMap = new Map((store.manifest.characters || []).map((c) => [c.id, c]));
+    const merged = builtin.map((bc) => {
+      const cc = customMap.get(bc.id);
+      if (!cc) return { ...bc, hasCustom: false };
+      customMap.delete(bc.id);
+      const customActs = new Map((cc.actions || []).map((a) => [a.id, { ...a, builtin: false, customized: true }]));
+      const actions = bc.actions.map((ba) => {
+        if (customActs.has(ba.id)) {
+          const ov = customActs.get(ba.id);
+          customActs.delete(ba.id);
+          return ov;
+        }
+        return ba;
+      }).concat([...customActs.values()]);
+      return { ...bc, name: cc.name || bc.name, actions, hasCustom: true };
+    });
+    for (const cc of customMap.values()) {
+      merged.push({
+        id: cc.id, name: cc.name || cc.id, role: 'custom', builtin: false, hasCustom: true,
+        actions: (cc.actions || []).map((a) => ({ ...a, builtin: false, customized: true })),
+      });
+    }
+    return merged;
+  }
+
+  function getMergedSimple(section) {
+    const builtin = (window.GameCatalog && window.GameCatalog[section]) || [];
+    const customMap = new Map((store.manifest[section] || []).map((e) => [e.id, { ...e, builtin: false, customized: true }]));
+    const merged = builtin.map((be) => {
+      if (customMap.has(be.id)) {
+        const ov = customMap.get(be.id);
+        customMap.delete(be.id);
+        return ov;
+      }
+      return be;
+    });
+    return merged.concat([...customMap.values()]);
   }
 
   // ---------------- Binary / Canvas helpers (for GitHub Direct Mode) ----------------
@@ -253,13 +296,15 @@
           if (payload.name) ch.name = String(payload.name).slice(0, 60);
           const prev = ch.actions.find((x) => x.id === a.id);
           const asset = await attach(`char_${payload.id}_${a.id}`);
-          if (!asset && !prev) throw new Error('新動作需要上傳 PNG 精靈表');
+          const fallbackPng = prev?.png || a.png || null;
+          const fallbackWebp = prev?.webp || a.webp || null;
+          if (!asset && !fallbackPng) throw new Error('新動作需要上傳 PNG 精靈表');
           const cols = Math.max(1, Math.min(20, Number(a.cols) || prev?.cols || 5));
           const rows = Math.max(1, Math.min(20, Number(a.rows) || prev?.rows || 2));
           const next = {
             id: a.id, label: String(a.label || prev?.label || a.id).slice(0, 60),
-            sheetKey: `custom_${payload.id}_${a.id}`,
-            png: asset?.png || prev.png, webp: asset?.webp || prev?.webp || null,
+            sheetKey: a.sheetKey || `custom_${payload.id}_${a.id}`,
+            png: asset?.png || fallbackPng, webp: asset?.webp || fallbackWebp,
             cols, rows, frames: Math.max(1, Math.min(cols * rows, Number(a.frames) || cols * rows)),
             fps: Math.max(1, Math.min(60, Number(a.fps) || 12)), loop: !!a.loop,
             trigger: a.trigger || 'on_attack', condition: (a.condition || '').trim(),
@@ -272,15 +317,17 @@
           const list = manifest[section];
           const prev = list.find((e) => e.id === payload.id);
           const asset = await attach(`${section === 'backgrounds' ? 'bg' : 'item'}_${payload.id}`);
-          if (!asset && !prev) throw new Error('新項目需要上傳 PNG');
+          const fallbackPng = prev?.png || payload.png || null;
+          const fallbackWebp = prev?.webp || payload.webp || null;
+          if (!asset && !fallbackPng) throw new Error('新項目需要上傳 PNG');
           const next = section === 'backgrounds'
             ? { id: payload.id, name: String(payload.name || prev?.name || payload.id).slice(0, 60),
                 stage: Math.max(1, Number(payload.stage) || 1), parallax: Math.max(0, Math.min(2, Number(payload.parallax) ?? 1)),
-                png: asset?.png || prev.png, webp: asset?.webp || prev?.webp || null,
+                png: asset?.png || fallbackPng, webp: asset?.webp || fallbackWebp,
                 width: asset?.width ?? prev?.width, height: asset?.height ?? prev?.height, updatedAt: now }
             : { id: payload.id, name: String(payload.name || prev?.name || payload.id).slice(0, 60),
                 effect: payload.effect || 'heal', value: Math.max(0, Number(payload.value) || 0),
-                png: asset?.png || prev.png, webp: asset?.webp || prev?.webp || null, updatedAt: now };
+                png: asset?.png || fallbackPng, webp: asset?.webp || fallbackWebp, updatedAt: now };
           manifest[section] = list.filter((e) => e.id !== payload.id).concat(next);
           prTitle = `Editor: update ${section.slice(0, -1)} ${payload.id}`;
         }
@@ -473,19 +520,31 @@
       const selectedActionId = ref(null);
       const isNewChar = ref(false);
       const charForm = reactive({ id: '', name: '' });
-      const blankAction = () => ({ id: '', label: '', cols: 5, rows: 2, frames: 10, fps: 12, loop: false, trigger: 'on_attack', condition: '', priority: 0 });
+      const blankAction = () => ({ id: '', label: '', cols: 5, rows: 2, frames: 10, fps: 12, loop: false, trigger: 'on_attack', condition: '', priority: 0, png: null, webp: null, sheetKey: null });
       const actionForm = reactive(blankAction());
       const isNewAction = ref(true);
       const file = ref(null);
       const localUrl = ref('');
       const condOk = ref(true);
       const filter = ref('');
+      const roleFilter = ref('all'); // 'all' | 'hero' | 'boss' | 'monster' | 'custom'
 
-      const characters = computed(() => store.manifest.characters
-        .filter((c) => !filter.value || (c.id + c.name).toLowerCase().includes(filter.value.toLowerCase())));
-      const current = computed(() => store.manifest.characters.find((c) => c.id === selectedId.value));
+      const allCharacters = computed(() => getMergedCharacters());
+      const characters = computed(() => allCharacters.value.filter((c) => {
+        if (roleFilter.value === 'custom' && !c.hasCustom && c.builtin) return false;
+        if (['hero', 'boss', 'monster'].includes(roleFilter.value) && c.role !== roleFilter.value) return false;
+        if (filter.value && !(c.id + ' ' + c.name).toLowerCase().includes(filter.value.toLowerCase())) return false;
+        return true;
+      }));
+      const current = computed(() => allCharacters.value.find((c) => c.id === selectedId.value));
       const currentAction = computed(() => current.value?.actions.find((a) => a.id === selectedActionId.value));
-      const previewSrc = computed(() => localUrl.value || (currentAction.value && !isNewAction.value ? rawUrl(currentAction.value.png, currentAction.value.updatedAt) : ''));
+      const previewSrc = computed(() => {
+        if (localUrl.value) return localUrl.value;
+        if (currentAction.value && !isNewAction.value) {
+          return rawUrl(currentAction.value.png || currentAction.value.webp, currentAction.value.updatedAt, !!currentAction.value.builtin);
+        }
+        return '';
+      });
 
       watch(file, (f) => { if (localUrl.value) URL.revokeObjectURL(localUrl.value); localUrl.value = f ? URL.createObjectURL(f) : ''; });
 
@@ -507,6 +566,12 @@
         if (actionForm.frames > c * r || isNewAction.value) actionForm.frames = c * r;
       });
 
+      onMounted(() => {
+        if (!selectedId.value && !isNewChar.value && allCharacters.value.length) {
+          selectChar(allCharacters.value[0]);
+        }
+      });
+
       const canSave = computed(() => !store.busy && condOk.value && ID_RE.test(charForm.id)
         && ID_RE.test(actionForm.id) && (file.value || !isNewAction.value));
 
@@ -516,50 +581,68 @@
         if (ok) {
           const cid = charForm.id; const aid = actionForm.id;
           isNewChar.value = false; selectedId.value = cid;
-          const a = store.manifest.characters.find((c) => c.id === cid)?.actions.find((x) => x.id === aid);
+          const a = allCharacters.value.find((c) => c.id === cid)?.actions.find((x) => x.id === aid);
           if (a) selectAction(a);
         }
       }
       async function removeAction() {
-        if (await deleteEntry({ section: 'characters', id: charForm.id, actionId: actionForm.id }, `動作 ${charForm.id}/${actionForm.id}`)) newAction();
+        if (await deleteEntry({ section: 'characters', id: charForm.id, actionId: actionForm.id }, `動作 ${charForm.id}/${actionForm.id}`)) {
+          const a = allCharacters.value.find((c) => c.id === charForm.id)?.actions[0];
+          if (a) selectAction(a); else newAction();
+        }
       }
       async function removeChar() {
-        if (await deleteEntry({ section: 'characters', id: charForm.id }, `角色 ${charForm.id}`)) newChar();
+        if (await deleteEntry({ section: 'characters', id: charForm.id }, `角色 ${charForm.id}`)) {
+          if (allCharacters.value.length) selectChar(allCharacters.value[0]); else newChar();
+        }
       }
-      return { store, characters, current, selectedId, selectedActionId, isNewChar, charForm, actionForm, isNewAction,
-        file, condOk, filter, previewSrc, canSave, TRIGGER_LABELS,
+      const roleTabs = [
+        { k: 'all', t: '全部' }, { k: 'hero', t: '主角' }, { k: 'boss', t: 'BOSS' },
+        { k: 'monster', t: '怪物' }, { k: 'custom', t: '✨自訂' },
+      ];
+      return { store, allCharacters, characters, current, currentAction, selectedId, selectedActionId, isNewChar, charForm, actionForm, isNewAction,
+        file, condOk, filter, roleFilter, roleTabs, previewSrc, canSave, TRIGGER_LABELS,
         selectChar, newChar, selectAction, newAction, save, removeAction, removeChar };
     },
     template: `
       <div class="grid grid-cols-12 gap-4">
-        <aside class="col-span-12 md:col-span-3 bg-white rounded shadow p-3 space-y-2">
+        <aside class="col-span-12 md:col-span-4 lg:col-span-3 bg-white rounded shadow p-3 space-y-2">
           <div class="flex gap-2">
-            <input v-model="filter" placeholder="搜尋角色…" class="flex-1 border rounded px-2 py-1 text-sm" />
-            <button @click="newChar" class="px-2 rounded bg-indigo-600 text-white text-sm">＋</button>
+            <input v-model="filter" placeholder="搜尋角色（共 {{ allCharacters.length }} 位）…" class="flex-1 border rounded px-2 py-1 text-sm" />
+            <button @click="newChar" title="新增自訂角色" class="px-2.5 rounded bg-indigo-600 text-white text-sm">＋</button>
           </div>
-          <p v-if="!characters.length" class="text-sm text-slate-400">尚無自訂角色</p>
-          <ul class="divide-y">
+          <div class="flex flex-wrap gap-1">
+            <button v-for="rt in roleTabs" :key="rt.k" @click="roleFilter=rt.k"
+                    :class="['text-xs px-2 py-0.5 rounded-full border', roleFilter===rt.k ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-slate-50 hover:bg-slate-100']">{{ rt.t }}</button>
+          </div>
+          <p v-if="!characters.length" class="text-sm text-slate-400 py-2">找不到符合的角色</p>
+          <ul class="divide-y max-h-[68vh] overflow-y-auto pr-1">
             <li v-for="c in characters" :key="c.id" @click="selectChar(c)"
-                :class="['py-2 px-2 cursor-pointer rounded', c.id===selectedId ? 'bg-indigo-50 font-semibold' : 'hover:bg-slate-50']">
-              {{ c.name }} <span class="text-xs text-slate-400">#{{ c.id }} · {{ c.actions.length }} 動作</span>
+                :class="['py-2 px-2 cursor-pointer rounded text-sm', c.id===selectedId ? 'bg-indigo-50 font-semibold text-indigo-900' : 'hover:bg-slate-50']">
+              <div class="flex items-center justify-between gap-1">
+                <span class="truncate">{{ c.name }}</span>
+                <span v-if="c.hasCustom" class="text-[10px] px-1.5 rounded bg-emerald-100 text-emerald-700 shrink-0">自訂</span>
+              </div>
+              <div class="text-xs text-slate-400">#{{ c.id }} · {{ c.actions.length }} 個動畫</div>
             </li>
           </ul>
         </aside>
 
-        <section class="col-span-12 md:col-span-9 bg-white rounded shadow p-4 space-y-4">
+        <section class="col-span-12 md:col-span-8 lg:col-span-9 bg-white rounded shadow p-4 space-y-4">
           <div class="grid grid-cols-2 gap-3">
             <label class="text-sm">角色 ID <input v-model.trim="charForm.id" :disabled="!isNewChar && !!selectedId" placeholder="red_panda"
               class="w-full border rounded px-2 py-1 font-mono disabled:bg-slate-100" /></label>
             <label class="text-sm">顯示名稱 <input v-model="charForm.name" placeholder="紅熊貓" class="w-full border rounded px-2 py-1" /></label>
           </div>
 
-          <div v-if="current" class="flex flex-wrap gap-2 items-center">
-            <span class="text-sm text-slate-500">動作：</span>
+          <div v-if="current" class="flex flex-wrap gap-1.5 items-center">
+            <span class="text-sm text-slate-500">動畫 ({{ current.actions.length }})：</span>
             <button v-for="a in current.actions" :key="a.id" @click="selectAction(a)"
-                    :class="['px-3 py-1 rounded-full text-sm border', a.id===selectedActionId ? 'bg-indigo-600 text-white border-indigo-600' : 'hover:bg-slate-100']">
-              {{ a.label || a.id }} <span class="opacity-60 text-xs">{{ TRIGGER_LABELS[a.trigger] }}</span>
+                    :class="['px-3 py-1 rounded-full text-xs border transition', a.id===selectedActionId ? 'bg-indigo-600 text-white border-indigo-600' : 'hover:bg-slate-100']">
+              {{ a.label || a.id }}
+              <span v-if="a.customized" class="ml-1 opacity-90">✨</span>
             </button>
-            <button @click="newAction" :class="['px-3 py-1 rounded-full text-sm border border-dashed', isNewAction ? 'border-indigo-500 text-indigo-600' : '']">＋ 新動作</button>
+            <button @click="newAction" :class="['px-3 py-1 rounded-full text-xs border border-dashed', isNewAction ? 'border-indigo-500 text-indigo-600 font-semibold' : '']">＋ 新動作</button>
           </div>
 
           <div class="grid grid-cols-12 gap-4">
@@ -587,19 +670,22 @@
                 <p class="text-sm mb-1">觸發條件式</p>
                 <condition-editor v-model="actionForm.condition" @valid="condOk=$event" />
               </div>
-              <drop-zone v-model:file="file" :hint="isNewAction ? '新動作必須上傳精靈表 PNG' : '留空 = 只更新設定，沿用現有圖檔'" />
+              <drop-zone v-model:file="file" :hint="isNewAction ? '新動作必須上傳精靈表 PNG' : '留空 = 沿用目前圖檔，或上傳新 PNG 覆寫'" />
             </div>
             <div class="col-span-12 lg:col-span-5">
               <sprite-preview :src="previewSrc" :cols="actionForm.cols" :rows="actionForm.rows" :frames="actionForm.frames" :fps="actionForm.fps" :size="260" />
-              <p v-if="currentAction && !isNewAction" class="text-xs text-slate-400 mt-2 font-mono break-all">{{ currentAction.sheetKey }}<br>{{ currentAction.png }}</p>
+              <p v-if="currentAction && !isNewAction" class="text-xs text-slate-400 mt-2 font-mono break-all">
+                <span :class="['inline-block px-1.5 py-0.5 rounded mr-1 font-sans', currentAction.builtin ? 'bg-slate-200 text-slate-600' : 'bg-emerald-100 text-emerald-700']">{{ currentAction.builtin ? '內建動畫' : '雲端自訂' }}</span>
+                {{ currentAction.sheetKey }}<br>{{ currentAction.png }}
+              </p>
             </div>
           </div>
 
           <div class="flex gap-2 border-t pt-3">
             <button @click="save" :disabled="!canSave" class="px-4 py-2 rounded bg-indigo-600 text-white disabled:opacity-40">
               {{ store.busy ? '處理中…' : '💾 儲存並建立 PR' }}</button>
-            <button v-if="!isNewAction && current" @click="removeAction" :disabled="store.busy" class="px-3 py-2 rounded border text-red-600">刪除此動作</button>
-            <button v-if="current" @click="removeChar" :disabled="store.busy" class="px-3 py-2 rounded border text-red-600 ml-auto">刪除角色</button>
+            <button v-if="!isNewAction && currentAction && !currentAction.builtin" @click="removeAction" :disabled="store.busy" class="px-3 py-2 rounded border text-red-600">刪除自訂動作</button>
+            <button v-if="current && !current.builtin" @click="removeChar" :disabled="store.busy" class="px-3 py-2 rounded border text-red-600 ml-auto">刪除自訂角色</button>
           </div>
         </section>
       </div>`,
@@ -617,9 +703,9 @@
         const scroll = ref(0);
         let raf = 0;
         watch(file, (f) => { if (localUrl.value) URL.revokeObjectURL(localUrl.value); localUrl.value = f ? URL.createObjectURL(f) : ''; });
-        const list = computed(() => store.manifest[section]);
+        const list = computed(() => getMergedSimple(section));
         const current = computed(() => list.value.find((e) => e.id === form.id && !isNew.value));
-        const previewSrc = computed(() => localUrl.value || (current.value ? rawUrl(current.value.png, current.value.updatedAt) : ''));
+        const previewSrc = computed(() => localUrl.value || (current.value ? rawUrl(current.value.png, current.value.updatedAt, !!current.value.builtin) : ''));
         function select(e) { isNew.value = false; file.value = null; Object.assign(form, cfg.blank(), JSON.parse(JSON.stringify(e))); }
         function reset() { isNew.value = true; file.value = null; Object.assign(form, cfg.blank()); }
         const canSave = computed(() => !store.busy && ID_RE.test(form.id) && (file.value || !isNew.value));
@@ -630,22 +716,25 @@
         }
         async function remove() { if (await deleteEntry({ section, id: form.id }, `${cfg.label} ${form.id}`)) reset(); }
         const tick = () => { scroll.value = (scroll.value + 1) % 100000; raf = requestAnimationFrame(tick); };
-        onMounted(() => { if (section === 'backgrounds') raf = requestAnimationFrame(tick); });
+        onMounted(() => {
+          if (section === 'backgrounds') raf = requestAnimationFrame(tick);
+          if (list.value.length) select(list.value[0]);
+        });
         onBeforeUnmount(() => cancelAnimationFrame(raf));
-        return { store, cfg, form, isNew, file, list, previewSrc, canSave, scroll, select, reset, save, remove, rawUrl };
+        return { store, cfg, form, isNew, file, list, current, previewSrc, canSave, scroll, select, reset, save, remove, rawUrl };
       },
       template: `
         <div class="grid grid-cols-12 gap-4">
           <aside class="col-span-12 md:col-span-4 bg-white rounded shadow p-3">
             <div class="flex justify-between items-center mb-2">
-              <h3 class="font-semibold">{{ cfg.label }}列表</h3>
+              <h3 class="font-semibold">{{ cfg.label }}列表 ({{ list.length }})</h3>
               <button @click="reset" class="px-2 rounded bg-indigo-600 text-white text-sm">＋ 新增</button>
             </div>
             <p v-if="!list.length" class="text-sm text-slate-400">尚無資料</p>
             <div class="grid grid-cols-2 gap-2">
               <div v-for="e in list" :key="e.id" @click="select(e)"
                    :class="['cursor-pointer rounded border p-1 text-xs', !isNew && e.id===form.id ? 'ring-2 ring-indigo-500' : 'hover:bg-slate-50']">
-                <img :src="rawUrl(e.png, e.updatedAt)" class="checker w-full h-20 object-contain rounded" loading="lazy" />
+                <img :src="rawUrl(e.png, e.updatedAt, !!e.builtin)" class="checker w-full h-20 object-contain rounded" loading="lazy" />
                 <div class="mt-1 truncate">{{ e.name }} <span class="text-slate-400">#{{ e.id }}</span></div>
                 <div class="text-slate-400">{{ cfg.summary(e) }}</div>
               </div>
@@ -664,7 +753,7 @@
                 </label>
               </template>
             </div>
-            <drop-zone v-model:file="file" :hint="isNew ? '必須上傳 PNG' : '留空 = 只更新設定'" />
+            <drop-zone v-model:file="file" :hint="isNew ? '必須上傳 PNG' : '留空 = 沿用目前圖檔，或上傳新 PNG 覆寫'" />
             <div v-if="previewSrc" class="checker rounded border overflow-hidden" :style="cfg.previewStyle">
               <div v-if="cfg.parallax" class="h-full w-full"
                    :style="{ backgroundImage: 'url(' + previewSrc + ')', backgroundRepeat: 'repeat-x', backgroundSize: 'auto 100%',

@@ -151,8 +151,12 @@ class SchoolFightE2ETest(unittest.TestCase):
             page.route("https://api.github.com/**", lambda route: route.fulfill(status=404, body="{}"))
             page.goto(f"{self.base_url}/editor.html")
             page.wait_for_selector("text=SchoolFight-TV 素材編輯器")
+            # Built-in game characters should be listed immediately (23 characters)
+            page.wait_for_selector("text=呆呆伶")
+            self.assertGreaterEqual(page.locator("aside ul li").count(), 23)
+            page.click('aside button[title="新增自訂角色"]')
 
-            page.locator('input[placeholder="red_panda"]').fill("red_panda")
+            page.locator('input[placeholder="red_panda"]').fill("my_panda")
             page.locator('input[placeholder="uppercut"]').fill("shoryuken")
             cond = page.locator('input[placeholder^="例如：hp"]')
             cond.fill("alert(1)")
