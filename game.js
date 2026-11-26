@@ -451,6 +451,7 @@
     { key: 'ad_run', file: 'assets/ad_run_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 242 },
     { key: 'ad_dash', file: 'assets/ad_dash_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 242 },
     { key: 'ad_dashLightAttack', file: 'assets/ad_dashLightAttack_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 242 },
+    { key: 'ad_tornadoKick', file: 'assets/ad_tornadoKick_sheet.webp', cols: 11, rows: 1, anchorX: 150, anchorY: 242 },
     // Wave 3 Brand-New Unique Monsters + Donghua Martial Grandmaster Final Boss (2x Hero Size!)
     { key: 'enemy_kangaroo_move', file: 'assets/enemy_kangaroo_move_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
     { key: 'enemy_kangaroo_attack', file: 'assets/enemy_kangaroo_attack_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
@@ -602,7 +603,7 @@
       { id: 'ad_attack', label: '重攻擊・海星飛星斬 (Heavy)', triggerDesc: '揮出翠綠星光月牙斬並釋放貫穿劍氣波', sheetKey: 'ad_attack', fallbackSheet: 'ad_idle', fps: 16, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
       { id: 'ad_dashLightAttack', label: '衝刺輕攻擊・操場黃金抽射 (Dash Light)', triggerDesc: '跑步中按輕攻踢出黃金星光足球', sheetKey: 'ad_dashLightAttack', fallbackSheet: 'ad_idle', fps: 17, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
       { id: 'ad_dashAttack', label: '衝刺重攻擊・翠綠流星衝刺 (Dash Heavy)', triggerDesc: '跑步中按重攻發動翠綠流星突破斬', sheetKey: 'ad_dashAttack', fallbackSheet: 'ad_idle', fps: 18, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
-      { id: 'ad_tornadoKick', label: '特殊招式・海星旋風踢 (Tornado Kick)', triggerDesc: '↑+重攻發動翠綠旋風踢將敵人浮空', sheetKey: 'ad_tornadoKick', fallbackSheet: 'ad_idle', fps: 15, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
+      { id: 'ad_tornadoKick', label: '特殊招式・海星旋風踢 (Tornado Kick)', triggerDesc: '↑+重攻發動 11 連幀海星旋風踢將敵人浮空', sheetKey: 'ad_tornadoKick', fallbackSheet: 'ad_idle', fps: 16, cols: 11, rows: 1, frameCount: 11, key: null, altKeys: [], rebindable: false },
       { id: 'ad_special', label: '必殺技・海星全校星光砲 (Special)', triggerDesc: '霸體集氣・全螢幕翠綠星光波動砲十連擊', sheetKey: 'ad_special', fallbackSheet: 'ad_idle', fps: 12, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
       { id: 'ad_hurt', label: '受傷／受擊 (Hurt)', triggerDesc: '受擊踉蹌與回復', sheetKey: 'ad_hurt', fallbackSheet: 'ad_idle', fps: 15, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
       { id: 'ad_victory', label: '戰鬥勝利動作 (Victory)', triggerDesc: '海星國小過關比YA歡慶勝利', sheetKey: 'ad_victory', fallbackSheet: 'ad_idle', fps: 10, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },

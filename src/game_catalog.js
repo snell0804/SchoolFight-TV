@@ -74,7 +74,7 @@
         act('ad_attack', '重攻擊・海星飛星斬 (Heavy)', 'ad_attack', 'assets/ad_idle_sheet.webp', 16, 'on_attack', false),
         act('ad_dashLightAttack', '衝刺輕攻擊・飛書砸擊 (Dash Light)', 'ad_dashLightAttack', 'assets/ad_dashLightAttack_sheet.webp', 17, 'on_attack', false),
         act('ad_dashAttack', '衝刺重攻擊・翠綠流星衝刺 (Dash Heavy)', 'ad_dashAttack', 'assets/ad_idle_sheet.webp', 18, 'on_attack', false),
-        act('ad_tornadoKick', '特殊招式・海星旋風踢 (Tornado Kick)', 'ad_tornadoKick', 'assets/ad_idle_sheet.webp', 15, 'on_attack', false),
+        { ...act('ad_tornadoKick', '特殊招式・海星旋風踢 (Tornado Kick)', 'ad_tornadoKick', 'assets/ad_tornadoKick_sheet.webp', 16, 'on_attack', false), cols: 11, rows: 1, frames: 11 },
         act('ad_special', '必殺技・海星全校星光砲 (Special)', 'ad_special', 'assets/ad_idle_sheet.webp', 12, 'on_attack', false),
         act('ad_hurt', '受傷／受擊 (Hurt)', 'ad_hurt', 'assets/ad_idle_sheet.webp', 15, 'on_hurt', false),
         act('ad_victory', '戰鬥勝利動作 (Victory)', 'ad_victory', 'assets/ad_idle_sheet.webp', 10, 'custom', true),
