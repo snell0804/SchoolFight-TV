@@ -85,9 +85,9 @@
     enemyChar('enemy_zebra_rush', '🦓 暴衝斑馬怪（5色變色）', 'enemy_zebra_rush', true, { enemyKey: 'zebra_rush' }),
     enemyChar('enemy_joey_kangaroo', '🦘 育兒袋鼠怪（5色變色）', 'enemy_joey_kangaroo', true, { enemyKey: 'joey_kangaroo' }),
     enemyChar('enemy_kangaroo', '🥊 拳擊袋鼠（彈跳拳擊怪）', 'enemy_kangaroo', true, { enemyKey: 'kangaroo' }),
-    enemyChar('enemy_zebra', '🛹 滑板斑馬（龐克滑板怪）', 'enemy_zebra', true, { enemyKey: 'zebra' }),
-    enemyChar('enemy_koala', '🎧 電競無尾熊（賽博DJ怪）', 'enemy_koala', true, { enemyKey: 'koala' }),
-    enemyChar('enemy_capybara', '🍊 佛系水豚君（霸體坦克怪）', 'enemy_capybara', true, { enemyKey: 'capybara' }),
+    (() => { const c = enemyChar('enemy_zebra', '🦓 斑斑（旋風飛踢斑馬）', 'enemy_zebra', true, { enemyKey: 'zebra' }); c.actions.forEach((a) => Object.assign(a, { cols: 10, rows: 1, frames: 10 })); return c; })(),
+    (() => { const c = enemyChar('enemy_koala', '🐨 無尾熊（尤加利葉撲擊怪）', 'enemy_koala', true, { enemyKey: 'koala' }); c.actions.forEach((a) => Object.assign(a, { cols: 10, rows: 1, frames: 10 })); return c; })(),
+    (() => { const c = enemyChar('enemy_capybara', '🍊 佛系水豚君（橘子頭槌坦克）', 'enemy_capybara', true, { enemyKey: 'capybara' }); c.actions.forEach((a) => Object.assign(a, { cols: 10, rows: 1, frames: 10 })); return c; })(),
     enemyChar('enemy_fat_tiger', '🐯 胖虎（飛撲重壓虎貓怪）', 'enemy_fat_tiger', true, { enemyKey: 'fat_tiger' }),
     enemyChar('enemy_cactus', '🌵 針刺仙人掌（條紋針刺怪）', 'enemy_cactus', true, { enemyKey: 'cactus' }),
     (() => {
