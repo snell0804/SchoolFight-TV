@@ -447,6 +447,10 @@
     { key: 'rp_special', file: 'assets/rp_special_sheet.webp', cols: 5, rows: 2, anchorX: 136, anchorY: 242 },
     { key: 'rp_victory', file: 'assets/rp_victory_sheet.webp', cols: 5, rows: 2, anchorX: 136, anchorY: 242 },
     { key: 'ad_idle', file: 'assets/ad_idle_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 242 },
+    { key: 'ad_walk', file: 'assets/ad_walk_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 242 },
+    { key: 'ad_run', file: 'assets/ad_run_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 242 },
+    { key: 'ad_dash', file: 'assets/ad_dash_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 242 },
+    { key: 'ad_dashLightAttack', file: 'assets/ad_dashLightAttack_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 242 },
     // Wave 3 Brand-New Unique Monsters + Donghua Martial Grandmaster Final Boss (2x Hero Size!)
     { key: 'enemy_kangaroo_move', file: 'assets/enemy_kangaroo_move_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
     { key: 'enemy_kangaroo_attack', file: 'assets/enemy_kangaroo_attack_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
@@ -2864,10 +2868,10 @@
       this.x = x;
       this.z = z;
       this.facing = facing;
-      this.style = style; // 'gothic' (Kuromi) | 'lightning' (Red Panda)
-      this.vx = facing * 760;
-      this.jumpY = style === 'lightning' ? 42 : 24;
-      this.vy = 180;
+      this.style = style; // 'gothic' (Kuromi) | 'lightning' (Red Panda) | 'book' (Adailing Textbook Throw!)
+      this.vx = facing * (style === 'book' ? 740 : 760);
+      this.jumpY = style === 'book' ? 84 : (style === 'lightning' ? 42 : 24);
+      this.vy = style === 'book' ? 140 : 180;
       this.rot = 0;
       this.age = 0;
       this.life = 1.05;
@@ -2881,21 +2885,22 @@
       this.life -= dt;
       if (this.life <= 0) { this.dead = true; return; }
       this.x += this.vx * dt;
-      this.rot += this.facing * 26 * dt;
+      this.rot += this.facing * (this.style === 'book' ? 18 : 26) * dt;
 
       const isLightning = this.style === 'lightning';
+      const isBook = this.style === 'book';
 
-      // Energetic soccer bounce along the street!
+      // Energetic bounce along the street!
       this.jumpY += this.vy * dt;
-      this.vy -= 1200 * dt;
+      this.vy -= (isBook ? 620 : 1200) * dt;
       if (this.jumpY < 16) {
         this.jumpY = 16;
         this.vy = Math.abs(this.vy) * 0.62;
         if (this.vy < 140) this.vy = 190;
-        spawnParticles(this.x, this.z, isLightning ? '#38bdf8' : '#e879f9', 5, 130, 4);
+        spawnParticles(this.x, this.z, isBook ? '#34d399' : (isLightning ? '#38bdf8' : '#e879f9'), 5, 130, 4);
       }
 
-      // Trail sparks matching hero's kick style
+      // Trail sparks matching hero's kick/throw style
       if (Math.random() < 0.8) {
         game.particles.push({
           x: this.x - this.facing * 14,
@@ -2903,9 +2908,11 @@
           vx: -this.facing * 120,
           vy: (Math.random() - 0.5) * 48,
           size: 4.5 + Math.random() * 4,
-          color: isLightning
-            ? (Math.random() < 0.55 ? '#67e8f9' : '#fde047')
-            : (Math.random() < 0.5 ? '#f472b6' : '#facc15'),
+          color: isBook
+            ? (Math.random() < 0.5 ? '#fde047' : '#38bdf8')
+            : (isLightning
+              ? (Math.random() < 0.55 ? '#67e8f9' : '#fde047')
+              : (Math.random() < 0.5 ? '#f472b6' : '#facc15')),
           life: 0.16,
           maxLife: 0.16,
           gravity: 0,
@@ -2918,14 +2925,15 @@
         if (Math.abs(e.x - this.x) < 58 && Math.abs(e.z - this.z) <= 44) {
           this.hitIds.add(e.id);
           this.hitsLeft--;
-          e.takeHit(28, this.facing, true, 320, isLightning ? '#38bdf8' : '#facc15', isLightning ? '⚡ GOAL!!' : 'GOAL!!');
+          const word = isBook ? '📚 知識爆擊!!' : (isLightning ? '⚡ GOAL!!' : 'GOAL!!');
+          e.takeHit(28, this.facing, true, 320, isBook ? '#34d399' : (isLightning ? '#38bdf8' : '#facc15'), word);
           sfx.playHit(true);
           game.hitstop = 0.048;
           addShake(8, 0.16);
           if (this.hitsLeft <= 0) {
             this.dead = true;
-            spawnParticles(this.x, this.z - this.jumpY, isLightning ? '#38bdf8' : '#f472b6', 16, 280, 7);
-            if (isLightning) spawnParticles(this.x, this.z - this.jumpY, '#fde047', 10, 240, 5);
+            spawnParticles(this.x, this.z - this.jumpY, isBook ? '#34d399' : (isLightning ? '#38bdf8' : '#f472b6'), 16, 280, 7);
+            if (isLightning || isBook) spawnParticles(this.x, this.z - this.jumpY, '#fde047', 10, 240, 5);
             return;
           }
         }
@@ -2951,6 +2959,52 @@
       ctx.fill();
 
       const by = this.z - this.jumpY;
+
+      if (this.style === 'book') {
+        // Adailing's spinning colorful hardcover school textbook (matches ad_dashLightAttack!)
+        const tailLen = 88;
+        const tail = ctx.createLinearGradient(this.x, by, this.x - this.facing * tailLen, by);
+        tail.addColorStop(0, 'rgba(52, 211, 153, 0.72)');
+        tail.addColorStop(0.5, 'rgba(250, 204, 21, 0.42)');
+        tail.addColorStop(1, 'rgba(56, 189, 248, 0)');
+        ctx.fillStyle = tail;
+        ctx.beginPath();
+        ctx.moveTo(this.x, by - 16);
+        ctx.lineTo(this.x - this.facing * tailLen, by);
+        ctx.lineTo(this.x, by + 16);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.translate(Math.round(this.x), Math.round(by));
+        ctx.rotate(this.rot);
+        // Book pages thickness edge
+        ctx.fillStyle = '#f8fafc';
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 2.6;
+        ctx.beginPath();
+        ctx.roundRect(-20, -14, 40, 32, 4);
+        ctx.fill();
+        ctx.stroke();
+        // Blue hardcover front with orange/yellow diagonal stripes (matching sprite!)
+        ctx.fillStyle = '#38bdf8';
+        ctx.beginPath();
+        ctx.roundRect(-22, -18, 40, 30, 4);
+        ctx.fill();
+        ctx.fillStyle = '#f97316';
+        ctx.fillRect(-10, -16, 12, 26);
+        ctx.fillStyle = '#facc15';
+        ctx.fillRect(4, -16, 10, 26);
+        // Spine & crisp outline
+        ctx.fillStyle = '#0284c7';
+        ctx.fillRect(-22, -18, 7, 30);
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 2.8;
+        ctx.beginPath();
+        ctx.roundRect(-22, -18, 40, 30, 4);
+        ctx.stroke();
+        ctx.restore();
+        return;
+      }
 
       if (this.style === 'lightning') {
         // Red Panda's Golden-White Lightning Soccer Ball (matches rp_dashLightAttack sprite!)
@@ -4310,15 +4364,18 @@
         this.performMeleeHitbox(148, 22, false, 180);
       }
 
-      const launchAt = isRp ? 0.50 : 0.40;
+      const isAd = this.hero.id === 'adailing';
+      const launchAt = (isRp || isAd) ? 0.50 : 0.40;
       if (progress >= launchAt && !this.ballLaunched) {
         this.ballLaunched = true;
-        const actFx = getActionFx(isRp ? 'rp_dashLightAttack' : 'dashLightAttack');
-        game.projectiles.push(new SoccerBall(this.x + this.facing * 68, this.z, this.facing, isRp ? 'lightning' : 'gothic'));
+        const actId = isRp ? 'rp_dashLightAttack' : (isAd ? 'ad_dashLightAttack' : 'dashLightAttack');
+        const actFx = getActionFx(actId);
+        const ballStyle = isRp ? 'lightning' : (isAd ? 'book' : 'gothic');
+        game.projectiles.push(new SoccerBall(this.x + this.facing * 68, this.z, this.facing, ballStyle));
         sfx.playHit(true);
         if (!actFx) {
           addShake(7, 0.14);
-          triggerImpactFrame(isRp ? '#fde047' : '#f0abfc', 0.055);
+          triggerImpactFrame(isRp ? '#fde047' : (isAd ? '#34d399' : '#f0abfc'), 0.055);
         } else {
           if (actFx.shakeEnabled) addShake(Number(actFx.shakeAmp) || 7, Number(actFx.shakeDur) || 0.14);
           if (actFx.flashEnabled) triggerImpactFrame(actFx.flashColor || '#fde047', Number(actFx.flashDur) || 0.055);
