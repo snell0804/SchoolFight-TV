@@ -107,5 +107,10 @@
     { id: 'prop_cooker_mp', name: '回魔電鍋補給箱', effect: 'power', value: 50, png: 'assets/prop_cooker_mp_sheet.webp', webp: 'assets/prop_cooker_mp_sheet.webp', builtin: true },
   ];
 
+  characters.forEach((c) => {
+    c.turnaround = `assets/turnarounds/${c.id}_turnaround.webp`;
+    c.turnaroundBuiltin = true;
+  });
+
   return { characters, backgrounds, items };
 });

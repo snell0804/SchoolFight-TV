@@ -71,7 +71,13 @@
     const out = { version: 1, characters: [], backgrounds: [], items: [] };
     if (!m || typeof m !== 'object') return out;
     out.characters = (m.characters || []).map((c) => {
-      if (Array.isArray(c.actions)) return { id: c.id, name: c.name || c.id, actions: c.actions };
+      if (Array.isArray(c.actions)) {
+        return {
+          id: c.id, name: c.name || c.id,
+          ...(c.turnaround ? { turnaround: c.turnaround, turnaroundUpdatedAt: c.turnaroundUpdatedAt } : {}),
+          actions: c.actions,
+        };
+      }
       return {
         id: c.id, name: c.name || c.id,
         actions: c.sheetKey ? [{
@@ -110,11 +116,20 @@
         }
         return ba;
       }).concat([...customActs.values()]);
-      return { ...bc, name: cc.name || bc.name, actions, hasCustom: true };
+      return {
+        ...bc,
+        name: cc.name || bc.name,
+        turnaround: cc.turnaround || bc.turnaround || null,
+        turnaroundBuiltin: cc.turnaround ? false : !!bc.turnaroundBuiltin,
+        turnaroundUpdatedAt: cc.turnaroundUpdatedAt || null,
+        actions,
+        hasCustom: true,
+      };
     });
     for (const cc of customMap.values()) {
       merged.push({
         id: cc.id, name: cc.name || cc.id, role: 'custom', builtin: false, hasCustom: true,
+        turnaround: cc.turnaround || null, turnaroundBuiltin: false, turnaroundUpdatedAt: cc.turnaroundUpdatedAt || null,
         actions: (cc.actions || []).map((a) => ({ ...a, builtin: false, customized: true })),
       });
     }
@@ -522,6 +537,7 @@
       actionId: String,
       actionLabel: String,
       currentSrc: String,
+      charTurnaroundSrc: String,
       initCols: Number,
       initRows: Number,
       initFrames: Number,
@@ -559,15 +575,26 @@
         targetUrl.value = URL.createObjectURL(f);
       }
 
-      watch(() => props.open, (v) => {
+      watch(() => props.open, async (v) => {
         if (!v) return;
         cols.value = props.initCols || 5;
         rows.value = props.initRows || 2;
         frames.value = props.initFrames || (cols.value * rows.value);
         fps.value = props.initFps || 14;
         genError.value = '';
-        if (!prompt.value) {
-          prompt.value = `${props.charName || props.charId} 施展「${props.actionLabel || props.actionId}」的 2D 橫向格鬥遊戲連幀精靈動畫，可愛Q版動漫風格，每格動作流暢連貫，純白背景無文字`;
+        prompt.value = `${props.charName || props.charId} 施展「${props.actionLabel || props.actionId}」的 2D 橫向格鬥遊戲連幀精靈動畫，可愛Q版動漫風格，每格動作流暢連貫，純白背景無文字`;
+        // Auto-attach the character's turnaround sheet so AI always has consistent character reference!
+        if (props.charTurnaroundSrc) {
+          try {
+            const res = await fetch(props.charTurnaroundSrc);
+            if (res.ok) {
+              const blob = await res.blob();
+              const f = new File([blob], `${props.charId || 'char'}_turnaround.webp`, { type: blob.type || 'image/webp' });
+              setRefFile(turnaroundFile, turnaroundUrl, f);
+            }
+          } catch { /* ignore */ }
+        } else {
+          setRefFile(turnaroundFile, turnaroundUrl, null);
         }
       });
 
@@ -934,6 +961,8 @@
       const filter = ref('');
       const roleFilter = ref('all'); // 'all' | 'hero' | 'boss' | 'monster' | 'custom'
       const aiModalOpen = ref(false);
+      const turnaroundZoom = ref(false);
+      const turnaroundLocalUrl = ref('');
 
       const allCharacters = computed(() => getMergedCharacters());
       const characters = computed(() => allCharacters.value.filter((c) => {
@@ -944,6 +973,13 @@
       }));
       const current = computed(() => allCharacters.value.find((c) => c.id === selectedId.value));
       const currentAction = computed(() => current.value?.actions.find((a) => a.id === selectedActionId.value));
+      const turnaroundSrc = computed(() => {
+        if (turnaroundLocalUrl.value) return turnaroundLocalUrl.value;
+        if (current.value && current.value.turnaround) {
+          return rawUrl(current.value.turnaround, current.value.turnaroundUpdatedAt, !!current.value.turnaroundBuiltin);
+        }
+        return '';
+      });
       const previewSrc = computed(() => {
         if (localUrl.value) return localUrl.value;
         if (currentAction.value && !isNewAction.value) {
@@ -953,6 +989,48 @@
       });
 
       watch(file, (f) => { if (localUrl.value) URL.revokeObjectURL(localUrl.value); localUrl.value = f ? URL.createObjectURL(f) : ''; });
+      watch(selectedId, () => {
+        if (turnaroundLocalUrl.value) { URL.revokeObjectURL(turnaroundLocalUrl.value); turnaroundLocalUrl.value = ''; }
+      });
+
+      async function uploadTurnaround(f) {
+        if (!f || !ID_RE.test(charForm.id || '')) { toast('請先選擇或輸入有效的角色 ID', 'error'); return; }
+        if (!/^image\/(png|jpeg|webp)$/.test(f.type)) { toast('三視圖只支援 PNG / JPG / WebP', 'error'); return; }
+        if (f.size > 10 * 1024 * 1024) { toast('檔案超過 10MB', 'error'); return; }
+        if (turnaroundLocalUrl.value) URL.revokeObjectURL(turnaroundLocalUrl.value);
+        turnaroundLocalUrl.value = URL.createObjectURL(f);
+        if (store.mode === 'github' && !store.ghToken) {
+          toast('已暫時套用於本機預覽與 AI 參考（設定 GitHub Token 後即可建立 PR 永久保存）', 'info');
+          return;
+        }
+        store.busy = true;
+        try {
+          const bmp = await createImageBitmap(f);
+          const c = document.createElement('canvas');
+          const scale = bmp.width > 1400 ? 1400 / bmp.width : 1;
+          c.width = Math.round(bmp.width * scale); c.height = Math.round(bmp.height * scale);
+          c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+          bmp.close();
+          const webpBlob = await new Promise((r) => c.toBlob(r, 'image/webp', 0.92));
+          const b64 = bytesToBase64(new Uint8Array(await webpBlob.arrayBuffer()));
+          const targetPath = `assets/turnarounds/${charForm.id}_turnaround.webp`;
+          const res = await ghApi(`/contents/${MANIFEST_PATH}?ref=${encodeURIComponent(store.ghBranch)}`, { allow404: true });
+          const manifest = normalizeManifest(res && res.content ? JSON.parse(base64ToStr(res.content)) : null);
+          let ch = manifest.characters.find((x) => x.id === charForm.id);
+          if (!ch) { ch = { id: charForm.id, name: charForm.name || charForm.id, actions: [] }; manifest.characters.push(ch); }
+          ch.turnaround = targetPath;
+          ch.turnaroundUpdatedAt = new Date().toISOString();
+          const files = [
+            { path: targetPath, b64 },
+            { path: MANIFEST_PATH, b64: strToBase64(JSON.stringify(manifest, null, 2) + '\n') },
+          ];
+          const prRes = await ghCommitAndOpenPR(files, `Editor: update turnaround sheet for ${charForm.id}`);
+          recordResult(`角色三視圖 ${charForm.id}`, prRes);
+          await loadManifest();
+        } catch (e) {
+          toast(`上傳三視圖失敗：${e.message}`, 'error');
+        } finally { store.busy = false; }
+      }
 
       function selectChar(c) {
         isNewChar.value = false; selectedId.value = c.id; Object.assign(charForm, { id: c.id, name: c.name });
@@ -1015,8 +1093,8 @@
         { k: 'monster', t: '怪物' }, { k: 'custom', t: '✨自訂' },
       ];
       return { store, allCharacters, characters, current, currentAction, selectedId, selectedActionId, isNewChar, charForm, actionForm, isNewAction,
-        file, condOk, filter, roleFilter, roleTabs, aiModalOpen, previewSrc, canSave, TRIGGER_LABELS,
-        selectChar, newChar, selectAction, newAction, onAiApply, save, removeAction, removeChar };
+        file, condOk, filter, roleFilter, roleTabs, aiModalOpen, turnaroundSrc, turnaroundZoom, previewSrc, canSave, TRIGGER_LABELS,
+        selectChar, newChar, selectAction, newAction, uploadTurnaround, onAiApply, save, removeAction, removeChar };
     },
     template: `
       <div class="grid grid-cols-12 gap-4">
@@ -1043,10 +1121,36 @@
         </aside>
 
         <section class="col-span-12 md:col-span-8 lg:col-span-9 bg-white rounded shadow p-4 space-y-4">
-          <div class="grid grid-cols-2 gap-3">
-            <label class="text-sm">角色 ID <input v-model.trim="charForm.id" :disabled="!isNewChar && !!selectedId" placeholder="red_panda"
-              class="w-full border rounded px-2 py-1 font-mono disabled:bg-slate-100" /></label>
-            <label class="text-sm">顯示名稱 <input v-model="charForm.name" placeholder="紅熊貓" class="w-full border rounded px-2 py-1" /></label>
+          <div class="grid grid-cols-12 gap-3 items-start">
+            <div class="col-span-12 lg:col-span-7 grid grid-cols-2 gap-3">
+              <label class="text-sm">角色 ID <input v-model.trim="charForm.id" :disabled="!isNewChar && !!selectedId" placeholder="red_panda"
+                class="w-full border rounded px-2 py-1 font-mono disabled:bg-slate-100" /></label>
+              <label class="text-sm">顯示名稱 <input v-model="charForm.name" placeholder="紅熊貓" class="w-full border rounded px-2 py-1" /></label>
+            </div>
+            <!-- Character Turnaround Reference Card -->
+            <div class="col-span-12 lg:col-span-5 flex items-center gap-3 bg-slate-50 border rounded-lg p-2">
+              <div @click="turnaroundSrc && (turnaroundZoom=true)"
+                   :class="['checker w-24 h-16 rounded border overflow-hidden shrink-0 flex items-center justify-center', turnaroundSrc ? 'cursor-zoom-in' : '']">
+                <img v-if="turnaroundSrc" :src="turnaroundSrc" class="max-w-full max-h-full object-contain" alt="角色三視圖" />
+                <span v-else class="text-[10px] text-slate-400 text-center">尚無三視圖</span>
+              </div>
+              <div class="flex-1 min-w-0 space-y-1">
+                <div class="text-xs font-semibold text-slate-700 flex items-center gap-1">
+                  <span>🧍 角色設定三視圖</span>
+                  <span v-if="turnaroundSrc" class="text-[10px] font-normal px-1 rounded bg-indigo-100 text-indigo-700">AI 自動帶入</span>
+                </div>
+                <div class="flex flex-wrap gap-1.5">
+                  <button v-if="turnaroundSrc" @click="turnaroundZoom=true" class="text-[11px] px-2 py-0.5 rounded border bg-white hover:bg-slate-100">🔍 檢視大圖</button>
+                  <label class="text-[11px] px-2 py-0.5 rounded bg-indigo-600 text-white cursor-pointer hover:bg-indigo-700">
+                    📤 更換三視圖
+                    <input type="file" accept="image/png,image/jpeg,image/webp" class="hidden"
+                           @change="uploadTurnaround($event.target.files[0]); $event.target.value=''" />
+                  </label>
+                  <a v-if="turnaroundSrc" :href="turnaroundSrc" :download="(charForm.id || 'char') + '_turnaround.webp'"
+                     class="text-[11px] px-2 py-0.5 rounded border bg-white text-indigo-700 hover:bg-indigo-50">⬇ 下載</a>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div v-if="current" class="flex flex-wrap gap-1.5 items-center">
@@ -1108,6 +1212,22 @@
           </div>
         </section>
 
+        <!-- Full-size Turnaround Lightbox -->
+        <div v-if="turnaroundZoom && turnaroundSrc" class="fixed inset-0 z-50 bg-slate-900/75 flex items-center justify-center p-4" @click.self="turnaroundZoom=false">
+          <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full overflow-hidden">
+            <div class="px-4 py-2.5 bg-slate-100 flex items-center justify-between border-b">
+              <span class="font-semibold text-sm">🧍 {{ charForm.name || charForm.id }} — 角色設定三視圖</span>
+              <div class="flex gap-2">
+                <a :href="turnaroundSrc" :download="(charForm.id || 'char') + '_turnaround.webp'" class="text-xs px-2.5 py-1 rounded bg-indigo-600 text-white">⬇ 下載參考圖</a>
+                <button @click="turnaroundZoom=false" class="text-xs px-2.5 py-1 rounded border bg-white">✕ 關閉</button>
+              </div>
+            </div>
+            <div class="p-4 checker flex items-center justify-center max-h-[80vh] overflow-auto">
+              <img :src="turnaroundSrc" class="max-w-full max-h-[74vh] object-contain rounded shadow" />
+            </div>
+          </div>
+        </div>
+
         <ai-modify-modal
           :open="aiModalOpen"
           :char-id="charForm.id || 'custom'"
@@ -1115,6 +1235,7 @@
           :action-id="actionForm.id || 'action'"
           :action-label="actionForm.label || actionForm.id || '招式'"
           :current-src="previewSrc"
+          :char-turnaround-src="turnaroundSrc"
           :init-cols="actionForm.cols"
           :init-rows="actionForm.rows"
           :init-frames="actionForm.frames"

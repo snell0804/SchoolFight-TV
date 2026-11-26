@@ -175,7 +175,7 @@ class SchoolFightE2ETest(unittest.TestCase):
 
             cond.fill("hp < 30 && state === 'hurt'")
             page.wait_for_selector("text=TRUE 觸發")
-            page.set_input_files("input[type=file]", str(self.sheet_10x4))
+            page.set_input_files('input[type="file"][accept="image/png"]', str(self.sheet_10x4))
             page.wait_for_selector("text=1000×340px")
             self.assertFalse(page.locator('button:has-text("儲存並建立 PR")').is_disabled())
 
