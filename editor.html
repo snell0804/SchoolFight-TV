@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SchoolFight-TV 角色 / 素材編輯器</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <style>
+    [v-cloak] { display: none; }
+    .checker { background-image: conic-gradient(#e5e7eb 25%, #fff 0 50%, #e5e7eb 0 75%, #fff 0); background-size: 16px 16px; }
+    canvas.pixel { image-rendering: pixelated; }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800">
+  <div id="app" v-cloak></div>
+  <script src="./src/condition_parser.js"></script>
+  <script src="./editor.js"></script>
+</body>
+</html>
