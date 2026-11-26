@@ -102,7 +102,7 @@
     enemyChar('enemy_pengice', '❄️ 冰雪企鵝（海洋敵人）', 'enemy_pengice', true, { enemyKey: 'penguin_ice' }),
     enemyChar('enemy_rabbit', '🐰 兔兔怪（5色共用）', 'enemy_rabbit', true, { enemyKey: 'rabbit' }),
     enemyChar('enemy_ghost', '👻 幽靈怪（5色共用）', 'enemy_ghost', true, { enemyKey: 'ghost' }),
-    enemyChar('enemy_sheep', '🐑 綿羊怪（5色共用）', 'enemy_sheep', true, { enemyKey: 'sheep' }),
+    (() => { const c = enemyChar('enemy_sheep', '🐑 綿羊怪（雲球衝鋒・5色共用）', 'enemy_sheep', true, { enemyKey: 'sheep' }); c.actions.forEach((a) => Object.assign(a, { cols: 10, rows: 1, frames: 10 })); return c; })(),
     enemyChar('enemy_pig', '🐗 暴怒豬豬怪（敵人）', 'enemy_pig', false, { enemyKey: 'pig' }),
     {
       id: 'enemy_slime', name: '💧 藍色水滴史萊姆（敵人）', role: 'monster', enemyKey: 'slime', builtin: true,
