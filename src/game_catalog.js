@@ -71,6 +71,7 @@
     enemyChar('enemy_zebra', '🛹 滑板斑馬（龐克滑板怪）', 'enemy_zebra', true, { enemyKey: 'zebra' }),
     enemyChar('enemy_koala', '🎧 電競無尾熊（賽博DJ怪）', 'enemy_koala', true, { enemyKey: 'koala' }),
     enemyChar('enemy_capybara', '🍊 佛系水豚君（霸體坦克怪）', 'enemy_capybara', true, { enemyKey: 'capybara' }),
+    enemyChar('enemy_fat_tiger', '🐯 胖虎（飛撲重壓虎貓怪）', 'enemy_fat_tiger', true, { enemyKey: 'fat_tiger' }),
     enemyChar('enemy_cactus', '🌵 針刺仙人掌（條紋針刺怪）', 'enemy_cactus', true, { enemyKey: 'cactus' }),
     (() => {
       const wg = enemyChar('enemy_wizard_ghost', '🧙‍♂️ 星空巫師幽靈（星辰法師怪）', 'enemy_wizard_ghost', true, { enemyKey: 'wizard_ghost' });
