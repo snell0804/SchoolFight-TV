@@ -1204,7 +1204,12 @@
           ? `${cm.file}?v=${cm.updatedAt || 1}`
           : (embedded[def.key] || def.file);
         if (!src) return;
-        const img = await this.loadImage(src);
+        let img;
+        try {
+          img = await this.loadImage(src);
+        } catch (_) {
+          return;
+        }
         const cols = (cm && cm.cols) || def.cols;
         const rows = (cm && cm.rows) || def.rows;
         const fc = (cm && cm.frameCount) || (cols * rows);
