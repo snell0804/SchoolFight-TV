@@ -3563,7 +3563,7 @@
       this.stateTime = 0;
       this.comboQueued = null;
       this.hitIds.clear();
-      this.frame = isRp ? 0 : 2;
+      this.frame = 0;
       sfx.playSwing(3);
       this.x += this.facing * 18;
       triggerActionFx(this, isRp ? 'rp_attack' : 'heavyAttack', {
@@ -4268,14 +4268,12 @@
             this.state = 'idle';
           }
         } else {
-          // 😈 KUROMI HEAVY ATTACK: 寒冰重擊 (Frost Glacier Overhead Smash — scales to 10~60+ frames!)
-          const startIdx = heavyFc > 12 ? 0 : Math.min(2, heavyFc - 1);
-          const span = Math.max(1, heavyFc - startIdx);
-          const dur = span / heavyFps;
+          // 😈 KUROMI HEAVY ATTACK: 寒冰重擊 (10-frame Ice Crystal Magic sequence — plays all frames 0..9!)
+          const dur = Math.max(0.45, heavyFc / heavyFps);
           const prog = Math.min(0.999, this.stateTime / dur);
-          this.frame = startIdx + Math.floor(prog * span);
-          if (prog >= 0.42 && prog <= 0.88) {
-            this.performMeleeHitbox(168, 42, true, 340);
+          this.frame = Math.min(heavyFc - 1, Math.floor(prog * heavyFc));
+          if (prog >= 0.30 && prog <= 0.78) {
+            this.performMeleeHitbox(176, 42, true, 340);
           }
           if (this.stateTime >= dur) {
             this.state = 'idle';
