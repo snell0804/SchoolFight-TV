@@ -447,7 +447,7 @@
     { key: 'rp_special', file: 'assets/rp_special_sheet.webp', cols: 5, rows: 2, anchorX: 136, anchorY: 242 },
     { key: 'rp_victory', file: 'assets/rp_victory_sheet.webp', cols: 5, rows: 2, anchorX: 136, anchorY: 242 },
     { key: 'ad_idle', file: 'assets/ad_idle_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 242 },
-    { key: 'ad_walk', file: 'assets/ad_walk_sheet.webp', cols: 14, rows: 1, anchorX: 210, anchorY: 304 },
+    { key: 'ad_walk', file: 'assets/ad_walk_sheet.webp', cols: 10, rows: 1, anchorX: 210, anchorY: 304 },
     { key: 'ad_run', file: 'assets/ad_run_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 242 },
     { key: 'ad_dash', file: 'assets/ad_dash_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 242 },
     { key: 'ad_attack', file: 'assets/ad_attack_sheet.webp', cols: 10, rows: 1, anchorX: 210, anchorY: 304 },
@@ -603,7 +603,7 @@
   function createDefaultAdailingActions() {
     return [
       { id: 'ad_idle', label: '待機動畫 (Idle)', triggerDesc: '海星國小制服元氣待機呼吸', sheetKey: 'ad_idle', fallbackSheet: null, fps: 8.5, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
-      { id: 'ad_walk', label: '走路動畫 (Walk)', triggerDesc: '14 連幀絲滑上學步伐走路（WASD / 方向鍵）', sheetKey: 'ad_walk', fallbackSheet: 'ad_idle', fps: 14, cols: 14, rows: 1, frameCount: 14, key: null, altKeys: [], rebindable: false },
+      { id: 'ad_walk', label: '走路動畫 (Walk)', triggerDesc: '10 連幀輕快上學步伐走路（WASD / 方向鍵）', sheetKey: 'ad_walk', fallbackSheet: 'ad_idle', fps: 12, cols: 10, rows: 1, frameCount: 10, key: null, altKeys: [], rebindable: false },
       { id: 'ad_run', label: '奔跑動畫 (Run)', triggerDesc: '操場百米衝刺奔跑', sheetKey: 'ad_run', fallbackSheet: 'ad_idle', fps: 17, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
       { id: 'ad_dash', label: '課間衝刺・疾風步 (Dash)', triggerDesc: '翠綠清風瞬間突進閃避', sheetKey: 'ad_dash', fallbackSheet: 'ad_idle', fps: 24, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
       { id: 'ad_lightAttack', label: '輕攻擊・海星三連拍 (Light)', triggerDesc: '元氣三連擊（直拍→反拍→跳拍）', sheetKey: 'ad_lightAttack', fallbackSheet: 'ad_idle', fps: 17, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
