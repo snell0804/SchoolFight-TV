@@ -1957,6 +1957,29 @@
       return c.toDataURL('image/png');
     },
 
+    exportSheetAsGridDataUrl(sheet, maxCols = 5) {
+      if (!sheet || !sheet.img) return null;
+      const srcCols = Math.max(1, Number(sheet.cols) || 1);
+      const srcRows = Math.max(1, Number(sheet.rows) || 1);
+      const fc = Math.max(1, Math.min(srcCols * srcRows, Number(sheet.frameCount) || (srcCols * srcRows)));
+      const outCols = Math.min(maxCols, fc);
+      const outRows = Math.max(1, Math.ceil(fc / outCols));
+      const cw = sheet.img.width / srcCols;
+      const ch = sheet.img.height / srcRows;
+      const c = document.createElement('canvas');
+      c.width = Math.round(cw * outCols);
+      c.height = Math.round(ch * outRows);
+      const cctx = c.getContext('2d');
+      for (let i = 0; i < fc; i++) {
+        const sc = i % srcCols;
+        const sr = Math.floor(i / srcCols);
+        const dc = i % outCols;
+        const dr = Math.floor(i / outCols);
+        cctx.drawImage(sheet.img, sc * cw, sr * ch, cw, ch, dc * cw, dr * ch, cw, ch);
+      }
+      return { url: c.toDataURL('image/png'), cols: outCols, rows: outRows, frameCount: fc };
+    },
+
     tintedCache: {},
 
     getTintedSheet(sheetKey, variant) {
@@ -10320,8 +10343,8 @@
       btnExpPng.disabled = !effectiveSheet;
       btnExpPng.addEventListener('click', () => {
         if (!effectiveSheet) return;
-        const url = SpriteBank.exportSheetToDataUrl(effectiveSheet);
-        if (url) triggerDownload(url, `${safeBase}_${effectiveSheet.cols}x${effectiveSheet.rows}_${effectiveSheet.frameCount}f.png`);
+        const exp = SpriteBank.exportSheetAsGridDataUrl(effectiveSheet, 5);
+        if (exp && exp.url) triggerDownload(exp.url, `${safeBase}_${exp.cols}x${exp.rows}_${exp.frameCount}f.png`);
       });
 
       const btnExpJson = document.createElement('button');

@@ -1758,22 +1758,24 @@
         }
       }
 
-      async function buildCleanReorderedCanvas() {
-        const cols = Math.max(1, Number(props.cols) || 1);
-        const rows = Math.max(1, Number(props.rows) || 1);
+      async function buildCleanReorderedCanvas(targetCols = null, targetRows = null) {
+        const srcCols = Math.max(1, Number(props.cols) || 1);
+        const srcRows = Math.max(1, Number(props.rows) || 1);
         const n = totalFrames.value;
-        const cw = origImg.naturalWidth / cols;
-        const ch = origImg.naturalHeight / rows;
+        const cw = origImg.naturalWidth / srcCols;
+        const ch = origImg.naturalHeight / srcRows;
+        const outCols = targetCols ? Math.max(1, targetCols) : srcCols;
+        const outRows = targetRows ? Math.max(1, targetRows) : srcRows;
         const out = document.createElement('canvas');
-        out.width = origImg.naturalWidth;
-        out.height = origImg.naturalHeight;
+        out.width = Math.round(cw * outCols);
+        out.height = Math.round(ch * outRows);
         const ctx = out.getContext('2d');
         for (let slot = 0; slot < n; slot++) {
           const origIdx = order.value[slot];
-          const sc = origIdx % cols;
-          const sr = Math.floor(origIdx / cols);
-          const dc = slot % cols;
-          const dr = Math.floor(slot / cols);
+          const sc = origIdx % srcCols;
+          const sr = Math.floor(origIdx / srcCols);
+          const dc = slot % outCols;
+          const dr = Math.floor(slot / outCols);
           drawScaledFrame(ctx, origIdx, sc * cw, sr * ch, cw, ch, dc * cw, dr * ch, cw, ch);
         }
         return out;
@@ -1852,15 +1854,18 @@
 
       async function exportPng() {
         if (!origImg) return;
-        const out = await buildCleanReorderedCanvas();
+        const n = totalFrames.value;
+        const expCols = Math.min(5, n);
+        const expRows = Math.max(1, Math.ceil(n / expCols));
+        const out = await buildCleanReorderedCanvas(expCols, expRows);
         const url = out.toDataURL('image/png');
         const a = document.createElement('a');
         a.href = url;
-        a.download = `${props.charId || 'char'}_${props.actionId || 'action'}_${props.cols}x${props.rows}_${totalFrames.value}f.png`;
+        a.download = `${props.charId || 'char'}_${props.actionId || 'action'}_${expCols}x${expRows}_${n}f.png`;
         document.body.appendChild(a);
         a.click();
         a.remove();
-        toast('⬇ 已匯出完整 Sprite Sheet PNG！', 'success');
+        toast(`⬇ 已匯出 ${expCols}×${expRows}（${n} 幀）Sprite Sheet PNG！`, 'success');
       }
 
       function onDragStart(slot, ev) {
@@ -1981,7 +1986,7 @@
             <button type="button" @click="resetOrder" :disabled="!dirty" class="px-2 py-1 rounded border bg-white hover:bg-slate-100 disabled:opacity-40">↺ 全部重設</button>
             <button type="button" @click="darkBg=!darkBg" class="px-2 py-1 rounded border bg-white hover:bg-slate-100">{{ darkBg ? '🌙 暗底' : '☀️ 亮底' }}</button>
             <button type="button" @click="showFullSheet=!showFullSheet" class="px-2 py-1 rounded border bg-white hover:bg-slate-100">{{ showFullSheet ? '🙈 隱藏大圖' : '🖼️ 顯示完整大圖' }}</button>
-            <button id="btnExportReorderedSheet" type="button" @click="exportPng" class="px-2.5 py-1 rounded bg-sky-600 hover:bg-sky-700 text-white font-semibold shadow-sm">⬇ 匯出 Sprite Sheet (PNG)</button>
+            <button id="btnExportReorderedSheet" type="button" @click="exportPng" class="px-2.5 py-1 rounded bg-sky-600 hover:bg-sky-700 text-white font-semibold shadow-sm">⬇ 匯出 {{ Math.min(5, totalFrames) }}×{{ Math.max(1, Math.ceil(totalFrames / Math.min(5, totalFrames))) }} PNG</button>
           </div>
         </div>
 
