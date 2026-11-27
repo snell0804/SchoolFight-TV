@@ -452,7 +452,7 @@
     { key: 'ad_dash', file: 'assets/ad_dash_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 242 },
     { key: 'ad_lightAttack', file: 'assets/ad_lightAttack_sheet.webp', cols: 10, rows: 1, anchorX: 210, anchorY: 304 },
     { key: 'ad_attack', file: 'assets/ad_attack_sheet.webp', cols: 10, rows: 1, anchorX: 210, anchorY: 304 },
-    { key: 'ad_dashLightAttack', file: 'assets/ad_dashLightAttack_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 242 },
+    { key: 'ad_dashLightAttack', file: 'assets/ad_dashLightAttack_sheet.webp', cols: 10, rows: 1, anchorX: 210, anchorY: 304 },
     { key: 'ad_dashAttack', file: 'assets/ad_dashAttack_sheet.webp', cols: 10, rows: 1, anchorX: 210, anchorY: 304 },
     { key: 'ad_tornadoKick', file: 'assets/ad_tornadoKick_sheet.webp', cols: 10, rows: 1, anchorX: 210, anchorY: 304 },
     // Wave 3 Brand-New Unique Monsters + Donghua Martial Grandmaster Final Boss (2x Hero Size!)
@@ -609,7 +609,7 @@
       { id: 'ad_dash', label: '課間衝刺・疾風步 (Dash)', triggerDesc: '翠綠清風瞬間突進閃避', sheetKey: 'ad_dash', fallbackSheet: 'ad_idle', fps: 24, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
       { id: 'ad_lightAttack', label: '輕攻擊・海星三連拍 (Light)', triggerDesc: '元氣三連擊（清風掌→反手掌→疾風爆裂掌）', sheetKey: 'ad_lightAttack', fallbackSheet: 'ad_idle', fps: 17, cols: 10, rows: 1, frameCount: 10, key: null, altKeys: [], rebindable: false },
       { id: 'ad_attack', label: '重攻擊・海星字典泰山壓頂 (Heavy)', triggerDesc: '高舉精裝大字典猛砸地面，爆出震地衝擊波重擊周圍敵人', sheetKey: 'ad_attack', fallbackSheet: 'ad_idle', fps: 15, cols: 10, rows: 1, frameCount: 10, key: null, altKeys: [], rebindable: false },
-      { id: 'ad_dashLightAttack', label: '衝刺輕攻擊・飛書砸擊 (Dash Light)', triggerDesc: '跑步中按輕攻擲出旋轉精裝課本遠程爆擊', sheetKey: 'ad_dashLightAttack', fallbackSheet: 'ad_idle', fps: 17, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
+      { id: 'ad_dashLightAttack', label: '衝刺輕攻擊・飛書砸擊 (Dash Light)', triggerDesc: '跑步中按輕攻擲出旋轉精裝課本遠程爆擊', sheetKey: 'ad_dashLightAttack', fallbackSheet: 'ad_idle', fps: 17, cols: 10, rows: 1, frameCount: 10, key: null, altKeys: [], rebindable: false },
       { id: 'ad_dashAttack', label: '衝刺重攻擊・海星倒掛流星踢 (Dash Heavy)', triggerDesc: '跑步中按重攻騰空 360° 空翻倒掛金鉤重擊', sheetKey: 'ad_dashAttack', fallbackSheet: 'ad_idle', fps: 15, cols: 10, rows: 1, frameCount: 10, key: null, altKeys: [], rebindable: false },
       { id: 'ad_tornadoKick', label: '特殊招式・海星旋風踢 (Tornado Kick)', triggerDesc: '↑+重攻發動 10 連幀龍捲旋風踢將敵人浮空', sheetKey: 'ad_tornadoKick', fallbackSheet: 'ad_idle', fps: 16, cols: 10, rows: 1, frameCount: 10, key: null, altKeys: [], rebindable: false },
       { id: 'ad_special', label: '必殺技・海星全校星光砲 (Special)', triggerDesc: '霸體集氣・全螢幕翠綠星光波動砲十連擊', sheetKey: 'ad_special', fallbackSheet: 'ad_idle', fps: 12, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
