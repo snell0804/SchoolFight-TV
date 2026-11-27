@@ -7875,8 +7875,11 @@
     ctx.font = '700 11px "Noto Sans TC", sans-serif';
     const curStage = getCurrentStage();
     const curZones = getCurrentZones();
-    const curZone = curZones[Math.min(game.zoneIndex, curZones.length - 1)];
-    ctx.fillText(`STAGE ${curStage.id}/3 · ${curZone.name}`, 512, 53);
+    const curZone = curZones.length ? curZones[Math.min(game.zoneIndex, curZones.length - 1)] : null;
+    const hudSub = curStage.isTraining
+      ? '🥋 自由訓練場 · 不主動出怪（無限氣力）'
+      : `STAGE ${curStage.id}/3 · ${curZone ? curZone.name : curStage.shortName}`;
+    ctx.fillText(hudSub, 512, 53);
     ctx.textAlign = 'left';
 
     // --- TOP-RIGHT: TARGET ENEMY / BOSS MULTI-LAYER HP BAR ---
