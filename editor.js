@@ -1517,7 +1517,7 @@
       </div>`,
   };
 
-  // ---------- Full Sprite Sheet Viewer & Drag-to-Reorder Frame Sorter ----------
+  // ---------- Full Sprite Sheet Viewer, Drag-to-Reorder & Per-Frame Scale Sorter ----------
   const SpriteSheetSorter = {
     props: {
       src: String,
@@ -1530,9 +1530,10 @@
     emits: ['reordered'],
     setup(props, { emit }) {
       const fullCanvas = ref(null);
-      const thumbs = ref([]); // [{ slotIdx, origIdx, dataUrl }]
+      const thumbs = ref([]); // [{ slot, origIdx, scale, dataUrl }]
       const order = ref([]);  // [origIdx0, origIdx1, ...]
-      const history = ref([]);
+      const scales = ref([]); // indexed by origIdx: 1.00 ~ 2.00
+      const history = ref([]); // [{ order: [...], scales: [...] }]
       const dragFrom = ref(-1);
       const dragOver = ref(-1);
       const mode = ref('swap'); // 'swap' | 'insert'
@@ -1542,7 +1543,10 @@
       const imgSize = reactive({ w: 0, h: 0 });
       const dirty = ref(false);
       let origImg = null;
+      let origAnchorYRatios = []; // per origIdx bottom-feet ratio (0..1) so scaling locks feet to ground
       let ignoreNextSrc = '';
+      let scaleEmitTimer = null;
+      let scaleDragSnapshot = null;
 
       const totalFrames = computed(() => {
         const c = Math.max(1, Number(props.cols) || 1);
@@ -1551,11 +1555,92 @@
         return Math.max(1, Math.min(c * r, f));
       });
 
+      const hasScaleChanges = computed(() => scales.value.some((s) => Math.abs((Number(s) || 1) - 1) > 0.001));
+
+      function computeDirty() {
+        const orderChanged = order.value.some((origIdx, slot) => origIdx !== slot);
+        const scaleChanged = scales.value.some((s) => Math.abs((Number(s) || 1) - 1) > 0.001);
+        return orderChanged || scaleChanged;
+      }
+
+      function computeOrigAnchors() {
+        origAnchorYRatios = [];
+        if (!origImg || !origImg.naturalWidth) return;
+        const cols = Math.max(1, Number(props.cols) || 1);
+        const rows = Math.max(1, Number(props.rows) || 1);
+        const n = totalFrames.value;
+        const cw = origImg.naturalWidth / cols;
+        const ch = origImg.naturalHeight / rows;
+        const defaultRatio = 304 / 340;
+        const sampleW = Math.max(16, Math.min(140, Math.round(cw)));
+        const sampleH = Math.max(16, Math.min(140, Math.round(ch)));
+        const scCanvas = document.createElement('canvas');
+        scCanvas.width = sampleW;
+        scCanvas.height = sampleH;
+        const sctx = scCanvas.getContext('2d', { willReadFrequently: true });
+        for (let idx = 0; idx < n; idx++) {
+          const sc = idx % cols;
+          const sr = Math.floor(idx / cols);
+          sctx.clearRect(0, 0, sampleW, sampleH);
+          sctx.drawImage(origImg, sc * cw, sr * ch, cw, ch, 0, 0, sampleW, sampleH);
+          let ratio = defaultRatio;
+          try {
+            const data = sctx.getImageData(0, 0, sampleW, sampleH).data;
+            let maxY = -1;
+            for (let y = sampleH - 1; y >= 0; y--) {
+              let rowHit = false;
+              for (let x = 0; x < sampleW; x++) {
+                if (data[(y * sampleW + x) * 4 + 3] > 20) {
+                  rowHit = true;
+                  break;
+                }
+              }
+              if (rowHit) { maxY = y; break; }
+            }
+            if (maxY >= 0) {
+              ratio = Math.max(0.5, Math.min(0.98, (maxY + 1) / sampleH));
+            }
+          } catch (_) {
+            ratio = defaultRatio;
+          }
+          origAnchorYRatios[idx] = ratio;
+        }
+      }
+
+      function drawScaledFrame(ctx, origIdx, sx, sy, sw, sh, dx, dy, dw, dh) {
+        const s = Math.max(1, Math.min(2, Number(scales.value[origIdx]) || 1));
+        if (Math.abs(s - 1) <= 0.001) {
+          ctx.drawImage(origImg, sx, sy, sw, sh, dx, dy, dw, dh);
+          return;
+        }
+        const ayRatio = origAnchorYRatios[origIdx] || (304 / 340);
+        const ax = dx + dw * 0.5;
+        const ay = dy + dh * ayRatio;
+        const scaledW = dw * s;
+        const scaledH = dh * s;
+        const drawX = ax - scaledW * 0.5;
+        const drawY = ay - scaledH * ayRatio;
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(dx, dy, dw, dh);
+        ctx.clip();
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(origImg, sx, sy, sw, sh, drawX, drawY, scaledW, scaledH);
+        ctx.restore();
+      }
+
       function resetOrderState() {
         const n = totalFrames.value;
         order.value = Array.from({ length: n }, (_, i) => i);
+        scales.value = Array.from({ length: n }, () => 1);
         history.value = [];
         dirty.value = false;
+      }
+
+      function pushHistorySnapshot(snapshot) {
+        history.value.push(snapshot || { order: [...order.value], scales: [...scales.value] });
+        if (history.value.length > 40) history.value.shift();
       }
 
       function renderThumbsAndFull() {
@@ -1566,14 +1651,15 @@
         const cols = Math.max(1, Number(props.cols) || 1);
         const rows = Math.max(1, Number(props.rows) || 1);
         const n = totalFrames.value;
-        if (order.value.length !== n) resetOrderState();
+        if (order.value.length !== n || scales.value.length !== n) resetOrderState();
+        if (origAnchorYRatios.length !== n) computeOrigAnchors();
 
         const cw = origImg.naturalWidth / cols;
         const ch = origImg.naturalHeight / rows;
         imgSize.w = origImg.naturalWidth;
         imgSize.h = origImg.naturalHeight;
 
-        // 1. Render per-frame thumbnails in current order
+        // 1. Render per-frame thumbnails in current order with individual scale applied
         const nextThumbs = [];
         const thumbMax = 140;
         const scale = Math.min(1, thumbMax / Math.max(cw, ch));
@@ -1587,9 +1673,10 @@
           const origIdx = order.value[slot];
           const sc = origIdx % cols;
           const sr = Math.floor(origIdx / cols);
+          const fScale = Math.max(1, Math.min(2, Number(scales.value[origIdx]) || 1));
           tctx.clearRect(0, 0, tw, th);
-          tctx.drawImage(origImg, sc * cw, sr * ch, cw, ch, 0, 0, tw, th);
-          nextThumbs.push({ slot, origIdx, dataUrl: tc.toDataURL('image/png') });
+          drawScaledFrame(tctx, origIdx, sc * cw, sr * ch, cw, ch, 0, 0, tw, th);
+          nextThumbs.push({ slot, origIdx, scale: fScale, dataUrl: tc.toDataURL('image/png') });
         }
         thumbs.value = nextThumbs;
 
@@ -1610,9 +1697,11 @@
             const sr = Math.floor(origIdx / cols);
             const dc = slot % cols;
             const dr = Math.floor(slot / cols);
-            fctx.drawImage(origImg, sc * cw, sr * ch, cw, ch, dc * dcw, dr * dch, dcw, dch);
+            const frameScale = Math.max(1, Math.min(2, Number(scales.value[origIdx]) || 1));
+            const isScaled = Math.abs(frameScale - 1) > 0.001;
+            drawScaledFrame(fctx, origIdx, sc * cw, sr * ch, cw, ch, dc * dcw, dr * dch, dcw, dch);
             // Grid cell border
-            fctx.strokeStyle = origIdx !== slot ? 'rgba(251, 146, 60, 0.9)' : 'rgba(56, 189, 248, 0.55)';
+            fctx.strokeStyle = origIdx !== slot ? 'rgba(251, 146, 60, 0.9)' : (isScaled ? 'rgba(16, 185, 129, 0.9)' : 'rgba(56, 189, 248, 0.55)');
             fctx.lineWidth = Math.max(1, Math.round(2 * fScale));
             fctx.strokeRect(dc * dcw + 0.5, dr * dch + 0.5, dcw - 1, dch - 1);
             // Number badge top-left of each cell
@@ -1627,6 +1716,20 @@
             fctx.textAlign = 'center';
             fctx.textBaseline = 'middle';
             fctx.fillText(String(slot + 1), dc * dcw + 4 + bw / 2, dr * dch + 4 + bh / 2);
+            // Scale badge bottom-right of cell when scaled
+            if (isScaled) {
+              const swBadge = Math.max(34, Math.min(48, dcw * 0.36));
+              const shBadge = Math.max(16, Math.min(22, dch * 0.18));
+              const bx = dc * dcw + dcw - swBadge - 4;
+              const by = dr * dch + dch - shBadge - 4;
+              fctx.fillStyle = '#059669';
+              fctx.beginPath();
+              fctx.roundRect(bx, by, swBadge, shBadge, 4);
+              fctx.fill();
+              fctx.fillStyle = '#ffffff';
+              fctx.font = `700 ${Math.max(9, Math.round(shBadge * 0.6))}px monospace`;
+              fctx.fillText(`${frameScale.toFixed(2)}×`, bx + swBadge / 2, by + shBadge / 2);
+            }
           }
         }
       }
@@ -1647,7 +1750,7 @@
           const sr = Math.floor(origIdx / cols);
           const dc = slot % cols;
           const dr = Math.floor(slot / cols);
-          ctx.drawImage(origImg, sc * cw, sr * ch, cw, ch, dc * cw, dr * ch, cw, ch);
+          drawScaledFrame(ctx, origIdx, sc * cw, sr * ch, cw, ch, dc * cw, dr * ch, cw, ch);
         }
         return out;
       }
@@ -1659,9 +1762,68 @@
         const fName = `${props.charId || 'char'}_${props.actionId || 'action'}_${props.cols}x${props.rows}.png`;
         const newFile = new File([blob], fName, { type: 'image/png' });
         newFile._skipPreprocess = true;
-        dirty.value = order.value.some((origIdx, slot) => origIdx !== slot);
+        dirty.value = computeDirty();
         ignoreNextSrc = 'PENDING_SELF_EMIT';
         emit('reordered', newFile);
+      }
+
+      function scheduleEmitReordered() {
+        if (scaleEmitTimer) clearTimeout(scaleEmitTimer);
+        scaleEmitTimer = setTimeout(() => {
+          scaleEmitTimer = null;
+          emitReorderedFile();
+        }, 120);
+      }
+
+      function onScaleStart() {
+        if (!scaleDragSnapshot) {
+          scaleDragSnapshot = { order: [...order.value], scales: [...scales.value] };
+        }
+      }
+
+      function onFrameScaleInput(origIdx, val) {
+        const clamped = Math.round(Math.max(1, Math.min(2, Number(val) || 1)) * 100) / 100;
+        const next = [...scales.value];
+        next[origIdx] = clamped;
+        scales.value = next;
+        dirty.value = computeDirty();
+        renderThumbsAndFull();
+        scheduleEmitReordered();
+      }
+
+      async function onFrameScaleChange(origIdx, val) {
+        if (scaleDragSnapshot) {
+          pushHistorySnapshot(scaleDragSnapshot);
+          scaleDragSnapshot = null;
+        } else {
+          pushHistorySnapshot();
+        }
+        const clamped = Math.round(Math.max(1, Math.min(2, Number(val) || 1)) * 100) / 100;
+        const next = [...scales.value];
+        next[origIdx] = clamped;
+        scales.value = next;
+        dirty.value = computeDirty();
+        renderThumbsAndFull();
+        if (scaleEmitTimer) { clearTimeout(scaleEmitTimer); scaleEmitTimer = null; }
+        await emitReorderedFile();
+      }
+
+      async function resetFrameScale(origIdx) {
+        if (Math.abs((Number(scales.value[origIdx]) || 1) - 1) <= 0.001) return;
+        pushHistorySnapshot();
+        const next = [...scales.value];
+        next[origIdx] = 1;
+        scales.value = next;
+        renderThumbsAndFull();
+        await emitReorderedFile();
+      }
+
+      async function resetAllScales() {
+        if (!hasScaleChanges.value) return;
+        pushHistorySnapshot();
+        scales.value = Array.from({ length: totalFrames.value }, () => 1);
+        renderThumbsAndFull();
+        await emitReorderedFile();
       }
 
       async function exportPng() {
@@ -1696,7 +1858,7 @@
         dragFrom.value = -1;
         dragOver.value = -1;
         if (from < 0 || from === targetSlot) return;
-        history.value.push([...order.value]);
+        pushHistorySnapshot();
         const next = [...order.value];
         if (mode.value === 'swap') {
           const tmp = next[from];
@@ -1713,21 +1875,24 @@
 
       async function undo() {
         if (!history.value.length) return;
-        order.value = history.value.pop();
+        const prev = history.value.pop();
+        order.value = [...prev.order];
+        scales.value = [...prev.scales];
         renderThumbsAndFull();
         await emitReorderedFile();
       }
       async function reverseAll() {
         if (!order.value.length) return;
-        history.value.push([...order.value]);
+        pushHistorySnapshot();
         order.value = [...order.value].reverse();
         renderThumbsAndFull();
         await emitReorderedFile();
       }
       async function resetOrder() {
         if (!origImg) return;
-        history.value.push([...order.value]);
+        pushHistorySnapshot();
         order.value = Array.from({ length: totalFrames.value }, (_, i) => i);
+        scales.value = Array.from({ length: totalFrames.value }, () => 1);
         renderThumbsAndFull();
         await emitReorderedFile();
       }
@@ -1735,6 +1900,7 @@
       function loadSource(src) {
         if (!src) {
           origImg = null;
+          origAnchorYRatios = [];
           thumbs.value = [];
           return;
         }
@@ -1749,6 +1915,7 @@
         im.onload = () => {
           origImg = im;
           resetOrderState();
+          computeOrigAnchors();
           renderThumbsAndFull();
         };
         im.src = src;
@@ -1758,24 +1925,26 @@
       watch(() => [props.cols, props.rows, props.frames], () => {
         if (origImg) {
           resetOrderState();
+          computeOrigAnchors();
           renderThumbsAndFull();
         }
       });
       watch(showFullSheet, (v) => { if (v && origImg) nextTick(renderThumbsAndFull); });
 
       return {
-        fullCanvas, thumbs, order, history, dragFrom, dragOver, mode, darkBg,
-        showFullSheet, zoomOpen, imgSize, dirty, totalFrames,
-        onDragStart, onDragOver, onDragEnd, onDrop, undo, reverseAll, resetOrder, exportPng,
+        fullCanvas, thumbs, order, scales, history, dragFrom, dragOver, mode, darkBg,
+        showFullSheet, zoomOpen, imgSize, dirty, hasScaleChanges, totalFrames,
+        onDragStart, onDragOver, onDragEnd, onDrop, undo, reverseAll, resetOrder,
+        onScaleStart, onFrameScaleInput, onFrameScaleChange, resetFrameScale, resetAllScales, exportPng,
       };
     },
     template: `
       <div v-if="src" id="spriteSheetSorter" class="border rounded-xl p-3 bg-slate-50/90 space-y-2.5">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div class="flex items-center gap-2">
-            <span class="font-semibold text-sm text-slate-800">🎞️ 完整 Sprite Sheet 檢視與拖曳重排</span>
+            <span class="font-semibold text-sm text-slate-800">🎞️ 完整 Sprite Sheet 檢視、拖曳重排與單幀縮放</span>
             <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-200 text-slate-700">{{ cols }}×{{ rows }} · {{ totalFrames }} 幀 · {{ imgSize.w }}×{{ imgSize.h }}px</span>
-            <span v-if="dirty" class="text-[11px] px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-semibold">✨ 已調整順序（記得存檔或匯出）</span>
+            <span v-if="dirty" class="text-[11px] px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-semibold">✨ 已調整順序／大小（記得存檔或匯出）</span>
           </div>
           <div class="flex flex-wrap items-center gap-1.5 text-xs">
             <div class="inline-flex rounded border overflow-hidden bg-white">
@@ -1784,7 +1953,8 @@
             </div>
             <button type="button" @click="undo" :disabled="!history.length" class="px-2 py-1 rounded border bg-white hover:bg-slate-100 disabled:opacity-40">↩ 復原</button>
             <button type="button" @click="reverseAll" class="px-2 py-1 rounded border bg-white hover:bg-slate-100" title="將全部幀倒序排列">⇄ 反轉</button>
-            <button type="button" @click="resetOrder" :disabled="!dirty" class="px-2 py-1 rounded border bg-white hover:bg-slate-100 disabled:opacity-40">↺ 重設</button>
+            <button type="button" @click="resetAllScales" :disabled="!hasScaleChanges" class="px-2 py-1 rounded border bg-white hover:bg-slate-100 disabled:opacity-40" title="將所有幀縮放重設回 1.00×">🔍 重設大小</button>
+            <button type="button" @click="resetOrder" :disabled="!dirty" class="px-2 py-1 rounded border bg-white hover:bg-slate-100 disabled:opacity-40">↺ 全部重設</button>
             <button type="button" @click="darkBg=!darkBg" class="px-2 py-1 rounded border bg-white hover:bg-slate-100">{{ darkBg ? '🌙 暗底' : '☀️ 亮底' }}</button>
             <button type="button" @click="showFullSheet=!showFullSheet" class="px-2 py-1 rounded border bg-white hover:bg-slate-100">{{ showFullSheet ? '🙈 隱藏大圖' : '🖼️ 顯示完整大圖' }}</button>
             <button id="btnExportReorderedSheet" type="button" @click="exportPng" class="px-2.5 py-1 rounded bg-sky-600 hover:bg-sky-700 text-white font-semibold shadow-sm">⬇ 匯出 Sprite Sheet (PNG)</button>
@@ -1794,38 +1964,65 @@
         <!-- Full Numbered Sprite Sheet Big Image -->
         <div v-show="showFullSheet" :class="['rounded-lg border overflow-x-auto p-2 transition', darkBg ? 'bg-slate-900 border-slate-700' : 'checker border-slate-300']">
           <div class="flex items-center justify-between text-[11px] mb-1 px-1" :class="darkBg ? 'text-slate-300' : 'text-slate-600'">
-            <span>🖼️ 完整 Sprite Sheet 大圖（附格線與編號，直接滑鼠拖曳下方卡片即可重新排序）</span>
+            <span>🖼️ 完整 Sprite Sheet 大圖（附格線與編號，直接滑鼠拖曳下方卡片可重排，下方滑桿可微調每幀 1.00×～2.00× 大小）</span>
             <button type="button" @click="zoomOpen=true" class="underline hover:text-sky-400">🔍 放大檢視</button>
           </div>
           <canvas ref="fullCanvas" @click="zoomOpen=true" class="max-h-56 w-auto max-w-none cursor-zoom-in rounded"></canvas>
         </div>
 
-        <!-- Draggable Numbered Frame Cards -->
-        <div class="grid gap-2" :style="{ gridTemplateColumns: 'repeat(auto-fill, minmax(92px, 1fr))' }">
+        <!-- Draggable Numbered Frame Cards with Per-Frame 1x~2x Scale Slider -->
+        <div class="grid gap-2" :style="{ gridTemplateColumns: 'repeat(auto-fill, minmax(112px, 1fr))' }">
           <div v-for="item in thumbs" :key="item.slot"
                draggable="true"
                @dragstart="onDragStart(item.slot, $event)"
                @dragover.prevent="onDragOver(item.slot)"
                @drop.prevent="onDrop(item.slot)"
                @dragend="onDragEnd"
-               :class="['relative rounded-lg border-2 p-1 cursor-grab active:cursor-grabbing select-none transition',
+               :class="['relative rounded-lg border-2 p-1 cursor-grab active:cursor-grabbing select-none transition flex flex-col',
                         darkBg ? 'bg-slate-900' : 'checker bg-white',
                         dragOver === item.slot ? 'border-sky-400 ring-2 ring-sky-300 scale-105' :
                         (dragFrom === item.slot ? 'opacity-40 border-indigo-400' :
-                        (item.origIdx !== item.slot ? 'border-amber-400' : 'border-slate-300 hover:border-indigo-400'))]">
-            <span :class="['absolute top-1 left-1 px-1.5 py-0.5 rounded text-[11px] font-mono font-bold leading-none shadow',
+                        (item.origIdx !== item.slot ? 'border-amber-400' :
+                        (item.scale > 1.001 ? 'border-emerald-400' : 'border-slate-300 hover:border-indigo-400')))]">
+            <span :class="['absolute top-1 left-1 px-1.5 py-0.5 rounded text-[11px] font-mono font-bold leading-none shadow z-10',
                            item.origIdx !== item.slot ? 'bg-amber-500 text-white' : 'bg-indigo-600 text-white']">
               {{ item.slot + 1 }}
             </span>
             <span v-if="item.origIdx !== item.slot"
-                  class="absolute top-1 right-1 px-1 py-0.5 rounded text-[9px] font-mono bg-slate-800/85 text-amber-300 leading-none">
+                  class="absolute top-1 right-1 px-1 py-0.5 rounded text-[9px] font-mono bg-slate-800/85 text-amber-300 leading-none z-10">
               原#{{ item.origIdx + 1 }}
             </span>
             <img :src="item.dataUrl" class="w-full h-20 object-contain pointer-events-none" />
+            <!-- Per-frame scale control (1.00x ~ 2.00x) -->
+            <div class="mt-1 pt-1 border-t border-slate-600/30 flex items-center gap-1 px-0.5 rounded bg-slate-800/85 text-white cursor-default"
+                 draggable="false"
+                 @dragstart.stop.prevent
+                 @mousedown.stop
+                 @pointerdown.stop>
+              <input type="range"
+                     min="1"
+                     max="2"
+                     step="0.05"
+                     :value="item.scale"
+                     :data-frame-scale="item.slot + 1"
+                     @pointerdown="onScaleStart"
+                     @mousedown="onScaleStart"
+                     @input="onFrameScaleInput(item.origIdx, $event.target.value)"
+                     @change="onFrameScaleChange(item.origIdx, $event.target.value)"
+                     class="w-full h-1.5 accent-emerald-400 cursor-pointer"
+                     :title="'微調第 ' + (item.slot + 1) + ' 幀大小（1.00× ~ 2.00×，腳底自動貼齊地面）'" />
+              <button type="button"
+                      @click.stop="resetFrameScale(item.origIdx)"
+                      :class="['text-[10px] font-mono leading-none px-1 py-0.5 rounded shrink-0',
+                               item.scale > 1.001 ? 'bg-emerald-500 text-white font-bold hover:bg-emerald-600' : 'text-slate-300 hover:text-white']"
+                      :title="item.scale > 1.001 ? '點擊還原為 1.00×' : '目前為 1.00× 原尺寸'">
+                {{ item.scale.toFixed(2) }}×
+              </button>
+            </div>
           </div>
         </div>
         <p class="text-[11px] text-slate-500">
-          💡 提示：用滑鼠按住任一幀（例如 <b>7</b>）拖到目標幀（例如 <b>9</b>）放開即可完成重排，右側動畫預覽會即時同步更新；完成後可點 <b>⬇ 匯出 Sprite Sheet</b> 下載，或按下方 <b>💾 存檔（套用到遊戲）</b> 立即生效。
+          💡 提示：拖曳任一幀卡片可重排順序；每張卡片下方的滑桿可獨立微調該幀大小（<b>1.00× ～ 2.00×</b>，放大時腳底自動鎖定地面不浮空、不溢出相鄰格，點擊右側倍率數字可快速還原 1.00×），右側動畫預覽會即時同步，完成後按 <b>⬇ 匯出 Sprite Sheet</b> 或 <b>💾 存檔（套用到遊戲）</b> 即可永久生效。
         </p>
 
         <!-- Full-Width Zoom Lightbox -->
