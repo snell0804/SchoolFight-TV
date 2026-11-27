@@ -1,9 +1,9 @@
-/* SchoolFight — 海星國小 大亂鬥 PWA Service Worker
+/* SchoolFight — 海星國小 大亂鬥 PWA Service Worker (v3 Auto-Update)
  * Strategy:
- * - HTML / CSS / JS: Network-First (always pulls latest hot-updated version when online, falls back to cache offline)
- * - Sprite Assets (assets/*.webp, *.png): Cache-First with background refresh (instant boot on Smart TV!)
+ * - HTML / CSS / JS / cloud_manifest.json: Network-First (always pulls latest online update immediately)
+ * - Sprite Assets (assets/*.webp, *.png): Stale-While-Revalidate (instant TV boot + automatic background update)
  */
-const CACHE_NAME = 'schoolfight-pwa-v1';
+const CACHE_NAME = 'schoolfight-pwa-v3';
 const CORE_SHELL = [
   './',
   './index.html',
@@ -36,28 +36,32 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
 
-  const isAsset = url.pathname.includes('/assets/');
+  const isManifest = url.pathname.endsWith('cloud_manifest.json');
+  const isAsset = url.pathname.includes('/assets/') && !isManifest;
 
   if (isAsset) {
-    // Cache-First for heavy sprite sheets so Smart TV boots almost instantly!
+    // Stale-While-Revalidate: instant boot + silent background refresh so updated sprites always sync!
     event.respondWith(
-      caches.match(req).then((cached) => {
-        if (cached) return cached;
-        return fetch(req).then((resp) => {
-          if (resp && resp.status === 200) {
-            const clone = resp.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(req, clone));
-          }
-          return resp;
-        });
-      })
+      caches.open(CACHE_NAME).then((cache) =>
+        cache.match(req).then((cached) => {
+          const networkPromise = fetch(req, { cache: 'no-cache' })
+            .then((resp) => {
+              if (resp && resp.status === 200) {
+                cache.put(req, resp.clone());
+              }
+              return resp;
+            })
+            .catch(() => cached);
+          return cached || networkPromise;
+        })
+      )
     );
     return;
   }
 
-  // Network-First for index.html, style.css, game.js so hot updates take effect immediately on reload!
+  // Network-First for index.html, style.css, game.js & cloud_manifest.json so online updates apply immediately!
   event.respondWith(
-    fetch(req)
+    fetch(req, { cache: 'no-cache' })
       .then((resp) => {
         if (resp && resp.status === 200) {
           const clone = resp.clone();
