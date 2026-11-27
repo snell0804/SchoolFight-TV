@@ -67,7 +67,7 @@
       id: 'adailing', name: '🎒 阿呆伶（主角 3）', role: 'hero', builtin: true,
       actions: [
         act('ad_idle', '待機動畫 (Idle)', 'ad_idle', 'assets/ad_idle_sheet.webp', 8.5, 'on_idle', true),
-        act('ad_walk', '走路動畫 (Walk)', 'ad_walk', 'assets/ad_walk_sheet.webp', 12, 'on_move', true),
+        { ...act('ad_walk', '走路動畫 (Walk)', 'ad_walk', 'assets/ad_walk_sheet.webp', 14, 'on_move', true), cols: 14, rows: 1, frames: 14 },
         act('ad_run', '奔跑動畫 (Run)', 'ad_run', 'assets/ad_run_sheet.webp', 17, 'on_move', true),
         act('ad_dash', '課間衝刺・疾風步 (Dash)', 'ad_dash', 'assets/ad_dash_sheet.webp', 24, 'on_move', false),
         act('ad_lightAttack', '輕攻擊・海星三連拍 (Light)', 'ad_lightAttack', 'assets/ad_idle_sheet.webp', 17, 'on_attack', false),
