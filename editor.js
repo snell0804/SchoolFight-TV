@@ -604,13 +604,13 @@
       frames: Number, fps: { type: Number, default: 12 }, size: { type: Number, default: 220 } },
     setup(props) {
       const canvas = ref(null);
-      const playing = ref(false); // 預設逐幀檢視（暫停），點播放才連續播放
+      const playing = ref(true); // 預設自動連續播放，點暫停或逐幀按鈕即可切換為單幀檢視
       const frame = ref(0);
       const grid = ref(false);
       const info = ref('');
       const img = new Image();
       img.crossOrigin = 'anonymous';
-      let raf = 0; let last = 0; let ok = false;
+      let raf = 0; let last = 0; let ok = false; let loadedSrc = '';
       const total = computed(() => Math.max(1, Math.min(props.frames || props.cols * props.rows, props.cols * props.rows)));
       const currentPos = computed(() => {
         const f = frame.value % total.value;
@@ -636,14 +636,23 @@
         else if (e.key === ' ') { e.preventDefault(); playing.value = !playing.value; }
       }
 
+      function updateInfo() {
+        if (!ok || !img.naturalWidth) return;
+        const c = Math.max(1, Number(props.cols) || 1);
+        const r = Math.max(1, Number(props.rows) || 1);
+        info.value = `${img.naturalWidth}×${img.naturalHeight}px · 每格 ${(img.naturalWidth / c).toFixed(1)}×${(img.naturalHeight / r).toFixed(1)}`;
+      }
+
       function draw() {
         const c = canvas.value; if (!c) return;
         const ctx = c.getContext('2d');
         ctx.clearRect(0, 0, c.width, c.height);
-        if (!ok) return;
-        const fw = img.width / props.cols; const fh = img.height / props.rows;
+        if (!ok || !img.naturalWidth) return;
+        const cols = Math.max(1, Number(props.cols) || 1);
+        const rows = Math.max(1, Number(props.rows) || 1);
+        const fw = img.naturalWidth / cols; const fh = img.naturalHeight / rows;
         const f = frame.value % total.value;
-        const sx = (f % props.cols) * fw; const sy = Math.floor(f / props.cols) * fh;
+        const sx = (f % cols) * fw; const sy = Math.floor(f / cols) * fh;
         const scale = Math.min(c.width / fw, c.height / fh);
         const dw = fw * scale; const dh = fh * scale;
         ctx.imageSmoothingEnabled = scale < 1;
@@ -655,22 +664,37 @@
       }
       function loop(t) {
         raf = requestAnimationFrame(loop);
-        if (playing.value && ok && t - last >= 1000 / Math.max(1, props.fps)) {
+        if (playing.value && ok && t - last >= 1000 / Math.max(1, Number(props.fps) || 12)) {
           last = t; frame.value = (frame.value + 1) % total.value;
         }
         draw();
       }
       function load() {
+        if (!props.src) { ok = false; loadedSrc = ''; info.value = ''; return; }
+        if (props.src === loadedSrc && ok && img.complete && img.naturalWidth > 0) {
+          frame.value = frame.value % total.value;
+          updateInfo();
+          draw();
+          return;
+        }
         ok = false; info.value = '';
-        if (!props.src) return;
+        loadedSrc = props.src;
         img.onload = () => {
           ok = true; frame.value = 0;
-          info.value = `${img.width}×${img.height}px · 每格 ${(img.width / props.cols).toFixed(1)}×${(img.height / props.rows).toFixed(1)}`;
+          updateInfo();
+          draw();
         };
-        img.onerror = () => { info.value = '無法載入圖片'; };
+        img.onerror = () => { ok = false; info.value = '無法載入圖片'; };
         img.src = props.src;
       }
-      watch(() => [props.src, props.cols, props.rows], load);
+      watch(() => props.src, load);
+      watch(() => [props.cols, props.rows, props.frames], () => {
+        if (ok && img.naturalWidth > 0) {
+          frame.value = frame.value % total.value;
+          updateInfo();
+          draw();
+        }
+      });
       onMounted(() => { load(); raf = requestAnimationFrame(loop); });
       onBeforeUnmount(() => cancelAnimationFrame(raf));
       return { canvas, playing, frame, grid, info, total, currentPos, prevFrame, nextFrame, goFrame, onKey };
@@ -2095,7 +2119,52 @@
         actionForm.frames = p.frames;
       }
 
-      watch(file, (f) => { if (localUrl.value) URL.revokeObjectURL(localUrl.value); localUrl.value = f ? URL.createObjectURL(f) : ''; });
+      function autoDetectGridFromImage(url) {
+        const im = new Image();
+        im.onload = () => {
+          if (!im.naturalWidth || !im.naturalHeight) return;
+          const w = im.naturalWidth;
+          const h = im.naturalHeight;
+          const curC = Math.max(1, Number(actionForm.cols) || 1);
+          const curR = Math.max(1, Number(actionForm.rows) || 1);
+          const curCellRatio = (w / curC) / (h / curR);
+          if (curCellRatio >= 0.55 && curCellRatio <= 1.85) {
+            if ((Number(actionForm.frames) || 0) <= 1 && curC * curR > 1) {
+              actionForm.frames = curC * curR;
+            }
+            return;
+          }
+          const ratio = w / h;
+          let detC = curC; let detR = curR;
+          if (ratio >= 7.5) {
+            const est = Math.round(w / (h * (420 / 340)));
+            const candidates = [10, 11, 12, 14, 16, 20];
+            detC = candidates.reduce((best, v) => Math.abs(v - est) < Math.abs(best - est) ? v : best, 10);
+            detR = 1;
+          } else if (ratio >= 1.55 && ratio <= 3.3) {
+            detC = 5; detR = 2;
+          } else if (ratio >= 1.05 && ratio < 1.55) {
+            detC = 5; detR = 4;
+          } else if (ratio >= 0.7 && ratio < 1.05) {
+            detC = 5; detR = 6;
+          }
+          if (detC !== curC || detR !== curR) {
+            actionForm.cols = detC;
+            actionForm.rows = detR;
+            actionForm.frames = detC * detR;
+            toast(`✨ 已自動偵測精靈表格數為 ${detC}×${detR}（${detC * detR} 幀）`, 'info');
+          }
+        };
+        im.src = url;
+      }
+
+      watch(file, (f) => {
+        if (localUrl.value) URL.revokeObjectURL(localUrl.value);
+        localUrl.value = f ? URL.createObjectURL(f) : '';
+        if (f && !f._skipPreprocess && localUrl.value) {
+          autoDetectGridFromImage(localUrl.value);
+        }
+      });
       watch(selectedId, () => {
         if (turnaroundLocalUrl.value) { URL.revokeObjectURL(turnaroundLocalUrl.value); turnaroundLocalUrl.value = ''; }
       });
