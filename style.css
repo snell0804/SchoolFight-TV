@@ -1502,3 +1502,72 @@ body.tv-mode #gameCanvas {
   object-fit: contain;
 }
 
+
+/* Training Dojo Control Bar */
+.training-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.94), rgba(17, 36, 56, 0.94));
+  border: 1.5px solid rgba(34, 211, 238, 0.42);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.32);
+}
+.training-bar[hidden] {
+  display: none !important;
+}
+.tr-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.tr-badge {
+  font-size: 12px;
+  font-weight: 800;
+  color: #22d3ee;
+  background: rgba(34, 211, 238, 0.14);
+  border: 1px solid rgba(34, 211, 238, 0.38);
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+.tr-lbl {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 700;
+}
+.tr-select {
+  background: #0f172a;
+  color: #f8fafc;
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  border-radius: 8px;
+  padding: 5px 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.tr-btn {
+  padding: 5px 10px !important;
+  font-size: 12px !important;
+}
+.tr-primary {
+  background: linear-gradient(135deg, #0891b2, #2563eb) !important;
+  border-color: #67e8f9 !important;
+  color: #fff !important;
+}
+.tr-danger {
+  border-color: rgba(248, 113, 113, 0.55) !important;
+  color: #fecaca !important;
+}
+.tr-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #e2e8f0;
+  cursor: pointer;
+  user-select: none;
+}

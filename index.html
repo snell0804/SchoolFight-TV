@@ -26,6 +26,7 @@
         <button id="btnSfx" class="btn active" title="切換戰鬥音效">🔊 音效：開</button>
         <button id="btnTouch" class="btn" title="顯示/隱藏虛擬搖桿">🕹️ 虛擬按鍵</button>
         <button id="btnSelectHero" class="btn" title="回到開機選擇主角與關卡畫面">🎭 選角 / 選關</button>
+        <button id="btnTraining" class="btn" title="直接進入自由訓練場：不會主動出怪，可隨時召喚怪物測試招式與動畫">🥋 訓練場</button>
         <button id="btnFullscreen" class="btn" title="切換電視 / 大螢幕全螢幕模式">📺 全螢幕</button>
         <button id="btnRestart" class="btn" title="重新開始關卡">↻ 重玩</button>
       </div>
@@ -34,6 +35,31 @@
     <main class="viewport-frame">
       <canvas id="gameCanvas" width="1024" height="512" tabindex="0"></canvas>
     </main>
+
+    <section id="trainingBar" class="training-bar" aria-label="訓練場控制面板" hidden>
+      <div class="tr-group">
+        <span class="tr-badge">🥋 訓練場</span>
+        <button class="btn tr-btn" data-tr-hero="kuromi" title="即時切換為呆呆伶">😈 呆呆伶</button>
+        <button class="btn tr-btn" data-tr-hero="redpanda" title="即時切換為超級帆">🦊 超級帆</button>
+        <button class="btn tr-btn" data-tr-hero="adailing" title="即時切換為阿呆伶">🎒 阿呆伶</button>
+      </div>
+      <div class="tr-group">
+        <select id="trMonsterSelect" class="tr-select" title="選擇要召喚測試的怪物"></select>
+        <button id="btnTrSpawn" class="btn tr-btn tr-primary" title="在主角前方召喚 1 隻所選怪物">＋ 召喚怪物</button>
+        <button id="btnTrAiMode" class="btn tr-btn active" title="切換怪物為不還手木樁或自由行動">🪵 木樁（不還手）</button>
+        <label class="tr-check" title="開啟後怪物打不死，方便反覆測試連段與受傷動畫；取消可測試死亡 KO 動畫">
+          <input id="chkTrInfHp" type="checkbox" checked /> 怪物不死
+        </label>
+      </div>
+      <div class="tr-group">
+        <span class="tr-lbl">預演怪物動作：</span>
+        <button class="btn tr-btn" data-tr-anim="move" title="讓場上怪物原地播放移動動畫">▶ 移動</button>
+        <button class="btn tr-btn" data-tr-anim="attack" title="讓場上怪物立刻發動攻擊動畫">▶ 攻擊</button>
+        <button class="btn tr-btn" data-tr-anim="hurt" title="讓場上怪物立刻播放受傷動畫">▶ 受傷</button>
+        <button class="btn tr-btn" data-tr-anim="ko" title="讓場上怪物立刻播放死亡 KO 動畫">▶ 死亡</button>
+        <button id="btnTrClear" class="btn tr-btn tr-danger" title="清空場上全部測試怪物">🧹 清空怪物</button>
+      </div>
+    </section>
 
     <section class="controls-bar" aria-label="操作說明">
       <div id="controlsLegend" class="key-groups"></div>

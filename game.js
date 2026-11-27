@@ -2245,9 +2245,10 @@
       { id: 'adailing', x: 684, y: 90, w: 304, h: 274 },
     ],
     stagePills: [
-      { idx: 0, x: 182, y: 374, w: 208, h: 32 },
-      { idx: 1, x: 408, y: 374, w: 208, h: 32 },
-      { idx: 2, x: 634, y: 374, w: 208, h: 32 },
+      { idx: 0, x: 64, y: 374, w: 214, h: 32 },
+      { idx: 1, x: 288, y: 374, w: 214, h: 32 },
+      { idx: 2, x: 512, y: 374, w: 214, h: 32 },
+      { idx: 3, x: 736, y: 374, w: 224, h: 32 },
     ],
     startBtn: { x: 312, y: 416, w: 400, h: 48 },
   };
@@ -2561,6 +2562,17 @@
         },
       ],
     },
+    {
+      id: 4,
+      key: 'training',
+      isTraining: true,
+      name: '🥋 自由訓練場 · 招式與怪物測試室',
+      shortName: '訓練場',
+      icon: '🥋',
+      accent: '#22d3ee',
+      subtitle: '不主動出怪 · 無限氣力 · 隨時召喚怪物測試所有招式與動畫',
+      zones: [],
+    },
   ];
 
   function getCurrentStage() {
@@ -2577,6 +2589,8 @@
     hoverHeroId: null,
     selectedStageIndex: 0,
     stageIndex: 0,
+    trainingDummyMode: true,
+    trainingInfiniteHp: true,
     time: 0,
     camX: 0,
     camMinX: 0,
@@ -5520,6 +5534,10 @@
         triggerImpactFrame(this.hp <= 0 ? '#fef08a' : (launchAir ? '#e879f9' : '#ffffff'), this.hp <= 0 ? 0.07 : 0.045);
       }
 
+      if (getCurrentStage().isTraining && game.trainingInfiniteHp && this.hp <= 0 && !(opts && opts.forceKill)) {
+        this.hp = Math.max(1, this.maxHp);
+      }
+
       if (this.hp <= 0) {
         this.dead = true;
         this.state = 'dead';
@@ -6305,6 +6323,20 @@
         // APPROACH / FLANK AI (Belt-scroller slot spacing + Unique Per-Monster Locomotion!)
         this.facing = dx >= 0 ? 1 : -1;
 
+        if (getCurrentStage().isTraining && game.trainingDummyMode) {
+          // 🥋 Training Dummy Mode: stand calmly facing hero (or animate move in place when previewing move!)
+          this.vx *= Math.pow(0.05, dt);
+          if (this._trainingPreviewMove) {
+            const mvSheet = this.resolveEnemySheet('move');
+            const mvFc = SpriteBank.getFrameCount(mvSheet, 10);
+            this.frame = Math.floor(this.animTime * 11) % mvFc;
+          } else {
+            this.frame = 0;
+          }
+          this.applyScreenWallBounds(dt);
+          return;
+        }
+
         const attackers = game.enemies.filter((e) => !e.dead && (e.state === 'windup' || e.state === 'attack')).length;
         const desiredDist = (this.type === 'koala' || this.type === 'wizard_ghost')
           ? 295
@@ -6981,6 +7013,74 @@
 
   function drawStageBackground(ctx, camX) {
     const stage = getCurrentStage();
+    if (stage.isTraining) {
+      // 🥋 Clean High-Contrast Training Dojo Arena (ideal for inspecting sprite edges, combos & hitboxes!)
+      const wallGrad = ctx.createLinearGradient(0, 0, 0, 344);
+      wallGrad.addColorStop(0, '#0f172a');
+      wallGrad.addColorStop(1, '#1e293b');
+      ctx.fillStyle = wallGrad;
+      ctx.fillRect(0, 0, CANVAS_W, 344);
+
+      // Subtle architectural wall grid (parallax 0.5x)
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.10)';
+      ctx.lineWidth = 1;
+      const wallOff = -(camX * 0.5) % 64;
+      for (let gx = wallOff; gx < CANVAS_W; gx += 64) {
+        ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, 344); ctx.stroke();
+      }
+      for (let gy = 48; gy < 344; gy += 64) {
+        ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(CANVAS_W, gy); ctx.stroke();
+      }
+
+      // Subtle Dojo Signboard on back wall
+      ctx.save();
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.72)';
+      ctx.strokeStyle = 'rgba(34, 211, 238, 0.42)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(CANVAS_W / 2 - 220, 74, 440, 62, 12);
+      ctx.fill();
+      ctx.stroke();
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#67e8f9';
+      ctx.font = '900 22px "Noto Sans TC", sans-serif';
+      ctx.fillText('🥋 自由訓練場 · TRAINING DOJO', CANVAS_W / 2, 106);
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '600 12px "Noto Sans TC", sans-serif';
+      ctx.fillText('不主動出怪 · 無限氣力 · 使用下方控制列召喚怪物與預演動作', CANVAS_W / 2, 126);
+      ctx.restore();
+
+      // Floor mat (344..CANVAS_H) with crisp 100px distance markers & Z-lane bounds
+      const floorGrad = ctx.createLinearGradient(0, 344, 0, CANVAS_H);
+      floorGrad.addColorStop(0, '#334155');
+      floorGrad.addColorStop(0.15, '#273449');
+      floorGrad.addColorStop(1, '#1e293b');
+      ctx.fillStyle = floorGrad;
+      ctx.fillRect(0, 344, CANVAS_W, CANVAS_H - 344);
+
+      // Horizontal ground-lane guide lines (Z_MIN, center, Z_MAX)
+      ctx.strokeStyle = 'rgba(34, 211, 238, 0.45)';
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(0, 344); ctx.lineTo(CANVAS_W, 344); ctx.stroke();
+      ctx.strokeStyle = 'rgba(148, 163, 184, 0.22)';
+      ctx.lineWidth = 1;
+      for (const gy of [Z_MIN, Math.round((Z_MIN + Z_MAX) / 2), Z_MAX]) {
+        ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(CANVAS_W, gy); ctx.stroke();
+      }
+
+      // World-anchored 100px distance ruler ticks
+      const startTick = Math.floor(camX / 100) * 100;
+      ctx.font = '700 11px monospace';
+      ctx.textAlign = 'center';
+      for (let wx = startTick; wx <= camX + CANVAS_W + 100; wx += 100) {
+        const sx = Math.round(wx - camX);
+        ctx.strokeStyle = 'rgba(56, 189, 248, 0.22)';
+        ctx.beginPath(); ctx.moveTo(sx, 344); ctx.lineTo(sx, CANVAS_H); ctx.stroke();
+        ctx.fillStyle = 'rgba(148, 163, 184, 0.72)';
+        ctx.fillText(`${wx}px`, sx, 360);
+      }
+      return;
+    }
     const theme = SCHOOL_THEMES[stage.key] || SCHOOL_THEMES.starfish;
     const signs = stage.signs || [];
     const stageBg = (SpriteBank.bgImages && SpriteBank.bgImages[stage.key])
@@ -8070,7 +8170,7 @@
         ctx.textAlign = 'center';
         ctx.fillStyle = active ? '#ffffff' : '#94a3b8';
         ctx.font = active ? '800 12.5px "Noto Sans TC", sans-serif' : '600 11.5px "Noto Sans TC", sans-serif';
-        const pillTag = st.key === 'starfish' ? '海洋' : (st.key === 'aqiang' ? '隨機' : '草原');
+        const pillTag = st.key === 'starfish' ? '海洋' : (st.key === 'aqiang' ? '隨機' : (st.key === 'training' ? '自由測試' : '草原'));
         ctx.fillText(`${st.icon} ${st.shortName} · ${pillTag}`, pill.x + pill.w / 2, pill.y + 21);
         ctx.restore();
       }
@@ -8467,10 +8567,24 @@
     setupStageEnvironment(false);
   }
 
+  function syncTrainingBarUI() {
+    const bar = document.getElementById('trainingBar');
+    if (!bar) return;
+    const active = game.state === 'playing' && !!getCurrentStage().isTraining;
+    bar.hidden = !active;
+    const btnTr = document.getElementById('btnTraining');
+    if (btnTr) btnTr.classList.toggle('active', active);
+    if (active) {
+      bar.querySelectorAll('[data-tr-hero]').forEach((b) => {
+        b.classList.toggle('active', b.getAttribute('data-tr-hero') === game.selectedHeroId);
+      });
+    }
+  }
+
   function advanceToNextStage() {
     sfx.init();
     try { window.focus(); canvas.focus(); } catch (_) {}
-    if (game.stageIndex + 1 < STAGES.length) {
+    if (game.stageIndex + 1 < STAGES.length && !STAGES[game.stageIndex + 1].isTraining) {
       game.stageIndex++;
       game.selectedStageIndex = game.stageIndex;
       setupStageEnvironment(true);
@@ -8481,13 +8595,19 @@
   }
 
   function updateStatusBar() {
+    syncTrainingBarUI();
     if (!statusReadout) return;
     const st = getCurrentStage();
     const zones = getCurrentZones();
     if (game.state === 'playing') {
-      const z = zones[Math.min(game.zoneIndex, zones.length - 1)];
-      const alive = game.enemies.filter((e) => !e.dead).length + game.pendingSpawns.length;
-      statusReadout.textContent = `STAGE ${st.id}/3 · ${z.name} · 剩餘敵人 ${alive}`;
+      if (st.isTraining) {
+        const alive = game.enemies.filter((e) => !e.dead).length;
+        statusReadout.textContent = `🥋 自由訓練場 · 場上測試怪 ${alive} 隻 · 不主動出怪（無限氣力）`;
+      } else {
+        const z = zones[Math.min(game.zoneIndex, zones.length - 1)];
+        const alive = game.enemies.filter((e) => !e.dead).length + game.pendingSpawns.length;
+        statusReadout.textContent = `STAGE ${st.id}/3 · ${z.name} · 剩餘敵人 ${alive}`;
+      }
     } else if (game.state === 'stageclear') {
       statusReadout.textContent = `${st.name} 制霸！準備前往下一校`;
     } else if (game.state === 'victory') {
@@ -8501,6 +8621,15 @@
 
   function updateZones(dt) {
     const p = game.player;
+    const st = getCurrentStage();
+    if (st.isTraining) {
+      // 🥋 Training Dojo: NEVER auto-spawn monsters or lock camera!
+      game.camMinX = 0;
+      game.camMaxX = STAGE_W - CANVAS_W;
+      const desiredCam = Math.max(game.camMinX, Math.min(game.camMaxX, p.x - CANVAS_W * 0.36));
+      game.camX += (desiredCam - game.camX) * Math.min(1, dt * 6.5);
+      return;
+    }
     const zones = getCurrentZones();
     if (game.zoneIndex < zones.length) {
       const zone = zones[game.zoneIndex];
@@ -8550,7 +8679,7 @@
           if (game.zoneIndex >= zones.length) {
             sfx.bossMode = false;
             sfx.playVictory();
-            if (game.stageIndex + 1 < STAGES.length) {
+            if (game.stageIndex + 1 < STAGES.length && !STAGES[game.stageIndex + 1].isTraining) {
               game.state = 'stageclear';
             } else {
               game.state = 'victory';
@@ -8572,6 +8701,11 @@
   function update(dt) {
     game.time += dt;
     if (game.state !== 'playing') return;
+
+    if (getCurrentStage().isTraining && game.player) {
+      game.player.sp = 100;
+      game.player.hp = game.player.maxHp;
+    }
 
     // Impact frames & comic bubbles tick smoothly even during impact hitstop!
     if (game.impactFrame) {
@@ -10949,6 +11083,165 @@
       canvas.focus();
     });
   }
+
+  // 🥋 Training Dojo Toolbar Button & Interactive Control Panel
+  const btnTraining = document.getElementById('btnTraining');
+  if (btnTraining) {
+    btnTraining.addEventListener('click', () => {
+      const trIdx = STAGES.findIndex((s) => s.isTraining);
+      if (trIdx >= 0) {
+        startNewGame(trIdx);
+        canvas.focus();
+      }
+    });
+  }
+  (function initTrainingBar() {
+    const bar = document.getElementById('trainingBar');
+    const sel = document.getElementById('trMonsterSelect');
+    const btnSpawn = document.getElementById('btnTrSpawn');
+    const btnAi = document.getElementById('btnTrAiMode');
+    const chkInf = document.getElementById('chkTrInfHp');
+    const btnClear = document.getElementById('btnTrClear');
+    if (!bar || !sel) return;
+
+    // Populate monster dropdown with all playable/testable enemy types
+    const monsterOrder = [
+      ['zebra', '🦓 斑斑（旋風飛踢斑馬）'],
+      ['koala', '🐨 無尾熊（尤加利葉撲擊怪）'],
+      ['capybara', '🦫 佛系水豚君（橘子頭槌坦克）'],
+      ['sheep', '🐑 綿羊怪（雲球衝鋒）'],
+      ['pig', '🐗 暴怒豬豬怪（雙角衝撞）'],
+      ['fat_tiger', '🐯 胖虎（飛撲重壓虎貓怪）'],
+      ['rabbit', '🐰 兔兔怪'],
+      ['ghost', '👻 幽靈怪'],
+      ['kangaroo', '🥊 拳擊袋鼠'],
+      ['joey_kangaroo', '🦘 育兒袋鼠怪'],
+      ['zebra_rush', '🦓 暴衝斑馬怪'],
+      ['cactus', '🌵 針刺仙人掌'],
+      ['wizard_ghost', '🧙‍♂️ 星空巫師幽靈'],
+      ['penguin_king', '🐧 企鵝王'],
+      ['penguin_ice', '❄️ 冰雪企鵝'],
+      ['slime', '💧 藍色水滴史萊姆'],
+      ['mushroom', '🍄 蘑菇怪'],
+      ['puffer', '🐡 河豚怪'],
+      ['star', '⭐ 宇宙海星'],
+      ['donghua_boss', '🥋 冬花武聖大宗師 (BOSS)'],
+      ['boss', '⭐ 宇宙海星大霸王 (BOSS)'],
+    ];
+    for (const [key, label] of monsterOrder) {
+      if (!ENEMY_CONFIGS[key]) continue;
+      const opt = document.createElement('option');
+      opt.value = key;
+      opt.textContent = label;
+      sel.appendChild(opt);
+    }
+
+    // Instant hero switch without leaving Training Dojo
+    bar.querySelectorAll('[data-tr-hero]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const hid = btn.getAttribute('data-tr-hero');
+        if (!hid || !HERO_ROSTER.some((h) => h.id === hid)) return;
+        game.selectedHeroId = hid;
+        const oldX = game.player ? game.player.x : 220;
+        const oldZ = game.player ? game.player.z : 418;
+        const oldFace = game.player ? game.player.facing : 1;
+        game.player = new Player();
+        game.player.x = oldX;
+        game.player.z = oldZ;
+        game.player.facing = oldFace;
+        game.player.sp = 100;
+        syncTrainingBarUI();
+        renderControlsLegend();
+        canvas.focus();
+      });
+    });
+
+    // Spawn 1 selected monster right in front of the player
+    if (btnSpawn) {
+      btnSpawn.addEventListener('click', () => {
+        if (!getCurrentStage().isTraining || !game.player) return;
+        const mType = sel.value || 'zebra';
+        const p = game.player;
+        const rawX = p.x + p.facing * 260;
+        const spawnX = Math.max(game.camX + 80, Math.min(game.camX + CANVAS_W - 80, rawX));
+        const spawnZ = Math.max(Z_MIN + 10, Math.min(Z_MAX - 10, p.z));
+        const e = new Enemy(mType, spawnX, spawnZ);
+        e.facing = -p.facing;
+        e.hasEnteredScreen = true;
+        game.enemies.push(e);
+        spawnParticles(spawnX, spawnZ - 60, '#22d3ee', 12, 220, 6);
+        updateStatusBar();
+        canvas.focus();
+      });
+    }
+
+    // Toggle Dummy (stand still) vs Free AI (walk & attack)
+    if (btnAi) {
+      btnAi.addEventListener('click', () => {
+        game.trainingDummyMode = !game.trainingDummyMode;
+        btnAi.textContent = game.trainingDummyMode ? '🪵 木樁（不還手）' : '⚔️ 自由行動（會打人）';
+        btnAi.classList.toggle('active', game.trainingDummyMode);
+        if (!game.trainingDummyMode) {
+          game.enemies.forEach((e) => { e._trainingPreviewMove = false; });
+        }
+        canvas.focus();
+      });
+    }
+
+    // Toggle Infinite Enemy HP
+    if (chkInf) {
+      chkInf.addEventListener('change', () => {
+        game.trainingInfiniteHp = !!chkInf.checked;
+        canvas.focus();
+      });
+    }
+
+    // Force-preview a specific monster animation on all active training enemies (auto-spawns 1 if empty!)
+    bar.querySelectorAll('[data-tr-anim]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        if (!getCurrentStage().isTraining || !game.player) return;
+        const anim = btn.getAttribute('data-tr-anim');
+        let targets = game.enemies.filter((e) => !e.dead);
+        if (targets.length === 0 && btnSpawn) {
+          btnSpawn.click();
+          targets = game.enemies.filter((e) => !e.dead);
+        }
+        for (const e of targets) {
+          e._trainingPreviewMove = (anim === 'move');
+          if (anim === 'move') {
+            e.state = 'approach';
+            e.stateTime = 0;
+            e.frame = 0;
+          } else if (anim === 'attack') {
+            e.state = 'attack';
+            e.attackStyle = 'A';
+            e.stateTime = 0;
+            e.frame = 0;
+            e.didHit = false;
+            e.projFired = false;
+          } else if (anim === 'hurt') {
+            e.takeHit(1, -e.facing, false, 70, { noScore: true });
+          } else if (anim === 'ko') {
+            e.hp = 1;
+            e.takeHit(9999, -e.facing, true, 260, { forceKill: true });
+          }
+        }
+        canvas.focus();
+      });
+    });
+
+    // Clear all spawned test monsters
+    if (btnClear) {
+      btnClear.addEventListener('click', () => {
+        game.enemies = [];
+        game.projectiles = [];
+        game.pickups = [];
+        updateStatusBar();
+        canvas.focus();
+      });
+    }
+  })();
+
   const btnFullscreen = document.getElementById('btnFullscreen');
   if (btnFullscreen) {
     btnFullscreen.addEventListener('click', () => {
