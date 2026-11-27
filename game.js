@@ -5817,9 +5817,11 @@
       } else if (this.state === 'knocked') {
         this.stateTime += dt;
         const knockDur = 0.72 * Math.max(0.6, Math.min(1.8, this.cfg.hitstunMult || 1.0));
-        const knockStart = Math.min(koFc - 1, Math.floor(koFc * 0.2));
-        const knockSpan = Math.max(1, Math.floor(koFc * 0.6));
-        this.frame = Math.min(koFc - 2, knockStart + Math.floor((this.stateTime / knockDur) * knockSpan));
+        if (this.cfg.hasHurt && SpriteBank.sheets[hurtSheet]) {
+          this.frame = Math.min(hurtFc - 1, Math.floor((this.stateTime / knockDur) * hurtFc));
+        } else {
+          this.frame = 0;
+        }
         if (this.jumpY === 0 && this.stateTime >= knockDur) {
           this.state = 'approach';
           this.armorShieldCount = this.cfg.armorHits || 3;
@@ -6697,9 +6699,9 @@
           : this.resolveEnemySheet('attack');
       } else if (this.state === 'attack') {
         sheetKey = this.resolveEnemySheet('attack');
-      } else if (this.state === 'hurt') {
-        sheetKey = this.cfg.hasHurt ? this.resolveEnemySheet('hurt', 'ko') : this.resolveEnemySheet('ko');
-      } else if (this.state === 'knocked' || this.state === 'dead') {
+      } else if (this.state === 'hurt' || this.state === 'knocked') {
+        sheetKey = this.cfg.hasHurt ? this.resolveEnemySheet('hurt', 'move') : this.resolveEnemySheet('move');
+      } else if (this.state === 'dead') {
         sheetKey = this.resolveEnemySheet('ko');
       }
 
