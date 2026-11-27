@@ -427,7 +427,7 @@
     { key: 'run', file: 'assets/run_sheet.webp', cols: 5, rows: 2, anchorX: 136, anchorY: 242 },
     { key: 'dash', file: 'assets/dash_sheet.webp', cols: 5, rows: 2, anchorX: 136, anchorY: 242 },
     { key: 'lightAttack', file: 'assets/lightAttack_sheet.webp', cols: 5, rows: 2, anchorX: 136, anchorY: 242 },
-    { key: 'attack', file: 'assets/attack_sheet.webp', cols: 5, rows: 2, anchorX: 136, anchorY: 242 },
+    { key: 'attack', file: 'assets/attack_sheet.webp', cols: 10, rows: 1, anchorX: 210, anchorY: 304 },
     { key: 'dashLightAttack', file: 'assets/dashLightAttack_sheet.webp', cols: 5, rows: 2, anchorX: 136, anchorY: 242 },
     { key: 'dashAttack', file: 'assets/dashAttack_sheet.webp', cols: 5, rows: 2, anchorX: 136, anchorY: 242 },
     { key: 'tornadoKick', file: 'assets/tornadoKick_sheet.webp', cols: 5, rows: 2, anchorX: 136, anchorY: 242 },
@@ -450,6 +450,7 @@
     { key: 'ad_walk', file: 'assets/ad_walk_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 242 },
     { key: 'ad_run', file: 'assets/ad_run_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 242 },
     { key: 'ad_dash', file: 'assets/ad_dash_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 242 },
+    { key: 'ad_attack', file: 'assets/ad_attack_sheet.webp', cols: 10, rows: 1, anchorX: 210, anchorY: 304 },
     { key: 'ad_dashLightAttack', file: 'assets/ad_dashLightAttack_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 242 },
     { key: 'ad_dashAttack', file: 'assets/ad_dashAttack_sheet.webp', cols: 10, rows: 1, anchorX: 210, anchorY: 304 },
     { key: 'ad_tornadoKick', file: 'assets/ad_tornadoKick_sheet.webp', cols: 11, rows: 1, anchorX: 210, anchorY: 304 },
@@ -545,7 +546,7 @@
       { id: 'run', label: '跑步動畫 (Run)', triggerDesc: '連按兩次 AA / DD / ←← / →→', sheetKey: 'run', fallbackSheet: null, fps: 17, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
       { id: 'dash', label: '瞬間衝刺・閃身步 (Dash)', triggerDesc: '喊出「閃身步」並瞬間突進一大段距離', sheetKey: 'dash', fallbackSheet: 'run', fps: 25, cols: 5, rows: 2, key: 'ShiftLeft', altKeys: ['ShiftRight'], rebindable: true },
       { id: 'lightAttack', label: '輕攻擊・揮拳連擊 (Light)', triggerDesc: '徒手三段拳擊（直拳→勾拳→上勾拳）', sheetKey: 'lightAttack', fallbackSheet: 'attack', fps: 17, cols: 5, rows: 2, key: 'Numpad4', altKeys: ['KeyJ', 'KeyZ'], rebindable: true },
-      { id: 'heavyAttack', label: '重攻擊・月牙天沖 (Heavy)', triggerDesc: '獨立 10 連幀！躍起揮出冰藍月牙斬擊並釋放貫穿月牙天沖劍氣波', sheetKey: 'attack', fallbackSheet: null, fps: 16, cols: 5, rows: 2, frameCount: 10, key: 'Numpad5', altKeys: ['KeyU', 'KeyC'], rebindable: true },
+      { id: 'heavyAttack', label: '重攻擊・月牙天沖 (Heavy)', triggerDesc: '獨立 10 連幀！揮出冰藍月牙斬擊並釋放貫穿月牙天沖劍氣波', sheetKey: 'attack', fallbackSheet: null, fps: 16, cols: 10, rows: 1, frameCount: 10, key: 'Numpad5', altKeys: ['KeyU', 'KeyC'], rebindable: true },
       { id: 'dashLightAttack', label: '衝刺輕攻擊・浪子踢球 (Dash Light)', triggerDesc: '獨立 10 幀！跑步中 按 輕攻擊 發動，踢出能量足球', sheetKey: 'dashLightAttack', fallbackSheet: null, fps: 17, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
       { id: 'dashAttack', label: '衝刺重攻擊・星杖衝刺斬 (Dash Heavy)', triggerDesc: '獨立 10 幀！跑步中 按 重攻擊 發動星光衝刺斬', sheetKey: 'dashAttack', fallbackSheet: null, fps: 18, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
       { id: 'tornadoKick', label: '特殊招式・龍捲旋風腳 (Tornado Kick)', triggerDesc: '按住 ↑ 再按 重攻擊（W+Num5 / 手把 ↑+重攻）發動！多段旋風擊飛浮空可空中追打', sheetKey: 'tornadoKick', fallbackSheet: 'dashAttack', fps: 15, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
@@ -602,7 +603,7 @@
       { id: 'ad_run', label: '奔跑動畫 (Run)', triggerDesc: '操場百米衝刺奔跑', sheetKey: 'ad_run', fallbackSheet: 'ad_idle', fps: 17, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
       { id: 'ad_dash', label: '課間衝刺・疾風步 (Dash)', triggerDesc: '翠綠清風瞬間突進閃避', sheetKey: 'ad_dash', fallbackSheet: 'ad_idle', fps: 24, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
       { id: 'ad_lightAttack', label: '輕攻擊・海星三連拍 (Light)', triggerDesc: '元氣三連擊（直拍→反拍→跳拍）', sheetKey: 'ad_lightAttack', fallbackSheet: 'ad_idle', fps: 17, cols: 5, rows: 2, key: null, altKeys: [], rebindable: false },
-      { id: 'ad_attack', label: '重攻擊・海星飛星斬 (Heavy)', triggerDesc: '揮出翠綠星光月牙斬並釋放貫穿劍氣波', sheetKey: 'ad_attack', fallbackSheet: 'ad_idle', fps: 16, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
+      { id: 'ad_attack', label: '重攻擊・海星字典泰山壓頂 (Heavy)', triggerDesc: '高舉精裝大字典猛砸地面，爆出震地衝擊波重擊周圍敵人', sheetKey: 'ad_attack', fallbackSheet: 'ad_idle', fps: 15, cols: 10, rows: 1, frameCount: 10, key: null, altKeys: [], rebindable: false },
       { id: 'ad_dashLightAttack', label: '衝刺輕攻擊・飛書砸擊 (Dash Light)', triggerDesc: '跑步中按輕攻擲出旋轉精裝課本遠程爆擊', sheetKey: 'ad_dashLightAttack', fallbackSheet: 'ad_idle', fps: 17, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
       { id: 'ad_dashAttack', label: '衝刺重攻擊・海星倒掛流星踢 (Dash Heavy)', triggerDesc: '跑步中按重攻騰空 360° 空翻倒掛金鉤重擊', sheetKey: 'ad_dashAttack', fallbackSheet: 'ad_idle', fps: 15, cols: 10, rows: 1, frameCount: 10, key: null, altKeys: [], rebindable: false },
       { id: 'ad_tornadoKick', label: '特殊招式・海星旋風踢 (Tornado Kick)', triggerDesc: '↑+重攻發動 11 連幀海星旋風踢將敵人浮空', sheetKey: 'ad_tornadoKick', fallbackSheet: 'ad_idle', fps: 16, cols: 11, rows: 1, frameCount: 11, key: null, altKeys: [], rebindable: false },
@@ -3842,27 +3843,30 @@
 
     startHeavyAttack() {
       const isRp = this.hero.id === 'redpanda';
+      const isAd = this.hero.id === 'adailing';
       this.isRunning = false;
       this.state = 'heavy';
       this.stateTime = 0;
+      this.jumpY = 0;
+      this.vy = 0;
       this.comboQueued = null;
       this.getsugaLaunched = false;
       this.hitIds.clear();
       this.frame = 0;
       sfx.playSwing(3);
       this.x += this.facing * 18;
-      triggerActionFx(this, isRp ? 'rp_attack' : 'heavyAttack', {
+      triggerActionFx(this, isRp ? 'rp_attack' : (isAd ? 'ad_attack' : 'heavyAttack'), {
         x: this.x - this.facing * 18,
         y: this.z - (isRp ? 206 : 196),
-        text: this.hero.heavyShout,
-        subText: this.hero.heavySub,
+        text: isAd ? '字典壓頂!!' : this.hero.heavyShout,
+        subText: isAd ? 'DICTIONARY SLAM!' : this.hero.heavySub,
         style: 'shout',
-        fillA: isRp ? '#fde047' : '#67e8f9',
-        fillB: isRp ? '#ea580c' : '#2563eb',
+        fillA: isRp ? '#fde047' : (isAd ? '#fef08a' : '#67e8f9'),
+        fillB: isRp ? '#ea580c' : (isAd ? '#16a34a' : '#2563eb'),
         rx: isRp ? 98 : 102,
         ry: 44,
         dur: isRp ? 0.78 : 0.66,
-        particles: isRp ? { color: '#fde047', count: 12 } : { color: '#67e8f9', count: 10 },
+        particles: isRp ? { color: '#fde047', count: 12 } : (isAd ? { color: '#fef08a', count: 12 } : { color: '#67e8f9', count: 10 }),
       });
     }
 
@@ -4555,8 +4559,47 @@
             this.jumpY = 0;
             this.state = 'idle';
           }
+        } else if (this.hero.id === 'adailing') {
+          // 🎒 ADAILING HEAVY ATTACK: 海星字典泰山壓頂 (10-frame Dictionary Overhead Slam — F1-F5 lift, F6 dive, F7 BOOM slam!)
+          this.jumpY = 0;
+          const adFps = StudioState.getFps('ad_attack', 15);
+          const dur = Math.max(0.56, heavyFc / adFps);
+          const prog = Math.min(0.999, this.stateTime / dur);
+          this.frame = Math.min(heavyFc - 1, Math.floor(prog * heavyFc));
+          // Forward dive lunge on F6 (prog 0.48..0.62)
+          if (prog >= 0.48 && prog <= 0.62) {
+            this.x += this.facing * 210 * dt;
+          }
+          // Ground-slam shockwave & wide AOE hitbox synced to F7 impact (prog 0.58..0.76)
+          if (prog >= 0.58 && prog <= 0.76) {
+            this.performMeleeHitbox(212, 48, true, 410, this.hitIds, {
+              wideBack: 56,
+              launchAir: true,
+              customWord: '字典壓頂!!',
+            });
+          }
+          if (prog >= 0.60 && !this.getsugaLaunched) {
+            this.getsugaLaunched = true;
+            const slamX = this.x + this.facing * 56;
+            const actFx = getActionFx('ad_attack');
+            sfx.playHit(true);
+            spawnParticles(slamX, this.z - 8, '#fde047', 18, 320, 7);
+            spawnParticles(slamX, this.z - 6, '#ffffff', 12, 260, 6);
+            if (!actFx) {
+              addShake(11, 0.22);
+              triggerImpactFrame('#fde047', 0.06);
+            } else {
+              if (actFx.shakeEnabled) addShake(Number(actFx.shakeAmp) || 11, Number(actFx.shakeDur) || 0.22);
+              if (actFx.flashEnabled) triggerImpactFrame(actFx.flashColor || '#fde047', Number(actFx.flashDur) || 0.06);
+            }
+          }
+          if (this.stateTime >= dur) {
+            this.jumpY = 0;
+            this.state = 'idle';
+          }
         } else {
-          // 😈 KUROMI HEAVY ATTACK: 月牙天沖 (10-frame Getsuga Tensho — F1-F3 wind-up, F4-F6 crescent slash + wave, F7-F10 recovery!)
+          // 😈 KUROMI HEAVY ATTACK: 月牙天沖 (10-frame Getsuga Tensho — strictly ground-locked!)
+          this.jumpY = 0;
           const dur = Math.max(0.50, heavyFc / heavyFps);
           const prog = Math.min(0.999, this.stateTime / dur);
           this.frame = Math.min(heavyFc - 1, Math.floor(prog * heavyFc));
@@ -4586,6 +4629,7 @@
             }
           }
           if (this.stateTime >= dur) {
+            this.jumpY = 0;
             this.state = 'idle';
           }
         }
