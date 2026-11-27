@@ -3,7 +3,7 @@
  * - 若由 tools/github_sync.js 提供服務，會自動偵測並啟用本機後端（含 AI Stable Diffusion 生成）。
  */
 (function () {
-  const { createApp, reactive, ref, computed, watch, onMounted, onBeforeUnmount } = Vue;
+  const { createApp, reactive, ref, computed, watch, nextTick, onMounted, onBeforeUnmount } = Vue;
   const CP = window.ConditionParser;
 
   const CFG_KEY = 'schoolfight_cloud_sync_cfg_v1';
@@ -1517,9 +1517,338 @@
       </div>`,
   };
 
+  // ---------- Full Sprite Sheet Viewer & Drag-to-Reorder Frame Sorter ----------
+  const SpriteSheetSorter = {
+    props: {
+      src: String,
+      cols: { type: Number, default: 10 },
+      rows: { type: Number, default: 1 },
+      frames: { type: Number, default: 10 },
+      charId: { type: String, default: 'char' },
+      actionId: { type: String, default: 'action' },
+    },
+    emits: ['reordered'],
+    setup(props, { emit }) {
+      const fullCanvas = ref(null);
+      const thumbs = ref([]); // [{ slotIdx, origIdx, dataUrl }]
+      const order = ref([]);  // [origIdx0, origIdx1, ...]
+      const history = ref([]);
+      const dragFrom = ref(-1);
+      const dragOver = ref(-1);
+      const mode = ref('swap'); // 'swap' | 'insert'
+      const darkBg = ref(true);
+      const showFullSheet = ref(true);
+      const zoomOpen = ref(false);
+      const imgSize = reactive({ w: 0, h: 0 });
+      const dirty = ref(false);
+      let origImg = null;
+      let ignoreNextSrc = '';
+
+      const totalFrames = computed(() => {
+        const c = Math.max(1, Number(props.cols) || 1);
+        const r = Math.max(1, Number(props.rows) || 1);
+        const f = Number(props.frames) || c * r;
+        return Math.max(1, Math.min(c * r, f));
+      });
+
+      function resetOrderState() {
+        const n = totalFrames.value;
+        order.value = Array.from({ length: n }, (_, i) => i);
+        history.value = [];
+        dirty.value = false;
+      }
+
+      function renderThumbsAndFull() {
+        if (!origImg || !origImg.naturalWidth) {
+          thumbs.value = [];
+          return;
+        }
+        const cols = Math.max(1, Number(props.cols) || 1);
+        const rows = Math.max(1, Number(props.rows) || 1);
+        const n = totalFrames.value;
+        if (order.value.length !== n) resetOrderState();
+
+        const cw = origImg.naturalWidth / cols;
+        const ch = origImg.naturalHeight / rows;
+        imgSize.w = origImg.naturalWidth;
+        imgSize.h = origImg.naturalHeight;
+
+        // 1. Render per-frame thumbnails in current order
+        const nextThumbs = [];
+        const thumbMax = 140;
+        const scale = Math.min(1, thumbMax / Math.max(cw, ch));
+        const tw = Math.max(24, Math.round(cw * scale));
+        const th = Math.max(24, Math.round(ch * scale));
+        const tc = document.createElement('canvas');
+        tc.width = tw;
+        tc.height = th;
+        const tctx = tc.getContext('2d');
+        for (let slot = 0; slot < n; slot++) {
+          const origIdx = order.value[slot];
+          const sc = origIdx % cols;
+          const sr = Math.floor(origIdx / cols);
+          tctx.clearRect(0, 0, tw, th);
+          tctx.drawImage(origImg, sc * cw, sr * ch, cw, ch, 0, 0, tw, th);
+          nextThumbs.push({ slot, origIdx, dataUrl: tc.toDataURL('image/png') });
+        }
+        thumbs.value = nextThumbs;
+
+        // 2. Render full numbered Sprite Sheet overview canvas
+        const fc = fullCanvas.value;
+        if (fc) {
+          const maxW = 1600;
+          const fScale = origImg.naturalWidth > maxW ? (maxW / origImg.naturalWidth) : 1;
+          fc.width = Math.max(1, Math.round(origImg.naturalWidth * fScale));
+          fc.height = Math.max(1, Math.round(origImg.naturalHeight * fScale));
+          const fctx = fc.getContext('2d');
+          fctx.clearRect(0, 0, fc.width, fc.height);
+          const dcw = fc.width / cols;
+          const dch = fc.height / rows;
+          for (let slot = 0; slot < n; slot++) {
+            const origIdx = order.value[slot];
+            const sc = origIdx % cols;
+            const sr = Math.floor(origIdx / cols);
+            const dc = slot % cols;
+            const dr = Math.floor(slot / cols);
+            fctx.drawImage(origImg, sc * cw, sr * ch, cw, ch, dc * dcw, dr * dch, dcw, dch);
+            // Grid cell border
+            fctx.strokeStyle = origIdx !== slot ? 'rgba(251, 146, 60, 0.9)' : 'rgba(56, 189, 248, 0.55)';
+            fctx.lineWidth = Math.max(1, Math.round(2 * fScale));
+            fctx.strokeRect(dc * dcw + 0.5, dr * dch + 0.5, dcw - 1, dch - 1);
+            // Number badge top-left of each cell
+            const bw = Math.max(22, Math.min(34, dcw * 0.24));
+            const bh = Math.max(18, Math.min(26, dch * 0.22));
+            fctx.fillStyle = origIdx !== slot ? '#ea580c' : '#0f172a';
+            fctx.beginPath();
+            fctx.roundRect(dc * dcw + 4, dr * dch + 4, bw, bh, 5);
+            fctx.fill();
+            fctx.fillStyle = '#ffffff';
+            fctx.font = `800 ${Math.max(11, Math.round(bh * 0.62))}px monospace`;
+            fctx.textAlign = 'center';
+            fctx.textBaseline = 'middle';
+            fctx.fillText(String(slot + 1), dc * dcw + 4 + bw / 2, dr * dch + 4 + bh / 2);
+          }
+        }
+      }
+
+      async function buildCleanReorderedCanvas() {
+        const cols = Math.max(1, Number(props.cols) || 1);
+        const rows = Math.max(1, Number(props.rows) || 1);
+        const n = totalFrames.value;
+        const cw = origImg.naturalWidth / cols;
+        const ch = origImg.naturalHeight / rows;
+        const out = document.createElement('canvas');
+        out.width = origImg.naturalWidth;
+        out.height = origImg.naturalHeight;
+        const ctx = out.getContext('2d');
+        for (let slot = 0; slot < n; slot++) {
+          const origIdx = order.value[slot];
+          const sc = origIdx % cols;
+          const sr = Math.floor(origIdx / cols);
+          const dc = slot % cols;
+          const dr = Math.floor(slot / cols);
+          ctx.drawImage(origImg, sc * cw, sr * ch, cw, ch, dc * cw, dr * ch, cw, ch);
+        }
+        return out;
+      }
+
+      async function emitReorderedFile() {
+        if (!origImg) return;
+        const out = await buildCleanReorderedCanvas();
+        const blob = await new Promise((r) => out.toBlob(r, 'image/png'));
+        const fName = `${props.charId || 'char'}_${props.actionId || 'action'}_${props.cols}x${props.rows}.png`;
+        const newFile = new File([blob], fName, { type: 'image/png' });
+        newFile._skipPreprocess = true;
+        dirty.value = order.value.some((origIdx, slot) => origIdx !== slot);
+        ignoreNextSrc = 'PENDING_SELF_EMIT';
+        emit('reordered', newFile);
+      }
+
+      async function exportPng() {
+        if (!origImg) return;
+        const out = await buildCleanReorderedCanvas();
+        const url = out.toDataURL('image/png');
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${props.charId || 'char'}_${props.actionId || 'action'}_${props.cols}x${props.rows}_${totalFrames.value}f.png`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        toast('⬇ 已匯出完整 Sprite Sheet PNG！', 'success');
+      }
+
+      function onDragStart(slot, ev) {
+        dragFrom.value = slot;
+        if (ev && ev.dataTransfer) {
+          ev.dataTransfer.effectAllowed = 'move';
+          try { ev.dataTransfer.setData('text/plain', String(slot)); } catch (_) {}
+        }
+      }
+      function onDragOver(slot) {
+        if (dragFrom.value >= 0) dragOver.value = slot;
+      }
+      function onDragEnd() {
+        dragFrom.value = -1;
+        dragOver.value = -1;
+      }
+      async function onDrop(targetSlot) {
+        const from = dragFrom.value;
+        dragFrom.value = -1;
+        dragOver.value = -1;
+        if (from < 0 || from === targetSlot) return;
+        history.value.push([...order.value]);
+        const next = [...order.value];
+        if (mode.value === 'swap') {
+          const tmp = next[from];
+          next[from] = next[targetSlot];
+          next[targetSlot] = tmp;
+        } else {
+          const [moved] = next.splice(from, 1);
+          next.splice(targetSlot, 0, moved);
+        }
+        order.value = next;
+        renderThumbsAndFull();
+        await emitReorderedFile();
+      }
+
+      async function undo() {
+        if (!history.value.length) return;
+        order.value = history.value.pop();
+        renderThumbsAndFull();
+        await emitReorderedFile();
+      }
+      async function reverseAll() {
+        if (!order.value.length) return;
+        history.value.push([...order.value]);
+        order.value = [...order.value].reverse();
+        renderThumbsAndFull();
+        await emitReorderedFile();
+      }
+      async function resetOrder() {
+        if (!origImg) return;
+        history.value.push([...order.value]);
+        order.value = Array.from({ length: totalFrames.value }, (_, i) => i);
+        renderThumbsAndFull();
+        await emitReorderedFile();
+      }
+
+      function loadSource(src) {
+        if (!src) {
+          origImg = null;
+          thumbs.value = [];
+          return;
+        }
+        if (ignoreNextSrc === 'PENDING_SELF_EMIT' && src.startsWith('blob:')) {
+          ignoreNextSrc = src;
+          return;
+        }
+        if (src === ignoreNextSrc) return;
+        ignoreNextSrc = '';
+        const im = new Image();
+        im.crossOrigin = 'anonymous';
+        im.onload = () => {
+          origImg = im;
+          resetOrderState();
+          renderThumbsAndFull();
+        };
+        im.src = src;
+      }
+
+      watch(() => props.src, (s) => loadSource(s), { immediate: true });
+      watch(() => [props.cols, props.rows, props.frames], () => {
+        if (origImg) {
+          resetOrderState();
+          renderThumbsAndFull();
+        }
+      });
+      watch(showFullSheet, (v) => { if (v && origImg) nextTick(renderThumbsAndFull); });
+
+      return {
+        fullCanvas, thumbs, order, history, dragFrom, dragOver, mode, darkBg,
+        showFullSheet, zoomOpen, imgSize, dirty, totalFrames,
+        onDragStart, onDragOver, onDragEnd, onDrop, undo, reverseAll, resetOrder, exportPng,
+      };
+    },
+    template: `
+      <div v-if="src" id="spriteSheetSorter" class="border rounded-xl p-3 bg-slate-50/90 space-y-2.5">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <span class="font-semibold text-sm text-slate-800">🎞️ 完整 Sprite Sheet 檢視與拖曳重排</span>
+            <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-200 text-slate-700">{{ cols }}×{{ rows }} · {{ totalFrames }} 幀 · {{ imgSize.w }}×{{ imgSize.h }}px</span>
+            <span v-if="dirty" class="text-[11px] px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-semibold">✨ 已調整順序（記得存檔或匯出）</span>
+          </div>
+          <div class="flex flex-wrap items-center gap-1.5 text-xs">
+            <div class="inline-flex rounded border overflow-hidden bg-white">
+              <button type="button" @click="mode='swap'" :class="['px-2 py-1', mode==='swap' ? 'bg-indigo-600 text-white font-semibold' : 'text-slate-600 hover:bg-slate-100']" title="拖曳第 7 幀到第 9 幀上，兩幀直接互換">🔄 互換兩幀</button>
+              <button type="button" @click="mode='insert'" :class="['px-2 py-1 border-l', mode==='insert' ? 'bg-indigo-600 text-white font-semibold' : 'text-slate-600 hover:bg-slate-100']" title="將拖曳的幀插入目標位置，其餘幀順移">📌 插入移位</button>
+            </div>
+            <button type="button" @click="undo" :disabled="!history.length" class="px-2 py-1 rounded border bg-white hover:bg-slate-100 disabled:opacity-40">↩ 復原</button>
+            <button type="button" @click="reverseAll" class="px-2 py-1 rounded border bg-white hover:bg-slate-100" title="將全部幀倒序排列">⇄ 反轉</button>
+            <button type="button" @click="resetOrder" :disabled="!dirty" class="px-2 py-1 rounded border bg-white hover:bg-slate-100 disabled:opacity-40">↺ 重設</button>
+            <button type="button" @click="darkBg=!darkBg" class="px-2 py-1 rounded border bg-white hover:bg-slate-100">{{ darkBg ? '🌙 暗底' : '☀️ 亮底' }}</button>
+            <button type="button" @click="showFullSheet=!showFullSheet" class="px-2 py-1 rounded border bg-white hover:bg-slate-100">{{ showFullSheet ? '🙈 隱藏大圖' : '🖼️ 顯示完整大圖' }}</button>
+            <button id="btnExportReorderedSheet" type="button" @click="exportPng" class="px-2.5 py-1 rounded bg-sky-600 hover:bg-sky-700 text-white font-semibold shadow-sm">⬇ 匯出 Sprite Sheet (PNG)</button>
+          </div>
+        </div>
+
+        <!-- Full Numbered Sprite Sheet Big Image -->
+        <div v-show="showFullSheet" :class="['rounded-lg border overflow-x-auto p-2 transition', darkBg ? 'bg-slate-900 border-slate-700' : 'checker border-slate-300']">
+          <div class="flex items-center justify-between text-[11px] mb-1 px-1" :class="darkBg ? 'text-slate-300' : 'text-slate-600'">
+            <span>🖼️ 完整 Sprite Sheet 大圖（附格線與編號，直接滑鼠拖曳下方卡片即可重新排序）</span>
+            <button type="button" @click="zoomOpen=true" class="underline hover:text-sky-400">🔍 放大檢視</button>
+          </div>
+          <canvas ref="fullCanvas" @click="zoomOpen=true" class="max-h-56 w-auto max-w-none cursor-zoom-in rounded"></canvas>
+        </div>
+
+        <!-- Draggable Numbered Frame Cards -->
+        <div class="grid gap-2" :style="{ gridTemplateColumns: 'repeat(auto-fill, minmax(92px, 1fr))' }">
+          <div v-for="item in thumbs" :key="item.slot"
+               draggable="true"
+               @dragstart="onDragStart(item.slot, $event)"
+               @dragover.prevent="onDragOver(item.slot)"
+               @drop.prevent="onDrop(item.slot)"
+               @dragend="onDragEnd"
+               :class="['relative rounded-lg border-2 p-1 cursor-grab active:cursor-grabbing select-none transition',
+                        darkBg ? 'bg-slate-900' : 'checker bg-white',
+                        dragOver === item.slot ? 'border-sky-400 ring-2 ring-sky-300 scale-105' :
+                        (dragFrom === item.slot ? 'opacity-40 border-indigo-400' :
+                        (item.origIdx !== item.slot ? 'border-amber-400' : 'border-slate-300 hover:border-indigo-400'))]">
+            <span :class="['absolute top-1 left-1 px-1.5 py-0.5 rounded text-[11px] font-mono font-bold leading-none shadow',
+                           item.origIdx !== item.slot ? 'bg-amber-500 text-white' : 'bg-indigo-600 text-white']">
+              {{ item.slot + 1 }}
+            </span>
+            <span v-if="item.origIdx !== item.slot"
+                  class="absolute top-1 right-1 px-1 py-0.5 rounded text-[9px] font-mono bg-slate-800/85 text-amber-300 leading-none">
+              原#{{ item.origIdx + 1 }}
+            </span>
+            <img :src="item.dataUrl" class="w-full h-20 object-contain pointer-events-none" />
+          </div>
+        </div>
+        <p class="text-[11px] text-slate-500">
+          💡 提示：用滑鼠按住任一幀（例如 <b>7</b>）拖到目標幀（例如 <b>9</b>）放開即可完成重排，右側動畫預覽會即時同步更新；完成後可點 <b>⬇ 匯出 Sprite Sheet</b> 下載，或按下方 <b>💾 存檔（套用到遊戲）</b> 立即生效。
+        </p>
+
+        <!-- Full-Width Zoom Lightbox -->
+        <div v-if="zoomOpen" class="fixed inset-0 z-50 bg-slate-950/85 flex items-center justify-center p-4" @click.self="zoomOpen=false">
+          <div class="bg-white rounded-xl shadow-2xl max-w-[95vw] w-full overflow-hidden">
+            <div class="px-4 py-2.5 bg-slate-100 flex items-center justify-between border-b">
+              <span class="font-semibold text-sm">🖼️ 完整 Sprite Sheet 大圖（{{ cols }}×{{ rows }} · {{ totalFrames }} 幀 · {{ imgSize.w }}×{{ imgSize.h }}px）</span>
+              <div class="flex gap-2">
+                <button type="button" @click="exportPng" class="text-xs px-2.5 py-1 rounded bg-sky-600 text-white font-semibold">⬇ 匯出 PNG</button>
+                <button type="button" @click="zoomOpen=false" class="text-xs px-2.5 py-1 rounded border bg-white">✕ 關閉</button>
+              </div>
+            </div>
+            <div :class="['p-4 overflow-auto max-h-[82vh]', darkBg ? 'bg-slate-900' : 'checker']">
+              <img :src="src" class="max-w-none h-auto min-h-[220px] rounded shadow" />
+            </div>
+          </div>
+        </div>
+      </div>`,
+  };
+
   // ---------- Characters tab ----------
   const CharactersTab = {
-    components: { SpritePreview, DropZone, ConditionEditor, AiModifyModal, FxBubbleEditor },
+    components: { SpritePreview, SpriteSheetSorter, DropZone, ConditionEditor, AiModifyModal, FxBubbleEditor },
     setup() {
       const selectedId = ref(null);
       const selectedActionId = ref(null);
@@ -1657,9 +1986,13 @@
       });
       const canSave = computed(() => !saveBlockReason.value);
 
+      function onSheetReordered(newFile) {
+        file.value = newFile;
+      }
+
       async function prepareUploadFile() {
         if (!file.value) return null;
-        if (!autoRemoveWhiteBg.value && !autoPadWideCell.value) return file.value;
+        if (file.value._skipPreprocess || (!autoRemoveWhiteBg.value && !autoPadWideCell.value)) return file.value;
         const c = await renderSpriteToCanvas(file.value, {
           cols: Number(actionForm.cols) || 10,
           rows: Number(actionForm.rows) || 1,
@@ -1681,12 +2014,13 @@
           const fps = Math.max(1, Math.min(60, Number(actionForm.fps) || 14));
           const src = file.value || previewSrc.value;
           if (!src) throw new Error('沒有可儲存的精靈表圖片');
+          const skipPre = !!(file.value && file.value._skipPreprocess);
           const c = await renderSpriteToCanvas(src, {
             cols,
             rows,
             frames,
-            removeWhiteBg: !!file.value && autoRemoveWhiteBg.value,
-            padWideCell: !!file.value && autoPadWideCell.value,
+            removeWhiteBg: !!file.value && !skipPre && autoRemoveWhiteBg.value,
+            padWideCell: !!file.value && !skipPre && autoPadWideCell.value,
           });
           const dataUrl = c.toDataURL('image/png');
           const cellW = c.width / cols;
@@ -1765,7 +2099,7 @@
       ];
       return { store, allCharacters, characters, current, currentAction, selectedId, selectedActionId, isNewChar, charForm, actionForm, isNewAction,
         file, condOk, filter, roleFilter, roleTabs, aiModalOpen, turnaroundSrc, turnaroundZoom, previewSrc, autoRemoveWhiteBg, autoPadWideCell, GRID_PRESETS, applyGridPreset, saveBlockReason, canSave, TRIGGER_LABELS,
-        selectChar, newChar, selectAction, newAction, uploadTurnaround, onAiApply, saveLocal, revertLocal, save, removeAction, removeChar };
+        selectChar, newChar, selectAction, newAction, uploadTurnaround, onAiApply, onSheetReordered, saveLocal, revertLocal, save, removeAction, removeChar };
     },
     template: `
       <div class="grid grid-cols-12 gap-4">
@@ -1893,6 +2227,16 @@
               </p>
             </div>
           </div>
+
+          <sprite-sheet-sorter
+            :src="previewSrc"
+            :cols="actionForm.cols"
+            :rows="actionForm.rows"
+            :frames="actionForm.frames"
+            :char-id="charForm.id || 'char'"
+            :action-id="actionForm.id || 'action'"
+            @reordered="onSheetReordered"
+          />
 
           <fx-bubble-editor v-model="actionForm.fx" />
 
