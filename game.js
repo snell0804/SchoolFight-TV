@@ -1344,6 +1344,7 @@
         { key: 'cooker_mp', embedKey: 'prop_cooker_mp_sheet', file: 'assets/prop_cooker_mp_sheet.webp' },
         { key: 'foods', embedKey: 'item_foods_sheet', file: 'assets/item_foods_sheet.webp' },
         { key: 'mana', embedKey: 'item_mana_bottle', file: 'assets/item_mana_bottle.webp' },
+        { key: 'stage_map', embedKey: 'stage_map_bg', file: 'assets/stage_map_bg.webp' },
       ];
       for (const b of bgDef) {
         promises.push((async () => {
@@ -2240,17 +2241,17 @@
 
   const SELECT_UI = {
     cards: [
-      { id: 'kuromi', x: 36, y: 90, w: 304, h: 274 },
-      { id: 'redpanda', x: 360, y: 90, w: 304, h: 274 },
-      { id: 'adailing', x: 684, y: 90, w: 304, h: 274 },
+      { id: 'kuromi', x: 24, y: 424, w: 184, h: 72 },
+      { id: 'redpanda', x: 218, y: 424, w: 184, h: 72 },
+      { id: 'adailing', x: 412, y: 424, w: 184, h: 72 },
     ],
     stagePills: [
-      { idx: 0, x: 64, y: 374, w: 214, h: 32 },
-      { idx: 1, x: 288, y: 374, w: 214, h: 32 },
-      { idx: 2, x: 512, y: 374, w: 214, h: 32 },
-      { idx: 3, x: 736, y: 374, w: 224, h: 32 },
+      { idx: 0, x: 108, y: 204, w: 176, h: 150, pinX: 196, pinY: 262, cardX: 112, cardY: 318, heroX: 196, heroY: 312 },
+      { idx: 1, x: 316, y: 100, w: 176, h: 162, pinX: 404, pinY: 164, cardX: 320, cardY: 222, heroX: 404, heroY: 218 },
+      { idx: 2, x: 562, y: 112, w: 180, h: 166, pinX: 652, pinY: 178, cardX: 566, cardY: 236, heroX: 652, heroY: 232 },
+      { idx: 3, x: 774, y: 150, w: 180, h: 158, pinX: 864, pinY: 212, cardX: 778, cardY: 268, heroX: 864, heroY: 264 },
     ],
-    startBtn: { x: 312, y: 416, w: 400, h: 48 },
+    startBtn: { x: 616, y: 424, w: 384, h: 72 },
   };
 
   function canvasCoords(e) {
@@ -7974,32 +7975,162 @@
   function drawOverlayScreens(ctx) {
     if (game.state === 'title') {
       ctx.save();
-      // Deep arcade backdrop overlay
-      const bgGrad = ctx.createLinearGradient(0, 0, 0, CANVAS_H);
-      bgGrad.addColorStop(0, 'rgba(10, 6, 22, 0.84)');
-      bgGrad.addColorStop(0.55, 'rgba(18, 11, 36, 0.76)');
-      bgGrad.addColorStop(1, 'rgba(10, 6, 22, 0.88)');
-      ctx.fillStyle = bgGrad;
-      ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+      // 1. Full-Bleed 3D Clay Miniature Diorama Island Map Background
+      const mapImg = SpriteBank.bgImages && SpriteBank.bgImages.stage_map;
+      if (mapImg) {
+        ctx.drawImage(mapImg, 0, 0, CANVAS_W, CANVAS_H);
+      } else {
+        const fallbackGrad = ctx.createLinearGradient(0, 0, 0, CANVAS_H);
+        fallbackGrad.addColorStop(0, '#f5ecd7');
+        fallbackGrad.addColorStop(1, '#bfe7e8');
+        ctx.fillStyle = fallbackGrad;
+        ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+      }
 
-      // Top Arcade Title Header
+      // 2. Top-Center Handcrafted Clay Storybook Title Ribbon
+      ctx.save();
       ctx.textAlign = 'center';
-      ctx.lineWidth = 7;
-      ctx.strokeStyle = '#090710';
-      ctx.font = '900 35px "Noto Sans TC", sans-serif';
-      ctx.strokeText('Star Fish 國小 大亂鬥 · 選擇出戰主角', CANVAS_W / 2, 46);
-      const tGrad = ctx.createLinearGradient(0, 14, 0, 52);
-      tGrad.addColorStop(0, '#ffffff');
-      tGrad.addColorStop(0.55, '#fde047');
-      tGrad.addColorStop(1, '#f43f8e');
-      ctx.fillStyle = tGrad;
-      ctx.fillText('Star Fish 國小 大亂鬥 · 選擇出戰主角', CANVAS_W / 2, 46);
+      ctx.font = '900 32px "Noto Sans TC", sans-serif';
+      ctx.lineJoin = 'round';
+      ctx.shadowColor = 'rgba(120, 62, 24, 0.28)';
+      ctx.shadowBlur = 10;
+      ctx.shadowOffsetY = 4;
+      ctx.lineWidth = 9;
+      ctx.strokeStyle = '#fffaf0';
+      ctx.strokeText('海星國小 大亂鬥 · 校園地圖', CANVAS_W / 2, 42);
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetY = 0;
+      const titleGrad = ctx.createLinearGradient(0, 14, 0, 48);
+      titleGrad.addColorStop(0, '#fb923c');
+      titleGrad.addColorStop(0.55, '#ea580c');
+      titleGrad.addColorStop(1, '#c2410c');
+      ctx.fillStyle = titleGrad;
+      ctx.fillText('海星國小 大亂鬥 · 校園地圖', CANVAS_W / 2, 42);
 
-      ctx.font = '700 12.5px "Noto Sans TC", sans-serif';
-      ctx.fillStyle = '#cbd5e1';
-      ctx.fillText('SELECT YOUR FIGHTER & SCHOOL  ·  ←/→ 切換主角（呆呆伶 / 超級帆 / 阿呆伶）｜ ↑/↓ 或點擊選擇三大關卡！', CANVAS_W / 2, 72);
+      // Cute warm clay pill subtitle (like the reference's peach banner!)
+      ctx.fillStyle = 'rgba(255, 247, 232, 0.94)';
+      ctx.strokeStyle = '#e7c9a0';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(CANVAS_W / 2 - 226, 52, 452, 24, 12);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = '#7c4a21';
+      ctx.font = '700 12px "Noto Sans TC", sans-serif';
+      ctx.fillText('📍 點擊地圖上的特色校園選關 · ↑/↓ 換關卡 · ←/→ 選主角！', CANVAS_W / 2, 68);
+      ctx.restore();
 
-      // Draw 3 Interactive Hero Cards!
+      // 3. Four Interactive Pastel Clay Map Pins & Landmark Cards on the Island!
+      const stageThemes = [
+        { bg: '#e0f2fe', header: '#0284c7', border: '#7dd3fc', tag: 'STAGE 1 · 海洋校區', sub: '海岸海星 · 企鵝與海怪' },
+        { bg: '#ffe4e6', header: '#e11d48', border: '#fda4af', tag: 'STAGE 2 · 歡樂校區', sub: '摩天輪 · 隨機怪大亂鬥' },
+        { bg: '#dcfce7', header: '#15803d', border: '#86efac', tag: 'STAGE 3 · 草原武道', sub: '櫻花道場 · 冬花武聖BOSS' },
+        { bg: '#fef3c7', header: '#b45309', border: '#fcd34d', tag: 'FREE · 自由訓練場', sub: '不主動出怪 · 測試招式' },
+      ];
+      const selHero = getSelectedHero();
+
+      for (let s = 0; s < STAGES.length; s++) {
+        const st = STAGES[s];
+        const pill = SELECT_UI.stagePills[s];
+        const stTheme = stageThemes[s] || stageThemes[0];
+        const active = game.selectedStageIndex === s;
+        const bounce = active ? Math.sin(game.time * 6.5) * 4 : 0;
+
+        ctx.save();
+        // Glowing selection ring on the school courtyard
+        if (active) {
+          ctx.fillStyle = 'rgba(254, 240, 138, 0.42)';
+          ctx.strokeStyle = '#facc15';
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.ellipse(pill.heroX, pill.heroY + 2, 48 + Math.sin(game.time * 5) * 3, 14, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+        }
+
+        // Cute clay teardrop map pin floating above the school
+        const px = pill.pinX;
+        const py = pill.pinY - 56 + bounce;
+        ctx.shadowColor = 'rgba(0,0,0,0.22)';
+        ctx.shadowBlur = 6;
+        ctx.shadowOffsetY = 3;
+        ctx.fillStyle = active ? '#ef4444' : stTheme.header;
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.arc(px, py, active ? 13 : 10, Math.PI * 0.85, Math.PI * 2.15);
+        ctx.lineTo(px, py + (active ? 22 : 17));
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+        ctx.shadowOffsetY = 0;
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(px, py, active ? 4.5 : 3.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Live animated miniature Hero standing right on the selected school!
+        if (active) {
+          const idleKey = selHero.sheets.idle;
+          const idleSheet = SpriteBank.sheets[idleKey];
+          if (idleSheet) {
+            const fIdx = Math.floor(game.time * 8.5) % idleSheet.frameCount;
+            SpriteBank.drawFrame(ctx, idleKey, fIdx, pill.heroX, pill.heroY, 1, 0.44, false);
+          }
+        }
+
+        // Pastel Rounded Clay Info Tag Card (matching the reference's soft color-coded cards!)
+        const cw = 166;
+        const ch = 50;
+        const cx = pill.cardX;
+        const cy = pill.cardY + (active ? -3 : 0);
+        ctx.shadowColor = active ? 'rgba(234, 88, 12, 0.35)' : 'rgba(51, 65, 85, 0.22)';
+        ctx.shadowBlur = active ? 14 : 8;
+        ctx.shadowOffsetY = 4;
+        ctx.fillStyle = active ? '#fffdf7' : stTheme.bg;
+        ctx.strokeStyle = active ? '#f97316' : stTheme.border;
+        ctx.lineWidth = active ? 3 : 2;
+        ctx.beginPath();
+        ctx.roundRect(cx, cy, cw, ch, 12);
+        ctx.fill();
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+        ctx.shadowOffsetY = 0;
+
+        // Top colored header strip inside card
+        ctx.fillStyle = active ? '#ea580c' : stTheme.header;
+        ctx.beginPath();
+        ctx.roundRect(cx + 4, cy + 4, cw - 8, 21, 8);
+        ctx.fill();
+
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '800 12px "Noto Sans TC", sans-serif';
+        ctx.fillText(`${st.icon} ${st.shortName}`, cx + cw / 2, cy + 19);
+
+        ctx.fillStyle = active ? '#9a3412' : '#475569';
+        ctx.font = active ? '800 10.5px "Noto Sans TC", sans-serif' : '700 10px "Noto Sans TC", sans-serif';
+        ctx.fillText(stTheme.sub, cx + cw / 2, cy + 41);
+        ctx.restore();
+      }
+
+      // 4. Bottom Warm Clay Dock Bar (3 Compact Live Hero Cards + Juicy Clay Start Button)
+      ctx.save();
+      ctx.fillStyle = 'rgba(255, 250, 240, 0.88)';
+      ctx.strokeStyle = 'rgba(217, 185, 145, 0.9)';
+      ctx.lineWidth = 2.5;
+      ctx.shadowColor = 'rgba(80, 50, 20, 0.22)';
+      ctx.shadowBlur = 14;
+      ctx.shadowOffsetY = -2;
+      ctx.beginPath();
+      ctx.roundRect(14, 414, CANVAS_W - 28, 90, 18);
+      ctx.fill();
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetY = 0;
+
+      // 3 Interactive Hero Cards inside Left Dock
       for (let i = 0; i < HERO_ROSTER.length; i++) {
         const hero = HERO_ROSTER[i];
         const card = SELECT_UI.cards[i];
@@ -8008,203 +8139,76 @@
         const isHovered = game.hoverHeroId === hero.id;
 
         ctx.save();
-        // Card Background with radial hero spotlight
-        const cardGrad = ctx.createLinearGradient(card.x, card.y, card.x, card.y + card.h);
-        if (isSelected) {
-          const topCol = hero.id === 'redpanda' ? 'rgba(154, 52, 18, 0.78)'
-            : (hero.id === 'adailing' ? 'rgba(6, 95, 70, 0.82)' : 'rgba(131, 24, 67, 0.78)');
-          cardGrad.addColorStop(0, topCol);
-          cardGrad.addColorStop(1, 'rgba(15, 11, 28, 0.94)');
-        } else {
-          cardGrad.addColorStop(0, isHovered ? 'rgba(42, 30, 68, 0.85)' : 'rgba(22, 17, 40, 0.78)');
-          cardGrad.addColorStop(1, 'rgba(12, 9, 24, 0.90)');
-        }
-        ctx.fillStyle = cardGrad;
-        ctx.beginPath();
-        ctx.roundRect(card.x, card.y, card.w, card.h, 16);
-        ctx.fill();
-
-        // Animated glowing border for selected hero
+        ctx.fillStyle = isSelected ? '#ffffff' : (isHovered ? '#fff7ed' : '#f8f2e6');
+        ctx.strokeStyle = isSelected ? hero.accent : (isHovered ? '#fdba74' : '#e2d4be');
+        ctx.lineWidth = isSelected ? 3.5 : 2;
         if (isSelected) {
           ctx.shadowColor = hero.accent;
-          ctx.shadowBlur = 18 + Math.sin(game.time * 7) * 6;
-          ctx.strokeStyle = hero.accentLight;
-          ctx.lineWidth = 4;
-        } else {
-          ctx.strokeStyle = isHovered ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.16)';
-          ctx.lineWidth = 2;
-        }
-        ctx.stroke();
-        ctx.shadowBlur = 0;
-
-        // Top-Left Hero Tag Pill
-        ctx.fillStyle = isSelected ? hero.accent : 'rgba(255,255,255,0.12)';
-        ctx.beginPath();
-        ctx.roundRect(card.x + 12, card.y + 12, 116, 24, 8);
-        ctx.fill();
-        ctx.textAlign = 'center';
-        ctx.fillStyle = '#ffffff';
-        ctx.font = '800 11.5px "Noto Sans TC", sans-serif';
-        ctx.fillText(hero.badge, card.x + 70, card.y + 28);
-
-        // Top-Right "P1 SELECTED" Bouncing Badge
-        if (isSelected) {
-          const bounce = Math.sin(game.time * 9) * 3;
-          ctx.fillStyle = '#facc15';
-          ctx.strokeStyle = '#090710';
-          ctx.lineWidth = 3;
-          ctx.beginPath();
-          ctx.roundRect(card.x + card.w - 102, card.y + 10 + bounce, 90, 24, 8);
-          ctx.fill();
-          ctx.stroke();
-          ctx.fillStyle = '#090710';
-          ctx.font = '900 11px "Noto Sans TC", sans-serif';
-          ctx.fillText('★ P1 選擇中', card.x + card.w - 57, card.y + 26 + bounce);
-        } else {
-          ctx.textAlign = 'right';
-          ctx.fillStyle = 'rgba(203,213,225,0.55)';
-          ctx.font = '700 11px monospace';
-          ctx.fillText(`KEY [${i + 1}]`, card.x + card.w - 14, card.y + 28);
-        }
-
-        // Spotlight stage circle under live hero sprite
-        const stageX = card.x + 76;
-        const stageY = card.y + 206;
-        const spot = ctx.createRadialGradient(stageX, stageY - 52, 10, stageX, stageY - 52, 74);
-        const spotCol = hero.id === 'redpanda' ? 'rgba(251, 146, 60, 0.36)'
-          : (hero.id === 'adailing' ? 'rgba(52, 211, 153, 0.36)' : 'rgba(244, 114, 182, 0.36)');
-        spot.addColorStop(0, isSelected ? spotCol : 'rgba(148, 163, 184, 0.12)');
-        spot.addColorStop(1, 'rgba(0, 0, 0, 0)');
-        ctx.fillStyle = spot;
-        ctx.beginPath();
-        ctx.arc(stageX, stageY - 52, 74, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Ground shadow ellipse
-        ctx.fillStyle = 'rgba(5, 3, 12, 0.55)';
-        ctx.beginPath();
-        ctx.ellipse(stageX, stageY + 2, 44, 10, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Live Animated Hero Preview
-        let demoKey = hero.sheets.idle;
-        let demoFps = 8.5;
-        if (isSelected) {
-          const cycle = Math.floor(game.time / 2.2) % 2;
-          const tryKey = cycle === 0 ? hero.sheets.lightAttack : hero.sheets.run;
-          if (SpriteBank.sheets[tryKey]) {
-            demoKey = tryKey;
-            demoFps = 15;
-          }
-        }
-        const demoSheet = SpriteBank.sheets[demoKey] || SpriteBank.sheets[hero.sheets.idle];
-        if (demoSheet) {
-          const fIdx = Math.floor(game.time * demoFps) % demoSheet.frameCount;
-          SpriteBank.drawFrame(ctx, demoKey, fIdx, stageX, stageY, 1, isSelected ? 0.78 : 0.70, false);
-        }
-
-        // Right Column: Hero Name, Style & 3 Stat Bars
-        const infoX = card.x + 148;
-        ctx.textAlign = 'left';
-        ctx.lineWidth = 4;
-        ctx.strokeStyle = '#090710';
-        ctx.font = '900 24px "Noto Sans TC", sans-serif';
-        ctx.strokeText(hero.name, infoX, card.y + 82);
-        ctx.fillStyle = isSelected ? '#ffffff' : '#e2e8f0';
-        ctx.fillText(hero.name, infoX, card.y + 82);
-
-        ctx.font = '700 11px "Noto Sans TC", sans-serif';
-        ctx.fillStyle = hero.accentLight;
-        ctx.fillText(`必殺：${hero.specialLabel}`, infoX, card.y + 106);
-
-        const statRows = [
-          { label: 'POW', val: hero.stats.power, color: '#f97316' },
-          { label: 'SPD', val: hero.stats.speed, color: '#38bdf8' },
-          { label: 'RNG', val: hero.stats.range, color: '#e879f9' },
-        ];
-        for (let s = 0; s < statRows.length; s++) {
-          const sy = card.y + 134 + s * 25;
-          ctx.fillStyle = '#cbd5e1';
-          ctx.font = '700 10.5px monospace';
-          ctx.fillText(statRows[s].label, infoX, sy);
-          for (let b = 0; b < 5; b++) {
-            const bx = infoX + 34 + b * 21;
-            ctx.fillStyle = b < statRows[s].val ? statRows[s].color : 'rgba(255,255,255,0.12)';
-            ctx.beginPath();
-            ctx.roundRect(bx, sy - 9, 17, 10, 3);
-            ctx.fill();
-          }
-        }
-
-        // Bottom Moves Strip inside Card
-        ctx.fillStyle = 'rgba(8, 5, 18, 0.65)';
-        ctx.beginPath();
-        ctx.roundRect(card.x + 10, card.y + card.h - 40, card.w - 20, 28, 8);
-        ctx.fill();
-        ctx.textAlign = 'center';
-        ctx.fillStyle = '#f1f5f9';
-        ctx.font = '600 10.5px "Noto Sans TC", sans-serif';
-        ctx.fillText(hero.subtitle, card.x + card.w / 2, card.y + card.h - 22);
-
-        ctx.restore();
-      }
-
-      // 3 Clickable School Stage Selector Pills (海星國小 / 阿強國小 / 冬花國小)
-      for (let s = 0; s < STAGES.length; s++) {
-        const st = STAGES[s];
-        const pill = SELECT_UI.stagePills[s];
-        const active = game.selectedStageIndex === s;
-        ctx.save();
-        ctx.fillStyle = active ? 'rgba(30, 22, 54, 0.96)' : 'rgba(15, 11, 30, 0.72)';
-        ctx.strokeStyle = active ? st.accent : 'rgba(255,255,255,0.18)';
-        ctx.lineWidth = active ? 2.5 : 1.5;
-        if (active) {
-          ctx.shadowColor = st.accent;
           ctx.shadowBlur = 10;
         }
         ctx.beginPath();
-        ctx.roundRect(pill.x, pill.y, pill.w, pill.h, 9);
+        ctx.roundRect(card.x, card.y, card.w, card.h, 13);
         ctx.fill();
         ctx.stroke();
         ctx.shadowBlur = 0;
+
+        // Live mini hero sprite on left of card
+        const demoKey = hero.sheets.idle;
+        const demoSheet = SpriteBank.sheets[demoKey];
+        if (demoSheet) {
+          const fIdx = Math.floor(game.time * 8.5) % demoSheet.frameCount;
+          SpriteBank.drawFrame(ctx, demoKey, fIdx, card.x + 38, card.y + 66, 1, isSelected ? 0.34 : 0.30, false);
+        }
+
+        // Hero Name & Role Pill
+        ctx.textAlign = 'left';
+        ctx.fillStyle = isSelected ? '#1e293b' : '#475569';
+        ctx.font = '900 16px "Noto Sans TC", sans-serif';
+        ctx.fillText(hero.name, card.x + 74, card.y + 30);
+
+        ctx.fillStyle = isSelected ? hero.accent : '#94a3b8';
+        ctx.beginPath();
+        ctx.roundRect(card.x + 74, card.y + 38, 98, 20, 7);
+        ctx.fill();
         ctx.textAlign = 'center';
-        ctx.fillStyle = active ? '#ffffff' : '#94a3b8';
-        ctx.font = active ? '800 12.5px "Noto Sans TC", sans-serif' : '600 11.5px "Noto Sans TC", sans-serif';
-        const pillTag = st.key === 'starfish' ? '海洋' : (st.key === 'aqiang' ? '隨機' : (st.key === 'training' ? '自由測試' : '草原'));
-        ctx.fillText(`${st.icon} ${st.shortName} · ${pillTag}`, pill.x + pill.w / 2, pill.y + 21);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '800 10.5px "Noto Sans TC", sans-serif';
+        ctx.fillText(isSelected ? '★ 出戰主角' : `按 [${i + 1}] 切換`, card.x + 123, card.y + 52);
         ctx.restore();
       }
 
-      // Pulsing Start Button at Bottom Center
-      const selHero = getSelectedHero();
+      // Juicy Pulsing Clay Start Button on Right Dock
       const selStage = STAGES[game.selectedStageIndex] || STAGES[0];
       const sb = SELECT_UI.startBtn;
-      const pulse = 0.88 + Math.sin(game.time * 6) * 0.12;
+      const pulse = 0.92 + Math.sin(game.time * 6) * 0.08;
+      ctx.save();
       ctx.globalAlpha = pulse;
-      const btnGrad = ctx.createLinearGradient(sb.x, sb.y, sb.x + sb.w, sb.y);
-      btnGrad.addColorStop(0, selHero.accent);
-      btnGrad.addColorStop(1, selHero.id === 'redpanda' ? '#ef4444' : '#9333ea');
+      const btnGrad = ctx.createLinearGradient(sb.x, sb.y, sb.x, sb.y + sb.h);
+      btnGrad.addColorStop(0, selStage.isTraining ? '#06b6d4' : '#fb923c');
+      btnGrad.addColorStop(1, selStage.isTraining ? '#0284c7' : '#ea580c');
       ctx.fillStyle = btnGrad;
+      ctx.shadowColor = selStage.isTraining ? 'rgba(6, 182, 212, 0.45)' : 'rgba(234, 88, 12, 0.45)';
+      ctx.shadowBlur = 12;
+      ctx.shadowOffsetY = 4;
       ctx.beginPath();
-      ctx.roundRect(sb.x, sb.y, sb.w, sb.h, 12);
+      ctx.roundRect(sb.x, sb.y, sb.w, sb.h, 15);
       ctx.fill();
       ctx.strokeStyle = '#ffffff';
       ctx.lineWidth = 3;
       ctx.stroke();
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetY = 0;
+
       ctx.fillStyle = '#ffffff';
       ctx.textAlign = 'center';
-      ctx.font = '900 19px "Noto Sans TC", sans-serif';
-      ctx.fillText(`▶ 以「${selHero.name}」進軍${selStage.shortName}（ENTER）`, CANVAS_W / 2, sb.y + 31);
-
-      // Controls Footer Hint
-      ctx.globalAlpha = 1;
-      ctx.fillStyle = '#94a3b8';
-      ctx.font = '600 11.5px "Noto Sans TC", sans-serif';
-      const lk = formatKeyCode(StudioState.getAction('lightAttack')?.key);
-      const hk = formatKeyCode(StudioState.getAction('heavyAttack')?.key);
-      const sk = formatKeyCode(StudioState.getAction('special')?.key);
-      const dk = formatKeyCode(StudioState.getAction('dash')?.key);
-      ctx.fillText(`WASD走路 ｜ AA/DD跑步 ｜ ↑+${hk}龍捲旋風腳(浮空追打) ｜ ${dk}閃身步 ｜ ${lk}輕攻 ｜ ${hk}重攻 ｜ ${sk}必殺技`, CANVAS_W / 2, 492);
+      ctx.font = '900 22px "Noto Sans TC", sans-serif';
+      const startVerb = selStage.isTraining ? '進入' : '進軍';
+      ctx.fillText(`▶ ${startVerb}「${selStage.icon} ${selStage.shortName}」`, sb.x + sb.w / 2, sb.y + 34);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.92)';
+      ctx.font = '700 12.5px "Noto Sans TC", sans-serif';
+      ctx.fillText(`由「${selHero.name}」出發 · 按 ENTER 或點擊開始`, sb.x + sb.w / 2, sb.y + 57);
+      ctx.restore();
+      ctx.restore();
       ctx.restore();
     } else if (game.state === 'paused') {
       ctx.save();
