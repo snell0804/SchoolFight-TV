@@ -6786,12 +6786,16 @@
   // SANRIO KIDS RICE COOKER SUPPLY BOXES (10-FRAME OPENING!) & KAWAII PICKUPS
   // --------------------------------------------------------------------------
   const KAWAII_FOOD_NAMES = [
-    '🍗 黃金炸雞腿',
-    '🍰 草莓蛋糕',
-    '🍔 微笑漢堡',
-    '🥟 熱騰騰肉包',
-    '🍓 草莓大福',
-    '🍡 三色糰子',
+    '🍗 鹽酥雞',
+    '🍢 糯米腸',
+    '🥟 黃金鍋貼',
+    '🥟 小籠湯包',
+    '🥞 香煎蘿蔔糕',
+    '🍜 切仔麵',
+    '🍝 台式炒米粉',
+    '🍜 台南擔仔麵',
+    '🍢 甜不辣',
+    '🥟 彰化肉圓',
   ];
 
   class Prop {
@@ -6981,10 +6985,11 @@
 
         const foodsImg = SpriteBank.bgImages && SpriteBank.bgImages.foods;
         if (foodsImg && foodsImg.width >= 384) {
-          const fw = foodsImg.width / 6;
+          const foodCount = Math.max(1, KAWAII_FOOD_NAMES.length);
+          const fw = foodsImg.width / foodCount;
           const fh = foodsImg.height;
-          const sz = 66;
-          ctx.drawImage(foodsImg, this.foodIdx * fw, 0, fw, fh, -sz / 2, -sz / 2, sz, sz);
+          const sz = 72;
+          ctx.drawImage(foodsImg, (this.foodIdx % foodCount) * fw, 0, fw, fh, -sz / 2, -sz / 2, sz, sz);
         } else {
           ctx.lineWidth = 3.2;
           ctx.strokeStyle = '#3a2449';
