@@ -80,6 +80,7 @@
         act('ad_victory', '戰鬥勝利動作 (Victory)', 'ad_victory', 'assets/ad_idle_sheet.webp', 10, 'custom', true),
       ],
     },
+    (() => { const c = enemyChar('enemy_whale_boss', '⚓ 戰艦鯨魚魔王（海星國小 STAGE 1 BOSS）', 'enemy_whale_boss', true, { role: 'boss', enemyKey: 'whale_boss' }); c.actions.forEach((a) => Object.assign(a, { cols: 10, rows: 1, frames: 10 })); return c; })(),
     enemyChar('enemy_donghua_boss', '🥋 冬花武聖大宗師（冬花 FINAL BOSS）', 'enemy_donghua_boss', true, { role: 'boss', enemyKey: 'donghua_boss' }),
     enemyChar('enemy_star_boss', '⭐ 宇宙海星大霸王（關卡 BOSS）', 'enemy_star_boss', false, { role: 'boss', enemyKey: 'boss', fallbackPrefix: 'enemy_star' }),
     enemyChar('enemy_zebra_rush', '🦓 暴衝斑馬怪（5色變色）', 'enemy_zebra_rush', true, { enemyKey: 'zebra_rush' }),

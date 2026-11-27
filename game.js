@@ -487,6 +487,10 @@
     { key: 'enemy_donghua_boss_attack', file: 'assets/enemy_donghua_boss_attack_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 242 },
     { key: 'enemy_donghua_boss_hurt', file: 'assets/enemy_donghua_boss_hurt_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 242 },
     { key: 'enemy_donghua_boss_ko', file: 'assets/enemy_donghua_boss_ko_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 242 },
+    { key: 'enemy_whale_boss_move', file: 'assets/enemy_whale_boss_move_sheet.webp', cols: 10, rows: 1, anchorX: 210, anchorY: 304 },
+    { key: 'enemy_whale_boss_attack', file: 'assets/enemy_whale_boss_attack_sheet.webp', cols: 10, rows: 1, anchorX: 210, anchorY: 304 },
+    { key: 'enemy_whale_boss_hurt', file: 'assets/enemy_whale_boss_hurt_sheet.webp', cols: 10, rows: 1, anchorX: 210, anchorY: 304 },
+    { key: 'enemy_whale_boss_ko', file: 'assets/enemy_whale_boss_ko_sheet.webp', cols: 10, rows: 1, anchorX: 210, anchorY: 304 },
     // 斑馬怪 (Zebra Monster) & 袋鼠怪 (Kangaroo Monster) — built from the uploaded design sheets
     { key: 'enemy_zebra_rush_move', file: 'assets/enemy_zebra_rush_move_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
     { key: 'enemy_zebra_rush_attack', file: 'assets/enemy_zebra_rush_attack_sheet.webp', cols: 5, rows: 2, anchorX: 150, anchorY: 236 },
@@ -618,6 +622,7 @@
       { id: 'kuromi', name: '😈 呆呆伶（主角 1）', role: 'hero', heroId: 'kuromi', actions: createDefaultHeroActions() },
       { id: 'redpanda', name: '🦊 超級帆（主角 2）', role: 'hero', heroId: 'redpanda', actions: createDefaultRedPandaActions() },
       { id: 'adailing', name: '🎒 阿呆伶（主角 3）', role: 'hero', heroId: 'adailing', actions: createDefaultAdailingActions() },
+      createEnemyCharProfile('enemy_whale_boss', '⚓ 戰艦鯨魚魔王（海星國小 STAGE 1 BOSS）', 'enemy_whale_boss', '艦炮飛彈齊射（黑鐵巨炮＋導引艦載飛彈連發）', '深海巨浪衝擊（破浪重撞＋水花震退）', true, { role: 'boss', enemyKey: 'whale_boss' }),
       createEnemyCharProfile('enemy_donghua_boss', '🥋 冬花武聖大宗師（冬花 FINAL BOSS）', 'enemy_donghua_boss', '「武」字黃金正拳＋太極震地氣勁', '三連黃金氣功波＋流星飛躍碎地斬', true, { role: 'boss', enemyKey: 'donghua_boss' }),
       createEnemyCharProfile('enemy_star_boss', '⭐ 宇宙海星大霸王（關卡 BOSS）', 'enemy_star_boss', '巨型迴旋霸體衝撞', '三向扇形宇宙星彈齊射', false, { role: 'boss', enemyKey: 'boss', fallbackPrefix: 'enemy_star' }),
       createEnemyCharProfile('enemy_zebra_rush', '🦓 暴衝斑馬怪（設定稿・5色變色）', 'enemy_zebra_rush', '轉身後腿雙蹄反踢（近身震退）', '蓄力蹬蹄破風頭槌猛衝（5色：墨白/灰/棕/白金/藍）', true, { enemyKey: 'zebra_rush' }),
@@ -2390,8 +2395,8 @@
       themeBadge: '🌊 海洋與奇幻軍團',
       icon: '⭐',
       accent: '#38bdf8',
-      bossWarnName: 'Star Fish 國小 宇宙海星體育股長 登場！',
-      clearTitle: 'STAGE 1 CLEAR!! 制霸 Star Fish 國小！',
+      bossWarnName: '⚓ 戰艦鯨魚魔王 · 海軍鯨艦首領 登場！',
+      clearTitle: 'STAGE 1 CLEAR!! 擊沉戰艦鯨魚魔王！',
       signs: [
         { x: 180, y: 122, w: 168, h: 40, text: 'Star Fish 國小', color: '#38bdf8' },
         { x: 640, y: 120, w: 142, h: 38, text: '主教學大樓', color: '#facc15' },
@@ -2430,15 +2435,15 @@
         },
         {
           id: 3,
-          name: 'Star Fish 國小 · 海洋大操場 BOSS 戰',
+          name: 'Star Fish 國小 · 戰艦鯨魚魔王決戰',
           triggerX: 2760,
           lockCamX: STAGE_W - CANVAS_W,
           isBoss: true,
           spawns: [
-            { type: 'boss', side: 1, z: 425, delay: 1.1, customName: '⭐ Star Fish 國小 宇宙海星體育股長', hpMult: 0.72 },
-            { type: 'zebra_rush', side: -1, z: 385, delay: 3.6 },
-            { type: 'wizard_ghost', side: 1, z: 465, delay: 7.4 },
-            { type: 'penguin_ice', side: -1, z: 432, delay: 11.2 },
+            { type: 'whale_boss', side: 1, z: 425, delay: 1.1, customName: '⚓ 戰艦鯨魚魔王', hpMult: 1.0 },
+            { type: 'penguin_king', side: -1, z: 385, delay: 4.2 },
+            { type: 'penguin_ice', side: 1, z: 465, delay: 8.0 },
+            { type: 'puffer', side: -1, z: 432, delay: 11.8 },
           ],
         },
       ],
@@ -3444,7 +3449,42 @@
 
       const py = this.z - this.jumpY;
 
-      if (this.kind === 'joey_boomerang') {
+      if (this.kind === 'missile') {
+        // ⚓ Whale Battleship Guided Naval Missile (艦載飛彈!)
+        ctx.translate(Math.round(this.x), Math.round(py));
+        if (this.facing < 0) ctx.scale(-1, 1);
+        // Fiery exhaust flame & smoke puff
+        const fl = 14 + Math.sin(game.time * 42) * 5;
+        ctx.fillStyle = '#f97316';
+        ctx.beginPath();
+        ctx.moveTo(-18, -6); ctx.lineTo(-18 - fl, 0); ctx.lineTo(-18, 6);
+        ctx.closePath(); ctx.fill();
+        ctx.fillStyle = '#fef08a';
+        ctx.beginPath();
+        ctx.moveTo(-18, -3); ctx.lineTo(-18 - fl * 0.6, 0); ctx.lineTo(-18, 3);
+        ctx.closePath(); ctx.fill();
+        // Tail fins
+        ctx.fillStyle = '#dc2626';
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(-16, -6); ctx.lineTo(-22, -13); ctx.lineTo(-10, -7); ctx.closePath();
+        ctx.moveTo(-16, 6); ctx.lineTo(-22, 13); ctx.lineTo(-10, 7); ctx.closePath();
+        ctx.fill(); ctx.stroke();
+        // Metallic navy hull
+        ctx.fillStyle = '#334155';
+        ctx.beginPath();
+        ctx.roundRect(-18, -8, 28, 16, 6);
+        ctx.fill(); ctx.stroke();
+        // Red nose cone
+        ctx.fillStyle = '#ef4444';
+        ctx.beginPath();
+        ctx.moveTo(8, -8); ctx.quadraticCurveTo(24, 0, 8, 8); ctx.closePath();
+        ctx.fill(); ctx.stroke();
+        // Specular highlight
+        ctx.fillStyle = 'rgba(255,255,255,0.6)';
+        ctx.beginPath(); ctx.ellipse(-2, -3.5, 9, 2.2, 0, 0, Math.PI * 2); ctx.fill();
+      } else if (this.kind === 'joey_boomerang') {
         // Spinning Curled-Up Baby Kangaroo Joey Boomerang (小袋鼠回力球!)
         ctx.translate(Math.round(this.x), Math.round(py));
         ctx.strokeStyle = 'rgba(253, 224, 71, 0.65)';
@@ -4964,6 +5004,25 @@
   let nextEntityId = 1;
 
   const ENEMY_CONFIGS = {
+    whale_boss: {
+      name: '⚓ 戰艦鯨魚魔王',
+      spritePrefix: 'enemy_whale_boss',
+      attackMode: 'whale_boss',
+      hasHurt: true,
+      projKind: 'missile',
+      hp: 620,
+      speedX: 145,
+      speedZ: 92,
+      reach: 230,
+      dmg: 22,
+      score: 3600,
+      scale: 1.22,
+      windup: 0.42,
+      attackDur: 0.78,
+      cooldown: 1.15,
+      armor: true,
+      isBoss: true,
+    },
     donghua_boss: {
       name: '🥋 冬花武聖大宗師',
       spritePrefix: 'enemy_donghua_boss',
@@ -5936,7 +5995,45 @@
         this.x += this.dashVel * dt;
         this.dashVel *= Math.pow(0.08, dt);
 
-        if (this.cfg.attackMode === 'donghua_boss') {
+        if (this.cfg.attackMode === 'whale_boss') {
+          // ⚓ STAGE 1 BOSS: 戰艦鯨魚魔王 — 10-Frame Cannon Barrage + Guided Naval Missiles (F5/F6) + Tidal Splash!
+          const dur = Math.max(0.68, this.cfg.attackDur);
+          const atkSheet = this.resolveEnemySheet('attack');
+          const atkFc = SpriteBank.getFrameCount(atkSheet, 10);
+          const prog = Math.min(0.999, this.stateTime / dur);
+          this.frame = Math.min(atkFc - 1, Math.floor(prog * atkFc));
+
+          // Fire guided naval missiles synced to F5 muzzle flash (prog >= 0.42)!
+          if (!this.projFired && prog >= 0.42) {
+            this.projFired = true;
+            const enraged = this.hp < this.maxHp * 0.5;
+            const px = this.x + this.facing * 95 * this.cfg.scale;
+            const spread = enraged ? [-64, 0, 64] : [-24, 24];
+            for (const vz of spread) {
+              game.projectiles.push(new EnemyProjectile(px, this.z - 4, this.facing, 'missile', Math.round(this.cfg.dmg * 0.85), vz));
+            }
+            spawnParticles(px, this.z - 120 * this.cfg.scale, '#fb923c', 12, 220, 6);
+            spawnParticles(this.x + this.facing * 70, this.z - 16, '#38bdf8', 10, 190, 6);
+            addShake(5, 0.12);
+          }
+
+          // Close-range tidal wave shockwave push if player stands right in front during F5-F7
+          if (!this.didHit && prog >= 0.44 && prog <= 0.72) {
+            const hdx = p.x - this.x;
+            const hdz = Math.abs(p.z - this.z);
+            if (Math.abs(hdx) <= 170 * this.cfg.scale && hdz <= 58) {
+              this.didHit = true;
+              p.takeDamage(this.cfg.dmg, hdx >= 0 ? 1 : -1, true);
+              spawnParticles(p.x, p.z - 45, '#38bdf8', 14, 250, 7);
+            }
+          }
+
+          if (this.stateTime >= dur) {
+            this.state = 'approach';
+            this.attackCd = this.cfg.cooldown * (this.hp < this.maxHp * 0.5 ? 0.72 : 1.0);
+            if (Math.random() < 0.5) this.strafeSide *= -1;
+          }
+        } else if (this.cfg.attackMode === 'donghua_boss') {
           const dur = this.cfg.attackDur || 0.82;
           const prog = Math.min(0.99, this.stateTime / dur);
           const enraged = this.hp < this.maxHp * 0.5;
@@ -11113,6 +11210,7 @@
 
     // Populate monster dropdown with all playable/testable enemy types
     const monsterOrder = [
+      ['whale_boss', '⚓ 戰艦鯨魚魔王 (第一關 BOSS)'],
       ['zebra', '🦓 斑斑（旋風飛踢斑馬）'],
       ['koala', '🐨 無尾熊（尤加利葉撲擊怪）'],
       ['capybara', '🦫 佛系水豚君（橘子頭槌坦克）'],
