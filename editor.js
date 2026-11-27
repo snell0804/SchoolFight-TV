@@ -2163,8 +2163,14 @@
         file.value = payload.file;
         toast('已套用 AI 生成結果！請點「💾 存檔（套用到遊戲）」或「☁️ 儲存並建立 PR」', 'success');
       }
-      watch(() => [actionForm.cols, actionForm.rows], ([c, r]) => {
-        if (actionForm.frames > c * r || isNewAction.value) actionForm.frames = c * r;
+      watch(() => [actionForm.cols, actionForm.rows], ([c, r], [oc, or]) => {
+        const nc = Math.max(1, Number(c) || 1);
+        const nr = Math.max(1, Number(r) || 1);
+        const prevMax = Math.max(1, (Number(oc) || 1) * (Number(or) || 1));
+        const curF = Number(actionForm.frames) || 0;
+        if (curF > nc * nr || curF === prevMax || curF <= 1 || isNewAction.value) {
+          actionForm.frames = nc * nr;
+        }
       });
 
       onMounted(() => {
