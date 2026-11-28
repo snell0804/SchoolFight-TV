@@ -3977,6 +3977,8 @@
       this.activeCustomAction = null;
 
       this.comboQueued = null; // null | 'light' | 'heavy'
+      this.hitConfirmed = false;
+      this.inputBuf = { action: null, timer: 0 }; // 180ms fighting-game input buffer (survives hitstop!)
       this.hitIds = new Set();
       this.hitIdsStage2 = new Set();
       this.invuln = 0;
@@ -3987,6 +3989,71 @@
       // Special 10-hit tracking
       this.cannonTicks = 0;
       this.cannonTickTimer = 0;
+    }
+
+    queueBufferedInput(action) {
+      if (!action) return;
+      const prio = { light: 1, dash: 2, heavy: 3, tornado: 4, special: 5 };
+      if (!this.inputBuf || this.inputBuf.timer <= 0 || (prio[action] || 0) >= (prio[this.inputBuf.action] || 0)) {
+        this.inputBuf = { action, timer: 0.18 };
+      }
+    }
+
+    captureLiveInputs(dt) {
+      if (this.inputBuf && this.inputBuf.timer > 0) {
+        this.inputBuf.timer = Math.max(0, this.inputBuf.timer - dt);
+        if (this.inputBuf.timer <= 0) this.inputBuf.action = null;
+      }
+      const wantSpecial = isActionJustPressed('special');
+      const wantHeavy = isActionJustPressed('heavyAttack');
+      const wantLight = isActionJustPressed('lightAttack');
+      const wantDash = isActionJustPressed('dash');
+      const holdingUp = isActionHeld('moveUp');
+      if (wantSpecial) this.queueBufferedInput('special');
+      else if (wantHeavy && holdingUp) this.queueBufferedInput('tornado');
+      else if (wantHeavy) this.queueBufferedInput('heavy');
+      else if (wantLight) this.queueBufferedInput('light');
+      else if (wantDash) this.queueBufferedInput('dash');
+    }
+
+    consumeBufferedInput(allowed) {
+      if (!this.inputBuf || this.inputBuf.timer <= 0 || !this.inputBuf.action) return null;
+      if (!allowed.includes(this.inputBuf.action)) return null;
+      const act = this.inputBuf.action;
+      this.inputBuf.action = null;
+      this.inputBuf.timer = 0;
+      return act;
+    }
+
+    tryCancelInto(allowed) {
+      const act = this.consumeBufferedInput(allowed);
+      if (!act) return false;
+      if (act === 'special' && this.energy >= 40) {
+        this.jumpY = 0;
+        this.startSpecial();
+        return true;
+      }
+      if (act === 'tornado') {
+        this.jumpY = 0;
+        this.startTornadoKick();
+        return true;
+      }
+      if (act === 'heavy') {
+        this.startHeavyAttack();
+        return true;
+      }
+      if (act === 'light') {
+        if (this.state === 'light1') this.startLightAttack(2);
+        else if (this.state === 'light2') this.startLightAttack(3);
+        else this.startLightAttack(1);
+        return true;
+      }
+      if (act === 'dash' && this.dashCd <= 0) {
+        this.jumpY = 0;
+        this.startDash();
+        return true;
+      }
+      return false;
     }
 
     getCombatCfg() {
@@ -4008,6 +4075,7 @@
       this.state = step === 1 ? 'light1' : (step === 2 ? 'light2' : 'light3');
       this.stateTime = 0;
       this.comboQueued = null;
+      this.hitConfirmed = false;
       this.hitIds.clear();
       this.frame = step === 1 ? 0 : (step === 2 ? 3 : 6);
       sfx.playSwing(step);
@@ -4026,6 +4094,7 @@
       this.jumpY = 0;
       this.vy = 0;
       this.comboQueued = null;
+      this.hitConfirmed = false;
       this.getsugaLaunched = false;
       this.hitIds.clear();
       this.frame = 0;
@@ -4047,7 +4116,7 @@
     }
 
     /**
-     * 衝刺輕攻擊：浪子踢球 / 閃電踢球 (Dash Light Attack — Running + Light Attack!)
+     * 衝刺輕攻擊：浪子踢球 / 閃電踢球 / 飛馳穿心掌 (Dash Light Attack — Running + Light Attack!)
      */
     startDashLightAttack() {
       const isRp = this.hero.id === 'redpanda';
@@ -4055,6 +4124,7 @@
       this.state = 'dashLightAttack';
       this.stateTime = 0;
       this.frame = 0;
+      this.hitConfirmed = false;
       this.ballLaunched = false;
       this.hitIds.clear();
       sfx.playSwing(2);
@@ -4273,6 +4343,7 @@
       if (this.hurtFlash > 0) this.hurtFlash -= dt;
       if (this.dashCd > 0) this.dashCd -= dt;
       if (this.tornadoCd > 0) this.tornadoCd -= dt;
+      this.captureLiveInputs(dt);
 
       const kbMoveX = (keys.ArrowRight || keys.KeyD ? 1 : 0) - (keys.ArrowLeft || keys.KeyA ? 1 : 0);
       const kbMoveZ = (keys.ArrowDown || keys.KeyS ? 1 : 0) - (keys.ArrowUp || keys.KeyW ? 1 : 0);
@@ -4567,6 +4638,10 @@
             spawnParticles(this.x + this.facing * 92, this.z - 72, '#ffffff', 8, 240, 5);
           }
         }
+        // On-Hit Cancel (56%+) or Recovery Cancel (74%+) -> silky combo into Heavy / Tornado / Special / Dash!
+        if ((this.hitConfirmed && progress >= 0.56) || progress >= 0.74) {
+          if (this.tryCancelInto(['special', 'tornado', 'heavy', 'dash'])) return;
+        }
         if (this.stateTime >= totalDur) {
           this.state = 'idle';
           this.animTimer = 0;
@@ -4596,6 +4671,10 @@
         }
       }
 
+      if ((this.hitConfirmed && progress >= 0.60) || progress >= 0.76) {
+        if (this.tryCancelInto(['special', 'tornado', 'heavy', 'dash'])) return;
+      }
+
       if (this.stateTime >= totalDur) {
         this.state = 'idle';
         this.animTimer = 0;
@@ -4603,7 +4682,7 @@
     }
 
     /**
-     * Multi-frame Dash Heavy Attack (星杖衝刺斬 / 赤焰衝刺撞擊) — supports 10 ~ 60+ frames!
+     * Multi-frame Dash Heavy Attack (星杖衝刺斬 / 赤焰衝刺撞擊 / 書包肩撞鐵山靠) — supports 10 ~ 60+ frames!
      */
     updateDashAttack(dt, wantSpecial) {
       this.stateTime += dt;
@@ -4646,6 +4725,10 @@
         } else {
           this.performMeleeHitbox(192, 38, true, 360, this.hitIdsStage2);
         }
+      }
+
+      if ((this.hitConfirmed && progress >= 0.62) || progress >= 0.78) {
+        if (this.tryCancelInto(['special', 'tornado', 'dash'])) return;
       }
 
       if (this.stateTime >= totalDur) {
@@ -4700,8 +4783,13 @@
         const dur = len / lightFps;
         const prog = Math.min(0.999, this.stateTime / dur);
         this.frame = Math.floor(prog * len);
-        if (prog >= 0.55) {
-          this.performMeleeHitbox(134, 14, false, 80);
+        if (prog < 0.55) this.x += this.facing * 95 * dt;
+        if (prog >= 0.45) {
+          this.performMeleeHitbox(136, 14, false, 78);
+        }
+        // On-Hit Cancel (58%+) or Recovery Cancel Window (74%+): seamlessly chains into next combo step!
+        if ((this.hitConfirmed && prog >= 0.58) || prog >= 0.74) {
+          if (this.tryCancelInto(['special', 'tornado', 'heavy', 'light'])) return;
         }
         if (this.stateTime >= dur) {
           if (this.comboQueued === 'heavy') this.startHeavyAttack();
@@ -4713,8 +4801,13 @@
         const dur = len / lightFps;
         const prog = Math.min(0.999, this.stateTime / dur);
         this.frame = s1End + Math.floor(prog * len);
+        if (prog < 0.55) this.x += this.facing * 115 * dt;
         if (prog >= 0.35) {
-          this.performMeleeHitbox(148, 20, false, 125);
+          this.performMeleeHitbox(150, 20, false, 118);
+        }
+        // On-Hit Cancel (55%+) or Recovery Cancel Window (74%+)
+        if ((this.hitConfirmed && prog >= 0.55) || prog >= 0.74) {
+          if (this.tryCancelInto(['special', 'tornado', 'heavy', 'light'])) return;
         }
         if (this.stateTime >= dur) {
           if (this.comboQueued === 'heavy') this.startHeavyAttack();
@@ -4726,8 +4819,13 @@
         const dur = len / Math.max(10, lightFps * 0.85);
         const prog = Math.min(0.999, this.stateTime / dur);
         this.frame = s2End + Math.floor(prog * len);
+        if (prog < 0.45) this.x += this.facing * 130 * dt;
         if (prog >= 0.25 && prog <= 0.65) {
-          this.performMeleeHitbox(156, 28, true, 240);
+          this.performMeleeHitbox(160, 28, true, 240);
+        }
+        // On-Hit Cancel (52%+) or Recovery Cancel Window (74%+) -> Heavy / Tornado / Special / Dash-Cancel!
+        if ((this.hitConfirmed && prog >= 0.52) || prog >= 0.74) {
+          if (this.tryCancelInto(['special', 'tornado', 'heavy', 'dash'])) return;
         }
         if (this.stateTime >= dur) {
           if (this.comboQueued === 'heavy') this.startHeavyAttack();
@@ -4769,6 +4867,10 @@
             });
           }
 
+          if ((this.hitConfirmed && prog >= 0.66) || prog >= 0.80) {
+            if (this.tryCancelInto(['special', 'tornado', 'dash'])) return;
+          }
+
           if (this.stateTime >= dur) {
             this.jumpY = 0;
             this.state = 'idle';
@@ -4807,6 +4909,40 @@
               if (actFx.flashEnabled) triggerImpactFrame(actFx.flashColor || '#fde047', Number(actFx.flashDur) || 0.06);
             }
           }
+          if ((this.hitConfirmed && prog >= 0.72) || prog >= 0.82) {
+            if (this.tryCancelInto(['special', 'tornado', 'dash'])) return;
+          }
+          if (this.stateTime >= dur) {
+            this.jumpY = 0;
+            this.state = 'idle';
+          }
+        } else if (this.hero.id === 'aqiang_boy') {
+          // 📚 HERO 4 HEAVY ATTACK: 書包大風車橫掃 (360° Wide Backpack Windmill Sweep — NO Kuromi wave!)
+          this.jumpY = 0;
+          const boyFps = StudioState.getFps('boy_attack', 16);
+          const dur = Math.max(0.50, heavyFc / boyFps);
+          const prog = Math.min(0.999, this.stateTime / dur);
+          this.frame = Math.min(heavyFc - 1, Math.floor(prog * heavyFc));
+          if (prog >= 0.26 && prog <= 0.56) {
+            this.x += this.facing * 155 * dt;
+          }
+          if (prog >= 0.30 && prog <= 0.66) {
+            this.performMeleeHitbox(205, 44, true, 390, this.hitIds, {
+              wideBack: 95,
+              customWord: '書包大風車!!',
+            });
+          }
+          if (prog >= 0.38 && !this.getsugaLaunched) {
+            this.getsugaLaunched = true;
+            sfx.playSwing(3);
+            addShake(8, 0.15);
+            triggerImpactFrame('#38bdf8', 0.055);
+            spawnParticles(this.x + this.facing * 56, this.z - 68, '#38bdf8', 16, 280, 6);
+            spawnParticles(this.x - this.facing * 42, this.z - 68, '#bae6fd', 10, 220, 5);
+          }
+          if ((this.hitConfirmed && prog >= 0.62) || prog >= 0.78) {
+            if (this.tryCancelInto(['special', 'tornado', 'dash'])) return;
+          }
           if (this.stateTime >= dur) {
             this.jumpY = 0;
             this.state = 'idle';
@@ -4841,6 +4977,9 @@
               if (actFx.shakeEnabled) addShake(Number(actFx.shakeAmp) || 8, Number(actFx.shakeDur) || 0.16);
               if (actFx.flashEnabled) triggerImpactFrame(actFx.flashColor || '#67e8f9', Number(actFx.flashDur) || 0.055);
             }
+          }
+          if ((this.hitConfirmed && prog >= 0.62) || prog >= 0.78) {
+            if (this.tryCancelInto(['special', 'tornado', 'dash'])) return;
           }
           if (this.stateTime >= dur) {
             this.jumpY = 0;
@@ -5202,11 +5341,17 @@
         }
       }
       if (hitAny) {
+        this.hitConfirmed = true;
         sfx.playHit(heavy);
-        game.hitstop = heavy ? 0.068 : 0.032;
-        addShake(heavy ? 10 : 4, heavy ? 0.2 : 0.09);
+        // Escalating fighting-game Hitstop (freeze frames): light1(2f) -> light2(2.6f) -> light3(3.5f) -> heavy/wallSlam(4.3f)
+        const stageStop = (effOpts && effOpts.wallSlam)
+          ? 0.072
+          : (heavy ? 0.068 : (this.state === 'light2' ? 0.044 : (this.state === 'light3' ? 0.056 : 0.032)));
+        game.hitstop = Math.max(game.hitstop, stageStop);
+        addShake(heavy ? 10 : (this.state === 'light2' ? 5.5 : 4), heavy ? 0.2 : 0.09);
         if (typeof GamepadManager !== 'undefined') GamepadManager.rumble(heavy ? 0.58 : 0.2, heavy ? 0.45 : 0.16, heavy ? 145 : 65);
       }
+      return hitAny;
     }
 
     draw(ctx) {
@@ -9267,6 +9412,8 @@
     game.comicBubbles = game.comicBubbles.filter((cb) => cb.life > 0);
 
     if (game.hitstop > 0) {
+      // Keep buffering player combo inputs during Hitstop freeze frames!
+      if (game.player) game.player.captureLiveInputs(dt);
       game.hitstop -= dt;
       return;
     }
