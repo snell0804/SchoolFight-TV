@@ -1348,6 +1348,7 @@
       const bgDef = [
         { key: 'starfish', embedKey: 'bg_starfish_street', file: 'assets/bg_starfish_street.webp' },
         { key: 'aqiang', embedKey: 'bg_aqiang_street', file: 'assets/bg_aqiang_street.webp' },
+        { key: 'donghua', embedKey: 'bg_donghua_street', file: 'assets/bg_donghua_street.webp' },
         { key: 'cooker_hp', embedKey: 'prop_cooker_sheet', file: 'assets/prop_cooker_sheet.webp' },
         { key: 'cooker_mp', embedKey: 'prop_cooker_mp_sheet', file: 'assets/prop_cooker_mp_sheet.webp' },
         { key: 'foods', embedKey: 'item_foods_sheet', file: 'assets/item_foods_sheet.webp' },
@@ -7223,22 +7224,21 @@
     const stageBg = (SpriteBank.bgImages && SpriteBank.bgImages[stage.key])
       ? SpriteBank.bgImages[stage.key]
       : null;
-    const isSanrio = !!stageBg && (stage.key === 'starfish' || stage.key === 'aqiang');
+    const isSanrio = !!stageBg && (stage.key === 'starfish' || stage.key === 'aqiang' || stage.key === 'donghua');
 
     // ------------------------------------------------------------------------
-    // LAYER 0 (0.05x): Pastel Sanrio Sky & Smiling Sun / Winter Moon
+    // LAYER 0 (0.05x): Warm Cream Clay Storybook Sky Backdrop
     // ------------------------------------------------------------------------
     const sky = ctx.createLinearGradient(0, 0, 0, 315);
     if (isSanrio && stage.key === 'starfish') {
-      // Sanrio Ocean Sky-Blue -> Baby-Blue -> Strawberry-Milk Horizon!
-      sky.addColorStop(0, '#5cc2ff');
-      sky.addColorStop(0.55, '#bae6fd');
-      sky.addColorStop(1, '#fff0f6');
+      sky.addColorStop(0, '#f6ecd3');
+      sky.addColorStop(1, '#f3e7cb');
     } else if (isSanrio && stage.key === 'aqiang') {
-      // Sanrio Warm Hualien Afternoon Sky -> Soft Buttercream -> Pastel Peach Horizon!
-      sky.addColorStop(0, '#62c3ff');
-      sky.addColorStop(0.54, '#cbeeff');
-      sky.addColorStop(1, '#ffedd5');
+      sky.addColorStop(0, '#f3e7cd');
+      sky.addColorStop(1, '#efe1c4');
+    } else if (isSanrio && stage.key === 'donghua') {
+      sky.addColorStop(0, '#f2e5cb');
+      sky.addColorStop(1, '#ede0c3');
     } else {
       sky.addColorStop(0, theme.sky[0]);
       sky.addColorStop(0.55, theme.sky[1]);

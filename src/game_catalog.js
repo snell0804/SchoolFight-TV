@@ -122,8 +122,9 @@
   ];
 
   const backgrounds = [
-    { id: 'bg_starfish_street', name: '海星國小街道全景', stage: 1, parallax: 1.0, png: 'assets/bg_starfish_street.webp', webp: 'assets/bg_starfish_street.webp', builtin: true },
-    { id: 'bg_aqiang_street', name: '阿強國小街道全景', stage: 2, parallax: 1.0, png: 'assets/bg_aqiang_street.webp', webp: 'assets/bg_aqiang_street.webp', builtin: true },
+    { id: 'bg_starfish_street', name: '海星國小黏土海岸全景', stage: 1, parallax: 1.0, png: 'assets/bg_starfish_street.webp', webp: 'assets/bg_starfish_street.webp', builtin: true },
+    { id: 'bg_aqiang_street', name: '阿強國小黏土摩天輪全景', stage: 2, parallax: 1.0, png: 'assets/bg_aqiang_street.webp', webp: 'assets/bg_aqiang_street.webp', builtin: true },
+    { id: 'bg_donghua_street', name: '冬花國小黏土櫻花道場全景', stage: 3, parallax: 1.0, png: 'assets/bg_donghua_street.webp', webp: 'assets/bg_donghua_street.webp', builtin: true },
   ];
 
   const items = [
