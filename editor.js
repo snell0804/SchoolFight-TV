@@ -68,27 +68,125 @@
     },
   };
 
-  /** Remove solid near-white background via per-cell border flood fill (only if corners are opaque white). */
-  function stripWhiteBgCanvas(canvas, cols = 1, rows = 1) {
+  /** Remove flat neon chroma-key green screen (#00FF00) + 2px green spill suppression, preserving forest-green outfits. */
+  function stripGreenScreenCanvas(canvas) {
     const w = canvas.width;
     const h = canvas.height;
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
     const imgData = ctx.getImageData(0, 0, w, h);
     const d = imgData.data;
-    const isNearWhite = (idx) => {
-      const r = d[idx], g = d[idx + 1], b = d[idx + 2], a = d[idx + 3];
-      if (a < 200) return false;
-      const mx = Math.max(r, g, b), mn = Math.min(r, g, b);
-      return r >= 230 && g >= 230 && b >= 230 && (mx - mn) <= 24;
-    };
-    const corners = [0, (w - 1) * 4, ((h - 1) * w) * 4, ((h - 1) * w + (w - 1)) * 4];
-    const whiteCorners = corners.filter(isNearWhite).length;
-    if (whiteCorners < 2) return canvas;
+    const n = w * h;
 
+    const isChroma = (idx) => {
+      const r = d[idx], g = d[idx + 1], b = d[idx + 2], a = d[idx + 3];
+      if (a < 180) return false;
+      return g >= 180 && (g - Math.max(r, b)) >= 85;
+    };
+    const isSoftChroma = (idx) => {
+      const r = d[idx], g = d[idx + 1], b = d[idx + 2], a = d[idx + 3];
+      if (a < 80) return false;
+      return g >= 145 && (g - Math.max(r, b)) >= 55 && r <= 145 && b <= 145;
+    };
+
+    const corners = [0, (w - 1) * 4, ((h - 1) * w) * 4, ((h - 1) * w + (w - 1)) * 4];
+    let greenHits = corners.filter(isChroma).length;
+    if (greenHits < 1) {
+      let sampleCount = 0;
+      const step = Math.max(1, Math.floor(n / 4000));
+      for (let p = 0; p < n; p += step) {
+        if (isChroma(p * 4)) sampleCount++;
+      }
+      if (sampleCount < 40) return canvas;
+    }
+
+    const dist = new Uint8Array(n);
+    dist.fill(99);
+    const queue = new Int32Array(n);
+    let head = 0, tail = 0;
+    for (let p = 0; p < n; p++) {
+      if (isChroma(p * 4)) {
+        dist[p] = 0;
+        queue[tail++] = p;
+      }
+    }
+    while (head < tail) {
+      const p = queue[head++];
+      const curD = dist[p];
+      if (curD >= 2) continue;
+      const x = p % w;
+      const y = (p - x) / w;
+      const tryNb = (nx, ny) => {
+        const np = ny * w + nx;
+        if (dist[np] <= curD + 1) return;
+        if (!isSoftChroma(np * 4)) return;
+        dist[np] = curD + 1;
+        queue[tail++] = np;
+      };
+      if (x > 0) tryNb(x - 1, y);
+      if (x < w - 1) tryNb(x + 1, y);
+      if (y > 0) tryNb(x, y - 1);
+      if (y < h - 1) tryNb(x, y + 1);
+    }
+
+    for (let p = 0; p < n; p++) {
+      if (dist[p] < 99) {
+        d[p * 4] = 0; d[p * 4 + 1] = 0; d[p * 4 + 2] = 0; d[p * 4 + 3] = 0;
+      }
+    }
+
+    // 1-pass outer-edge green fringe removal & 2px green spill suppression
+    const nearBg = new Uint8Array(n);
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        const p = y * w + x;
+        if (d[p * 4 + 3] === 0) continue;
+        let adj1 = false;
+        if (x > 0 && d[(p - 1) * 4 + 3] === 0) adj1 = true;
+        else if (x < w - 1 && d[(p + 1) * 4 + 3] === 0) adj1 = true;
+        else if (y > 0 && d[(p - w) * 4 + 3] === 0) adj1 = true;
+        else if (y < h - 1 && d[(p + w) * 4 + 3] === 0) adj1 = true;
+        if (adj1) {
+          nearBg[p] = 1;
+          const idx = p * 4;
+          const gDom = d[idx + 1] - Math.max(d[idx], d[idx + 2]);
+          if (gDom >= 38 && d[idx + 1] >= 115) {
+            d[idx] = 0; d[idx + 1] = 0; d[idx + 2] = 0; d[idx + 3] = 0;
+          }
+        }
+      }
+    }
+    // Expand nearBg by 1 more pixel for despill
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        const p = y * w + x;
+        if (d[p * 4 + 3] === 0 || nearBg[p]) continue;
+        if ((x > 0 && nearBg[p - 1] === 1) || (x < w - 1 && nearBg[p + 1] === 1) ||
+            (y > 0 && nearBg[p - w] === 1) || (y < h - 1 && nearBg[p + w] === 1)) {
+          nearBg[p] = 2;
+        }
+      }
+    }
+    for (let p = 0; p < n; p++) {
+      if (nearBg[p] > 0 && d[p * 4 + 3] > 0) {
+        const idx = p * 4;
+        const maxRB = Math.max(d[idx], d[idx + 2]);
+        if (d[idx + 1] > maxRB) d[idx + 1] = maxRB;
+      }
+    }
+    ctx.putImageData(imgData, 0, 0);
+    return canvas;
+  }
+
+  /** Remove solid background by auto-sampling 4 corners/borders of each cell (works for white, dark, magenta, or any solid bg). */
+  function stripBorderColorCanvas(canvas, cols = 1, rows = 1, tolerance = 40) {
+    const w = canvas.width;
+    const h = canvas.height;
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    const imgData = ctx.getImageData(0, 0, w, h);
+    const d = imgData.data;
+    const tolSq = tolerance * tolerance;
     const visited = new Uint8Array(w * h);
     const queue = new Int32Array(w * h);
-    const cw = Math.max(1, Math.floor(w / Math.max(1, cols)));
-    const ch = Math.max(1, Math.floor(h / Math.max(1, rows)));
 
     for (let rIdx = 0; rIdx < Math.max(1, rows); rIdx++) {
       const y0 = Math.floor((rIdx * h) / Math.max(1, rows));
@@ -96,11 +194,46 @@
       for (let cIdx = 0; cIdx < Math.max(1, cols); cIdx++) {
         const x0 = Math.floor((cIdx * w) / Math.max(1, cols));
         const x1 = Math.min(w - 1, Math.floor(((cIdx + 1) * w) / Math.max(1, cols)) - 1);
+        const mx = Math.floor((x0 + x1) / 2);
+        const my = Math.floor((y0 + y1) / 2);
+        // Sample 4 corners + 4 edge midpoints of this cell
+        const samplePts = [
+          [x0, y0], [x1, y0], [x0, y1], [x1, y1],
+          [mx, y0], [mx, y1], [x0, my], [x1, my],
+        ];
+        const opaqueSamples = [];
+        for (const [sx, sy] of samplePts) {
+          const idx = (sy * w + sx) * 4;
+          if (d[idx + 3] >= 200) opaqueSamples.push([d[idx], d[idx + 1], d[idx + 2]]);
+        }
+        if (opaqueSamples.length < 2) continue; // Already transparent cell
+
+        // Find dominant sampled border color
+        let bestRgb = opaqueSamples[0];
+        let bestCount = 0;
+        for (let i = 0; i < opaqueSamples.length; i++) {
+          let cnt = 0;
+          const [r1, g1, b1] = opaqueSamples[i];
+          for (let j = 0; j < opaqueSamples.length; j++) {
+            const dr = r1 - opaqueSamples[j][0], dg = g1 - opaqueSamples[j][1], db = b1 - opaqueSamples[j][2];
+            if (dr * dr + dg * dg + db * db <= 32 * 32) cnt++;
+          }
+          if (cnt > bestCount) { bestCount = cnt; bestRgb = opaqueSamples[i]; }
+        }
+        if (bestCount < 2) continue;
+
+        const [bgR, bgG, bgB] = bestRgb;
+        const matchesBg = (idx) => {
+          if (d[idx + 3] < 140) return false;
+          const dr = d[idx] - bgR, dg = d[idx + 1] - bgG, db = d[idx + 2] - bgB;
+          return (dr * dr + dg * dg + db * db) <= tolSq;
+        };
+
         let head = 0, tail = 0;
         const push = (x, y) => {
           const p = y * w + x;
           if (visited[p]) return;
-          if (!isNearWhite(p * 4)) return;
+          if (!matchesBg(p * 4)) return;
           visited[p] = 1;
           queue[tail++] = p;
         };
@@ -108,13 +241,34 @@
         for (let y = y0; y <= y1; y++) { push(x0, y); push(x1, y); }
         while (head < tail) {
           const p = queue[head++];
-          d[p * 4 + 3] = 0;
+          const idx = p * 4;
+          d[idx] = 0; d[idx + 1] = 0; d[idx + 2] = 0; d[idx + 3] = 0;
           const x = p % w;
           const y = (p - x) / w;
           if (x > x0) push(x - 1, y);
           if (x < x1) push(x + 1, y);
           if (y > y0) push(x, y - 1);
           if (y < y1) push(x, y + 1);
+        }
+
+        // 1-pass gentle de-halo for outer border pixels close to sampled bg color
+        const haloTolSq = (tolerance + 26) * (tolerance + 26);
+        for (let y = y0; y <= y1; y++) {
+          for (let x = x0; x <= x1; x++) {
+            const p = y * w + x;
+            const idx = p * 4;
+            if (d[idx + 3] === 0) continue;
+            const adjBg = (x > x0 && d[(p - 1) * 4 + 3] === 0) ||
+                          (x < x1 && d[(p + 1) * 4 + 3] === 0) ||
+                          (y > y0 && d[(p - w) * 4 + 3] === 0) ||
+                          (y < y1 && d[(p + w) * 4 + 3] === 0);
+            if (!adjBg) continue;
+            const dr = d[idx] - bgR, dg = d[idx + 1] - bgG, db = d[idx + 2] - bgB;
+            const distSq = dr * dr + dg * dg + db * db;
+            if (distSq <= haloTolSq) {
+              d[idx] = 0; d[idx + 1] = 0; d[idx + 2] = 0; d[idx + 3] = 0;
+            }
+          }
         }
       }
     }
@@ -164,7 +318,7 @@
     return out;
   }
 
-  async function renderSpriteToCanvas(fileOrUrl, { cols = 5, rows = 2, frames = null, removeWhiteBg = false, padWideCell = false } = {}) {
+  async function renderSpriteToCanvas(fileOrUrl, { cols = 5, rows = 2, frames = null, removeGreenScreen = false, removeBorderColor = false, removeWhiteBg = false, padWideCell = false } = {}) {
     let bmp;
     if (fileOrUrl instanceof Blob) {
       bmp = await createImageBitmap(fileOrUrl);
@@ -178,7 +332,8 @@
     c.height = bmp.height;
     c.getContext('2d').drawImage(bmp, 0, 0);
     bmp.close();
-    if (removeWhiteBg) stripWhiteBgCanvas(c, cols, rows);
+    if (removeGreenScreen) stripGreenScreenCanvas(c);
+    if (removeBorderColor || removeWhiteBg) stripBorderColorCanvas(c, cols, rows);
     if (padWideCell && (c.width / cols !== WIDE_CELL_W || c.height / rows !== WIDE_CELL_H)) {
       return padSheetToWideCells(c, cols, rows, frames || cols * rows);
     }
@@ -2115,7 +2270,8 @@
         }
         return '';
       });
-      const autoRemoveWhiteBg = ref(true);
+      const autoRemoveGreenScreen = ref(true);
+      const autoRemoveBorderColor = ref(true);
       const autoPadWideCell = ref(true);
       function applyGridPreset(p) {
         actionForm.cols = p.cols;
@@ -2266,14 +2422,51 @@
         file.value = newFile;
       }
 
+      async function applyBgRemovalPreview() {
+        const src = file.value || previewSrc.value;
+        if (!src) { toast('請先上傳或選擇圖片', 'error'); return; }
+        if (!autoRemoveGreenScreen.value && !autoRemoveBorderColor.value) {
+          toast('請先勾選至少一種去背方式（綠幕去背 或 四周點色去背）', 'error');
+          return;
+        }
+        store.busy = true;
+        try {
+          const cols = Math.max(1, Number(actionForm.cols) || 5);
+          const rows = Math.max(1, Number(actionForm.rows) || 2);
+          const frames = Math.max(1, Math.min(cols * rows, Number(actionForm.frames) || cols * rows));
+          const c = await renderSpriteToCanvas(src, {
+            cols,
+            rows,
+            frames,
+            removeGreenScreen: autoRemoveGreenScreen.value,
+            removeBorderColor: autoRemoveBorderColor.value,
+            padWideCell: false,
+          });
+          const pngBlob = await new Promise((r) => c.toBlob(r, 'image/png'));
+          const keyedFile = new File([pngBlob], `${actionForm.id || 'sprite'}_keyed.png`, { type: 'image/png' });
+          keyedFile._alreadyKeyed = true;
+          file.value = keyedFile;
+          const modes = [
+            autoRemoveGreenScreen.value ? '綠幕去背' : '',
+            autoRemoveBorderColor.value ? '四周點色去背' : '',
+          ].filter(Boolean).join('＋');
+          toast(`🪄 已套用「${modes}」並更新預覽！`, 'success');
+        } catch (e) {
+          toast(`去背處理失敗：${e.message}`, 'error');
+        } finally { store.busy = false; }
+      }
+
       async function prepareUploadFile() {
         if (!file.value) return null;
-        if (file.value._skipPreprocess || (!autoRemoveWhiteBg.value && !autoPadWideCell.value)) return file.value;
+        const doGreen = !file.value._alreadyKeyed && autoRemoveGreenScreen.value;
+        const doBorder = !file.value._alreadyKeyed && autoRemoveBorderColor.value;
+        if (file.value._skipPreprocess || (!doGreen && !doBorder && !autoPadWideCell.value)) return file.value;
         const c = await renderSpriteToCanvas(file.value, {
-          cols: Number(actionForm.cols) || 10,
-          rows: Number(actionForm.rows) || 1,
+          cols: Number(actionForm.cols) || 5,
+          rows: Number(actionForm.rows) || 2,
           frames: Number(actionForm.frames) || null,
-          removeWhiteBg: autoRemoveWhiteBg.value,
+          removeGreenScreen: doGreen,
+          removeBorderColor: doBorder,
           padWideCell: autoPadWideCell.value,
         });
         const pngBlob = await new Promise((r) => c.toBlob(r, 'image/png'));
@@ -2284,18 +2477,20 @@
         if (!canSave.value) return;
         store.busy = true;
         try {
-          const cols = Math.max(1, Math.min(24, Number(actionForm.cols) || 10));
-          const rows = Math.max(1, Math.min(20, Number(actionForm.rows) || 1));
+          const cols = Math.max(1, Math.min(24, Number(actionForm.cols) || 5));
+          const rows = Math.max(1, Math.min(20, Number(actionForm.rows) || 2));
           const frames = Math.max(1, Math.min(cols * rows, Number(actionForm.frames) || cols * rows));
           const fps = Math.max(1, Math.min(60, Number(actionForm.fps) || 14));
           const src = file.value || previewSrc.value;
           if (!src) throw new Error('沒有可儲存的精靈表圖片');
           const skipPre = !!(file.value && file.value._skipPreprocess);
+          const alreadyKeyed = !!(file.value && file.value._alreadyKeyed);
           const c = await renderSpriteToCanvas(src, {
             cols,
             rows,
             frames,
-            removeWhiteBg: !!file.value && !skipPre && autoRemoveWhiteBg.value,
+            removeGreenScreen: !!file.value && !skipPre && !alreadyKeyed && autoRemoveGreenScreen.value,
+            removeBorderColor: !!file.value && !skipPre && !alreadyKeyed && autoRemoveBorderColor.value,
             padWideCell: !!file.value && !skipPre && autoPadWideCell.value,
           });
           const dataUrl = c.toDataURL('image/png');
@@ -2374,7 +2569,7 @@
         { k: 'monster', t: '怪物' }, { k: 'custom', t: '✨自訂' },
       ];
       return { store, allCharacters, characters, current, currentAction, selectedId, selectedActionId, isNewChar, charForm, actionForm, isNewAction,
-        file, condOk, filter, roleFilter, roleTabs, aiModalOpen, turnaroundSrc, turnaroundZoom, previewSrc, autoRemoveWhiteBg, autoPadWideCell, GRID_PRESETS, applyGridPreset, saveBlockReason, canSave, TRIGGER_LABELS,
+        file, condOk, filter, roleFilter, roleTabs, aiModalOpen, turnaroundSrc, turnaroundZoom, previewSrc, autoRemoveGreenScreen, autoRemoveBorderColor, autoPadWideCell, applyBgRemovalPreview, GRID_PRESETS, applyGridPreset, saveBlockReason, canSave, TRIGGER_LABELS,
         selectChar, newChar, selectAction, newAction, uploadTurnaround, onAiApply, onSheetReordered, saveLocal, revertLocal, save, removeAction, removeChar };
     },
     template: `
@@ -2477,15 +2672,26 @@
                 <p class="text-sm mb-1">觸發條件式</p>
                 <condition-editor v-model="actionForm.condition" @valid="condOk=$event" />
               </div>
-              <drop-zone v-model:file="file" :hint="isNewAction ? '新動作必須上傳精靈表圖片（推薦 10~20 欄 × 1 列）' : '留空 = 沿用目前圖檔，或上傳新圖覆寫'" />
-              <div class="flex flex-col gap-1">
-                <label class="inline-flex items-center gap-2 text-xs text-slate-600 select-none">
-                  <input type="checkbox" v-model="autoRemoveWhiteBg" />
-                  上傳白底圖時自動去除純白背景（若已是透明去背 PNG 則保留原樣）
+              <drop-zone v-model:file="file" :hint="isNewAction ? '新動作必須上傳精靈表圖片（推薦 5×2 / 5×4 / 8×5）' : '留空 = 沿用目前圖檔，或上傳新圖覆寫'" />
+              <div class="flex flex-col gap-1.5 p-2.5 rounded-lg bg-slate-50 border border-slate-200">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <span class="text-xs font-semibold text-slate-700">✂️ 去背與格線正規化選項</span>
+                  <button id="btnApplyBgRemoval" type="button" @click="applyBgRemovalPreview" :disabled="store.busy || !previewSrc || (!autoRemoveGreenScreen && !autoRemoveBorderColor)"
+                    class="px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm disabled:opacity-40">
+                    🪄 立即去背預覽
+                  </button>
+                </div>
+                <label class="inline-flex items-center gap-2 text-xs text-slate-700 select-none cursor-pointer">
+                  <input id="chkGreenScreen" type="checkbox" v-model="autoRemoveGreenScreen" class="accent-emerald-600" />
+                  <span>🟩 <b>綠幕去背</b>（自動去除 <code>#00FF00</code> 亮綠幕＋外緣去綠溢色，保留深綠服裝）</span>
                 </label>
-                <label class="inline-flex items-center gap-2 text-xs text-slate-600 select-none">
+                <label class="inline-flex items-center gap-2 text-xs text-slate-700 select-none cursor-pointer">
+                  <input id="chkBorderColor" type="checkbox" v-model="autoRemoveBorderColor" class="accent-indigo-600" />
+                  <span>🎯 <b>四周點色去背</b>（自動取樣各格四角／四邊背景色連通去背，支援白底／深底／洋紅幕等任意純色底）</span>
+                </label>
+                <label class="inline-flex items-center gap-2 text-xs text-slate-600 select-none cursor-pointer">
                   <input type="checkbox" v-model="autoPadWideCell" />
-                  📐 自動正規化每格畫布為固定 256×256 px 邏輯格子（腳底錨點 128, 228）
+                  <span>📐 自動正規化每格畫布為固定 256×256 px 邏輯格子（腳底錨點 128, 228）</span>
                 </label>
               </div>
             </div>
