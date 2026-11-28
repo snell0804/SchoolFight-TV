@@ -695,7 +695,7 @@
       { id: 'boy_dash', label: '衝刺・疾風滑步 (Dash)', triggerDesc: '低姿青色風軌滑步瞬間突進閃避', sheetKey: 'boy_dash', fallbackSheet: 'boy_idle', fps: 24, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
       { id: 'boy_lightAttack', label: '輕攻擊・雙掌太極推 (Light)', triggerDesc: '武術推掌連擊：右掌推擊→左掌蓄力→雙掌爆裂氣波推', sheetKey: 'boy_lightAttack', fallbackSheet: 'boy_idle', fps: 17, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
       { id: 'boy_attack', label: '重攻擊・書包大風車橫掃 (Heavy)', triggerDesc: '摘下深藍書包 360° 大風車猛力橫掃，爆出青色弧形衝擊波', sheetKey: 'boy_attack', fallbackSheet: 'boy_idle', fps: 16, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
-      { id: 'boy_dashLightAttack', label: '衝刺輕攻擊・飛馳穿心掌（撞飛撞牆） (Dash Light)', triggerDesc: '奔跑中按輕攻疾馳突進近身猛推，將敵人高速打飛至畫面邊緣猛烈撞牆並撞飛沿路敵人', sheetKey: 'boy_dashLightAttack', fallbackSheet: 'boy_idle', fps: 17, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
+      { id: 'boy_dashLightAttack', label: '衝刺輕攻擊・飛馳穿心掌（長距突進） (Dash Light)', triggerDesc: '奔跑中按輕攻發動超長距離疾馳穿心掌突進切入，命中硬直可直接取消接續連段', sheetKey: 'boy_dashLightAttack', fallbackSheet: 'boy_idle', fps: 17, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
       { id: 'boy_dashAttack', label: '衝刺重攻擊・書包肩撞鐵山靠（撞飛撞牆） (Dash Heavy)', triggerDesc: '跑步中按重攻壓低身軀發動霸體鐵山靠肩撞，將敵人猛烈打飛至畫面邊緣撞牆並撞飛沿路敵人', sheetKey: 'boy_dashAttack', fallbackSheet: 'boy_idle', fps: 16, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
       { id: 'boy_tornadoKick', label: '特殊技・直尺昇龍旋風斬 (Special Skill)', triggerDesc: '↑+重攻高舉白直尺騰空螺旋昇龍，捲起青色旋風浮空連擊', sheetKey: 'boy_tornadoKick', fallbackSheet: 'boy_idle', fps: 16, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
       { id: 'boy_special', label: '必殺技・期末考大審判 (Super Special)', triggerDesc: '躍空高舉雙手召喚期末考天降五道黃金審判光柱，全場多段聖光轟擊', sheetKey: 'boy_special', fallbackSheet: 'boy_idle', fps: 12, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
@@ -793,7 +793,7 @@
           flinchOnHit: true,
           hitstunMult: 1.0,
           knockbackMode: 'normal', // 'normal' | 'resist' | 'immune'
-          wallSlamMode: charId === 'aqiang_boy' ? 'dashLight' : 'off', // 'off' | 'dashLight' | 'heavy' | 'all'
+          wallSlamMode: 'off', // 'off' | 'dashLight' | 'heavy' | 'all'
           speedMult: 1.0,
           dmgMult: 1.0,
         };
@@ -4610,9 +4610,10 @@
       const isBoy = this.hero.id === 'aqiang_boy';
       let speed = 0;
       if (isBoy) {
-        if (progress < 0.25) speed = 420;
-        else if (progress < 0.55) speed = 340;
-        else if (progress < 0.72) speed = 150;
+        // 超長距離疾馳穿心掌突進切入（高速滑步突進 → 急煞收掌）
+        if (progress < 0.28) speed = 640;
+        else if (progress < 0.58) speed = 520;
+        else if (progress < 0.76) speed = 240;
         else speed = 0;
       } else {
         if (progress < 0.12) speed = 310;
@@ -4624,23 +4625,25 @@
       this.x += this.facing * speed * dt;
 
       if (isBoy) {
-        // 班長小強專屬：不發射氣功／足球，近身疾馳穿心掌直接將敵人高速打飛至畫面邊緣猛烈撞牆！
-        if (progress >= 0.30 && progress <= 0.65) {
-          const hit = this.performMeleeHitbox(188, 30, true, 900, this.hitIds, {
-            wallSlam: true,
+        // 班長小強專屬：長距離突進穿心掌（不發射氣功／不撞飛撞牆，短擊退方便貼身接續連段！）
+        if (progress < 0.60 && Math.random() < 0.55) {
+          spawnParticles(this.x - this.facing * 26, this.z - 54 + (Math.random() - 0.5) * 32, '#7dd3fc', 1, 120, 4.5);
+        }
+        if (progress >= 0.26 && progress <= 0.66) {
+          const hit = this.performMeleeHitbox(190, 26, false, 145, this.hitIds, {
             customWord: '飛馳穿心掌!!',
           });
           if (hit && !this.ballLaunched) {
             this.ballLaunched = true;
-            addShake(9, 0.16);
-            triggerImpactFrame('#38bdf8', 0.06);
-            spawnParticles(this.x + this.facing * 92, this.z - 72, '#38bdf8', 16, 300, 7);
-            spawnParticles(this.x + this.facing * 92, this.z - 72, '#ffffff', 8, 240, 5);
+            addShake(6, 0.12);
+            triggerImpactFrame('#38bdf8', 0.05);
+            spawnParticles(this.x + this.facing * 92, this.z - 72, '#38bdf8', 14, 260, 6.5);
+            spawnParticles(this.x + this.facing * 92, this.z - 72, '#ffffff', 7, 210, 5);
           }
         }
-        // On-Hit Cancel (56%+) or Recovery Cancel (74%+) -> silky combo into Heavy / Tornado / Special / Dash!
-        if ((this.hitConfirmed && progress >= 0.56) || progress >= 0.74) {
-          if (this.tryCancelInto(['special', 'tornado', 'heavy', 'dash'])) return;
+        // On-Hit Cancel (52%+) or Recovery Cancel (72%+) -> silky combo into Light / Heavy / Tornado / Special / Dash!
+        if ((this.hitConfirmed && progress >= 0.52) || progress >= 0.72) {
+          if (this.tryCancelInto(['special', 'tornado', 'heavy', 'light', 'dash'])) return;
         }
         if (this.stateTime >= totalDur) {
           this.state = 'idle';
