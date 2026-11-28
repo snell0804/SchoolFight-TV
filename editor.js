@@ -122,16 +122,15 @@
     return canvas;
   }
 
-  const WIDE_CELL_W = 420;
-  const WIDE_CELL_H = 340;
-  const WIDE_ANCHOR_X = 210;
-  const WIDE_ANCHOR_Y = 304;
+  const WIDE_CELL_W = 256;
+  const WIDE_CELL_H = 256;
+  const WIDE_ANCHOR_X = 128;
+  const WIDE_ANCHOR_Y = 228;
   const GRID_PRESETS = [
-    { label: '10×1（標準長條）', cols: 10, rows: 1, frames: 10 },
-    { label: '12×1', cols: 12, rows: 1, frames: 12 },
-    { label: '16×1', cols: 16, rows: 1, frames: 16 },
-    { label: '20×1', cols: 20, rows: 1, frames: 20 },
-    { label: '5×2（雙列）', cols: 5, rows: 2, frames: 10 },
+    { label: '5×2（10 幀 · 1280×512）', cols: 5, rows: 2, frames: 10 },
+    { label: '5×4（20 幀 · 1280×1024）', cols: 5, rows: 4, frames: 20 },
+    { label: '5×6（30 幀 · 1280×1536）', cols: 5, rows: 6, frames: 30 },
+    { label: '8×5（40 幀 · 2048×1280）', cols: 8, rows: 5, frames: 40 },
   ];
 
   function padSheetToWideCells(srcCanvas, cols, rows, frames) {
@@ -145,13 +144,13 @@
     octx.imageSmoothingEnabled = true;
     octx.imageSmoothingQuality = 'high';
 
-    // Scale uniformly so each cell fits comfortably inside 420x340 with generous margins for big actions
-    const targetH = 220;
-    const baseScale = Math.min(targetH / Math.max(1, sh), (WIDE_CELL_W - 40) / Math.max(1, sw), (WIDE_CELL_H - 36) / Math.max(1, sh));
+    // Scale uniformly so each cell fits cleanly inside fixed 256x256 logical grid with anchor (128, 228)
+    const targetH = 196;
+    const baseScale = Math.min(targetH / Math.max(1, sh), (WIDE_CELL_W - 16) / Math.max(1, sw), (WIDE_CELL_H - 28) / Math.max(1, sh));
     const dw = Math.round(sw * baseScale);
     const dh = Math.round(sh * baseScale);
     const ox = Math.round((WIDE_CELL_W - dw) / 2);
-    const oy = Math.max(8, Math.min(WIDE_CELL_H - dh - 8, WIDE_ANCHOR_Y - dh));
+    const oy = Math.max(6, Math.min(WIDE_CELL_H - dh - 6, WIDE_ANCHOR_Y - dh));
 
     for (let i = 0; i < total; i++) {
       const cIdx = i % cols;
@@ -165,7 +164,7 @@
     return out;
   }
 
-  async function renderSpriteToCanvas(fileOrUrl, { cols = 10, rows = 1, frames = null, removeWhiteBg = false, padWideCell = false } = {}) {
+  async function renderSpriteToCanvas(fileOrUrl, { cols = 5, rows = 2, frames = null, removeWhiteBg = false, padWideCell = false } = {}) {
     let bmp;
     if (fileOrUrl instanceof Blob) {
       bmp = await createImageBitmap(fileOrUrl);
@@ -180,7 +179,7 @@
     c.getContext('2d').drawImage(bmp, 0, 0);
     bmp.close();
     if (removeWhiteBg) stripWhiteBgCanvas(c, cols, rows);
-    if (padWideCell && (c.width / cols < WIDE_CELL_W || c.height / rows < WIDE_CELL_H)) {
+    if (padWideCell && (c.width / cols !== WIDE_CELL_W || c.height / rows !== WIDE_CELL_H)) {
       return padSheetToWideCells(c, cols, rows, frames || cols * rows);
     }
     return c;
@@ -2080,7 +2079,7 @@
       const selectedActionId = ref(null);
       const isNewChar = ref(false);
       const charForm = reactive({ id: '', name: '' });
-      const blankAction = () => ({ id: '', label: '', cols: 10, rows: 1, frames: 10, fps: 14, loop: false, trigger: 'on_attack', condition: '', priority: 0, png: null, webp: null, sheetKey: null, fx: defaultFxForAction() });
+      const blankAction = () => ({ id: '', label: '', cols: 5, rows: 2, frames: 10, fps: 14, loop: false, trigger: 'on_attack', condition: '', priority: 0, png: null, webp: null, sheetKey: null, fx: defaultFxForAction() });
       const actionForm = reactive(blankAction());
       const isNewAction = ref(true);
       const file = ref(null);
@@ -2486,7 +2485,7 @@
                 </label>
                 <label class="inline-flex items-center gap-2 text-xs text-slate-600 select-none">
                   <input type="checkbox" v-model="autoPadWideCell" />
-                  📐 自動補寬每格畫布為 420×340（保留充裕留白，大動作不超出邊界被裁切）
+                  📐 自動正規化每格畫布為固定 256×256 px 邏輯格子（腳底錨點 128, 228）
                 </label>
               </div>
             </div>
