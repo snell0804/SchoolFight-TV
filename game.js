@@ -538,6 +538,7 @@
     { key: 'enemy_mushroom_ko', file: 'assets/enemy_mushroom_ko_sheet.webp', cols: 5, rows: 2, anchorX: 128, anchorY: 228 },
     { key: 'enemy_puffer_move', file: 'assets/enemy_puffer_move_sheet.webp', cols: 5, rows: 2, anchorX: 128, anchorY: 228 },
     { key: 'enemy_puffer_attack', file: 'assets/enemy_puffer_attack_sheet.webp', cols: 5, rows: 2, anchorX: 128, anchorY: 228 },
+    { key: 'enemy_puffer_hurt', file: 'assets/enemy_puffer_hurt_sheet.webp', cols: 5, rows: 2, anchorX: 128, anchorY: 228 },
     { key: 'enemy_puffer_ko', file: 'assets/enemy_puffer_ko_sheet.webp', cols: 5, rows: 2, anchorX: 128, anchorY: 228 },
     // Water-Type & Cosmic Starfish Enemy Sheets
     { key: 'enemy_star_move', file: 'assets/enemy_star_move_sheet.webp', cols: 5, rows: 2, anchorX: 128, anchorY: 228 },
@@ -658,7 +659,7 @@
       },
       createEnemyCharProfile('enemy_slime_mini', '💧 分裂小史萊姆（衍生小怪）', 'enemy_slime_mini', '迷你果凍跳躍撞擊', null, false, { enemyKey: 'slime_mini', fallbackPrefix: 'enemy_slime' }),
       createEnemyCharProfile('enemy_mushroom', '🍄 蘑菇怪（敵人）', 'enemy_mushroom', '蓄力金光 → 飛躍頭頂 → 重砸爆發孢子彈', null, false, { enemyKey: 'mushroom' }),
-      createEnemyCharProfile('enemy_puffer', '🐡 河豚怪（敵人）', 'enemy_puffer', '吸氣膨脹霸體 → 尖刺水花衝刺 → 閃電撞擊', null, false, { enemyKey: 'puffer' }),
+      createEnemyCharProfile('enemy_puffer', '🐡 河豚怪（敵人）', 'enemy_puffer', '吸氣膨脹霸體 → 尖刺水花衝刺 → 閃電撞擊', null, true, { enemyKey: 'puffer' }),
       createEnemyCharProfile('enemy_star', '⭐ 宇宙海星（一般敵人）', 'enemy_star', '高速迴旋衝撞', '寶石念力星彈', false, { enemyKey: 'star' }),
     ];
   }

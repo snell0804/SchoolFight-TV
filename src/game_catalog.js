@@ -117,7 +117,7 @@
     },
     enemyChar('enemy_slime_mini', '💧 分裂小史萊姆（衍生小怪）', 'enemy_slime_mini', false, { enemyKey: 'slime_mini', fallbackPrefix: 'enemy_slime' }),
     enemyChar('enemy_mushroom', '🍄 蘑菇怪（敵人）', 'enemy_mushroom', false, { enemyKey: 'mushroom' }),
-    enemyChar('enemy_puffer', '🐡 河豚怪（敵人）', 'enemy_puffer', false, { enemyKey: 'puffer' }),
+    enemyChar('enemy_puffer', '🐡 河豚怪（敵人）', 'enemy_puffer', true, { enemyKey: 'puffer' }),
     enemyChar('enemy_star', '⭐ 宇宙海星（一般敵人）', 'enemy_star', false, { enemyKey: 'star' }),
   ];
 
