@@ -4008,7 +4008,7 @@
       const wantHeavy = isActionJustPressed('heavyAttack');
       const wantLight = isActionJustPressed('lightAttack');
       const wantDash = isActionJustPressed('dash');
-      const holdingUp = isActionHeld('moveUp');
+      const holdingUp = Boolean(keys.ArrowUp || keys.KeyW || ((typeof GamepadManager !== 'undefined') && GamepadManager.moveZ < -0.35));
       if (wantSpecial) this.queueBufferedInput('special');
       else if (wantHeavy && holdingUp) this.queueBufferedInput('tornado');
       else if (wantHeavy) this.queueBufferedInput('heavy');
