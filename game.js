@@ -696,7 +696,7 @@
       { id: 'boy_lightAttack', label: '輕攻擊・雙掌太極推 (Light)', triggerDesc: '武術推掌連擊：右掌推擊→左掌蓄力→雙掌爆裂氣波推', sheetKey: 'boy_lightAttack', fallbackSheet: 'boy_idle', fps: 17, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
       { id: 'boy_attack', label: '重攻擊・書包大風車橫掃 (Heavy)', triggerDesc: '摘下深藍書包 360° 大風車猛力橫掃，爆出青色弧形衝擊波', sheetKey: 'boy_attack', fallbackSheet: 'boy_idle', fps: 16, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
       { id: 'boy_dashLightAttack', label: '衝刺輕攻擊・飛馳穿心掌（撞飛撞牆） (Dash Light)', triggerDesc: '奔跑中按輕攻疾馳突進近身猛推，將敵人高速打飛至畫面邊緣猛烈撞牆並撞飛沿路敵人', sheetKey: 'boy_dashLightAttack', fallbackSheet: 'boy_idle', fps: 17, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
-      { id: 'boy_dashAttack', label: '衝刺重攻擊・書包肩撞鐵山靠 (Dash Heavy)', triggerDesc: '跑步中按重攻壓低身軀發動霸體鐵山靠肩撞，捲起塵浪重擊', sheetKey: 'boy_dashAttack', fallbackSheet: 'boy_idle', fps: 16, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
+      { id: 'boy_dashAttack', label: '衝刺重攻擊・書包肩撞鐵山靠（撞飛撞牆） (Dash Heavy)', triggerDesc: '跑步中按重攻壓低身軀發動霸體鐵山靠肩撞，將敵人猛烈打飛至畫面邊緣撞牆並撞飛沿路敵人', sheetKey: 'boy_dashAttack', fallbackSheet: 'boy_idle', fps: 16, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
       { id: 'boy_tornadoKick', label: '特殊技・直尺昇龍旋風斬 (Special Skill)', triggerDesc: '↑+重攻高舉白直尺騰空螺旋昇龍，捲起青色旋風浮空連擊', sheetKey: 'boy_tornadoKick', fallbackSheet: 'boy_idle', fps: 16, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
       { id: 'boy_special', label: '必殺技・期末考大審判 (Super Special)', triggerDesc: '躍空高舉雙手召喚期末考天降五道黃金審判光柱，全場多段聖光轟擊', sheetKey: 'boy_special', fallbackSheet: 'boy_idle', fps: 12, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
       { id: 'boy_hurt', label: '受傷硬直 (Hurt)', triggerDesc: '受擊爆星閃白→20°後仰踉蹌→滑步蹲姿緩衝→回復站姿', sheetKey: 'boy_hurt', fallbackSheet: 'boy_idle', fps: 15, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
@@ -4629,6 +4629,7 @@
 
       this.x += this.facing * speed * dt;
 
+      const isBoy = this.hero.id === 'aqiang_boy';
       if (progress >= 0.28 && progress < 0.48) {
         this.performMeleeHitbox(164, 22, false, 140, this.hitIds);
       }
@@ -4637,7 +4638,14 @@
         triggerImpactFrame('#fde047', 0.06);
       }
       if (progress >= 0.48 && progress <= 0.72) {
-        this.performMeleeHitbox(192, 38, true, 360, this.hitIdsStage2);
+        if (isBoy) {
+          this.performMeleeHitbox(196, 40, true, 960, this.hitIdsStage2, {
+            wallSlam: true,
+            customWord: '書包鐵山靠!!',
+          });
+        } else {
+          this.performMeleeHitbox(192, 38, true, 360, this.hitIdsStage2);
+        }
       }
 
       if (this.stateTime >= totalDur) {

@@ -90,7 +90,7 @@
         act('boy_lightAttack', '輕攻擊・雙掌太極推 (Light)', 'boy_lightAttack', 'assets/boy_lightAttack_sheet.webp', 17, 'on_attack', false),
         act('boy_attack', '重攻擊・書包大風車橫掃 (Heavy)', 'boy_attack', 'assets/boy_attack_sheet.webp', 16, 'on_attack', false),
         act('boy_dashLightAttack', '衝刺輕攻擊・飛馳穿心掌（撞飛撞牆） (Dash Light)', 'boy_dashLightAttack', 'assets/boy_dashLightAttack_sheet.webp', 17, 'on_attack', false),
-        act('boy_dashAttack', '衝刺重攻擊・書包肩撞鐵山靠 (Dash Heavy)', 'boy_dashAttack', 'assets/boy_dashAttack_sheet.webp', 16, 'on_attack', false),
+        act('boy_dashAttack', '衝刺重攻擊・書包肩撞鐵山靠（撞飛撞牆） (Dash Heavy)', 'boy_dashAttack', 'assets/boy_dashAttack_sheet.webp', 16, 'on_attack', false),
         act('boy_tornadoKick', '特殊技・直尺昇龍旋風斬 (Special Skill)', 'boy_tornadoKick', 'assets/boy_tornadoKick_sheet.webp', 16, 'on_attack', false),
         act('boy_special', '必殺技・期末考大審判 (Super Special)', 'boy_special', 'assets/boy_special_sheet.webp', 12, 'on_attack', false),
         act('boy_hurt', '受傷硬直 (Hurt)', 'boy_hurt', 'assets/boy_hurt_sheet.webp', 15, 'on_hurt', false),
