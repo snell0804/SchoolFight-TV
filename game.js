@@ -452,8 +452,8 @@
         dashAttack: 'boy_dashAttack',
         tornadoKick: 'boy_tornadoKick',
         special: 'boy_special',
-        hurt: 'boy_idle',
-        victory: 'boy_idle',
+        hurt: 'boy_hurt',
+        victory: 'boy_victory',
       },
       fallbacks: {
         walk: 'boy_idle',
@@ -521,6 +521,8 @@
     { key: 'boy_dashAttack', file: 'assets/boy_dashAttack_sheet.webp', cols: 5, rows: 2, anchorX: 128, anchorY: 228 },
     { key: 'boy_tornadoKick', file: 'assets/boy_tornadoKick_sheet.webp', cols: 5, rows: 2, anchorX: 128, anchorY: 228 },
     { key: 'boy_special', file: 'assets/boy_special_sheet.webp', cols: 5, rows: 2, anchorX: 128, anchorY: 228 },
+    { key: 'boy_hurt', file: 'assets/boy_hurt_sheet.webp', cols: 5, rows: 2, anchorX: 128, anchorY: 228 },
+    { key: 'boy_victory', file: 'assets/boy_victory_sheet.webp', cols: 5, rows: 2, anchorX: 128, anchorY: 228 },
     // Wave 3 Brand-New Unique Monsters + Donghua Martial Grandmaster Final Boss (2x Hero Size!)
     { key: 'enemy_kangaroo_move', file: 'assets/enemy_kangaroo_move_sheet.webp', cols: 5, rows: 2, anchorX: 128, anchorY: 228 },
     { key: 'enemy_kangaroo_attack', file: 'assets/enemy_kangaroo_attack_sheet.webp', cols: 5, rows: 2, anchorX: 128, anchorY: 228 },
@@ -697,8 +699,8 @@
       { id: 'boy_dashAttack', label: '衝刺重攻擊・書包肩撞鐵山靠 (Dash Heavy)', triggerDesc: '跑步中按重攻壓低身軀發動霸體鐵山靠肩撞，捲起塵浪重擊', sheetKey: 'boy_dashAttack', fallbackSheet: 'boy_idle', fps: 16, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
       { id: 'boy_tornadoKick', label: '特殊技・直尺昇龍旋風斬 (Special Skill)', triggerDesc: '↑+重攻高舉白直尺騰空螺旋昇龍，捲起青色旋風浮空連擊', sheetKey: 'boy_tornadoKick', fallbackSheet: 'boy_idle', fps: 16, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
       { id: 'boy_special', label: '必殺技・黃金課本聖光審判 (Super Special)', triggerDesc: '躍空高舉翻開的黃金課本，全場降下五道黃金天降聖光柱審判', sheetKey: 'boy_special', fallbackSheet: 'boy_idle', fps: 12, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
-      { id: 'boy_hurt', label: '受傷／受擊 (Hurt)', triggerDesc: '受擊踉蹌與回復', sheetKey: 'boy_idle', fallbackSheet: 'boy_idle', fps: 14, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
-      { id: 'boy_victory', label: '戰鬥勝利動作 (Victory)', triggerDesc: '班長過關歡慶勝利', sheetKey: 'boy_idle', fallbackSheet: 'boy_idle', fps: 10, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
+      { id: 'boy_hurt', label: '受傷硬直 (Hurt)', triggerDesc: '受擊爆星閃白→20°後仰踉蹌→滑步蹲姿緩衝→回復站姿', sheetKey: 'boy_hurt', fallbackSheet: 'boy_idle', fps: 15, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
+      { id: 'boy_victory', label: '戰鬥勝利動作 (Victory)', triggerDesc: '過關結算專屬 10 幀躍空高舉歡呼＋金色星芒彩帶慶祝動畫', sheetKey: 'boy_victory', fallbackSheet: 'boy_idle', fps: 10, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
     ];
   }
 
