@@ -374,9 +374,9 @@
       walkSpeed: 245,
       runSpeed: 398,
       specialType: 'beam',
-      specialLabel: '星光波動砲',
-      specialShout: '海星全校星光砲!!',
-      specialSub: 'STARFISH NOVA CANNON!!',
+      specialLabel: '愛心波動砲',
+      specialShout: '愛心星光波動砲!!',
+      specialSub: 'HEART NOVA CANNON!!',
       heavyShout: '海星飛星斬!!',
       heavySub: 'STARFISH CRESCENT!!',
       dashLightShout: '操場黃金抽射!!',
@@ -4792,6 +4792,7 @@
       }
 
       // KUROMI SPECIAL: 能量砲十連發 (10-Shot Gothic Energy Cannon!)
+      const isHeartBeam = this.hero && this.hero.id === 'adailing';
       if (this.stateTime < 0.08) {
         this.frame = 0;
       } else if (this.stateTime < 0.16) {
@@ -4802,11 +4803,12 @@
         this.frame = 3;
         if (!this.hitIds.has('aura')) {
           this.hitIds.add('aura');
-          spawnParticles(this.x, this.z - 80, '#fb923c', 18, 260, 7);
+          const auraCol = isHeartBeam ? '#f472b6' : '#fb923c';
+          spawnParticles(this.x, this.z - 80, auraCol, 18, 260, 7);
           for (const e of game.enemies) {
             if (!e.dead && Math.abs(e.x - this.x) < 115 && Math.abs(e.z - this.z) < 55) {
               const dir = e.x >= this.x ? 1 : -1;
-              e.takeHit(10, dir, false, 150, '#fb923c');
+              e.takeHit(10, dir, false, 150, auraCol);
             }
           }
         }
@@ -4818,16 +4820,17 @@
           this.cannonImpactDone = true;
           triggerImpactFrame('#f472b6', 0.085);
         }
-        const beamSeq = [5, 6, 7, 6, 7, 8];
+        const beamSeq = isHeartBeam ? [5, 6, 5, 6, 6, 7] : [5, 6, 7, 6, 7, 8];
         this.frame = beamSeq[Math.min(beamSeq.length - 1, Math.floor((beamElapsed / 0.78) * beamSeq.length))];
 
         game.beamEffect = {
-          x: this.x + this.facing * 62,
-          y: this.z - 56,
+          x: this.x + this.facing * (isHeartBeam ? 72 : 62),
+          y: this.z - (isHeartBeam ? 64 : 56),
           z: this.z + 1,
           facing: this.facing,
           progress: beamElapsed / 0.78,
           pulse: Math.sin(beamElapsed * 75) * 0.5 + 0.5,
+          style: isHeartBeam ? 'heart' : 'kuromi',
         };
 
         this.cannonTickTimer -= dt;
@@ -4837,12 +4840,13 @@
           const isFinalShot = this.cannonTicks === 10;
           sfx.playCannonPulse(this.cannonTicks);
           addShake(isFinalShot ? 11 : 4.5, isFinalShot ? 0.22 : 0.08);
+          const hitCol = isHeartBeam ? '#f472b6' : '#f0abfc';
 
           for (const e of game.enemies) {
             if (e.dead) continue;
             const dx = (e.x - this.x) * this.facing;
             if (dx >= -25 && dx <= 760 && Math.abs(e.z - this.z) <= Z_HIT_BEAM) {
-              e.takeHit(isFinalShot ? 24 : 11, this.facing, isFinalShot, isFinalShot ? 380 : 42, '#f0abfc');
+              e.takeHit(isFinalShot ? 24 : 11, this.facing, isFinalShot, isFinalShot ? 380 : 42, hitCol);
             }
           }
           for (const prop of game.props) {
@@ -7854,17 +7858,124 @@
   // --------------------------------------------------------------------------
   // EXTENDING ENERGY CANNON LASER BEAM VFX (Synced to Kuromi's hands!)
   // --------------------------------------------------------------------------
+  function drawHeartPath(ctx, cx, cy, sz) {
+    ctx.beginPath();
+    ctx.moveTo(cx, cy + sz * 0.35);
+    ctx.bezierCurveTo(cx - sz * 0.6, cy - sz * 0.15, cx - sz * 0.6, cy - sz * 0.72, cx, cy - sz * 0.32);
+    ctx.bezierCurveTo(cx + sz * 0.6, cy - sz * 0.72, cx + sz * 0.6, cy - sz * 0.15, cx, cy + sz * 0.35);
+    ctx.closePath();
+  }
+
   function drawEnergyCannonBeam(ctx) {
     const b = game.beamEffect;
     if (!b) return;
     const len = 820;
-    const width = (46 + b.pulse * 18) * (b.progress > 0.85 ? (1 - b.progress) / 0.15 : 1);
+    const fade = b.progress > 0.85 ? (1 - b.progress) / 0.15 : 1;
+    const width = (46 + b.pulse * 18) * fade;
 
     ctx.save();
     ctx.translate(b.x, b.y);
     ctx.scale(b.facing, 1);
 
-    // Outer violet-magenta glow aura
+    if (b.style === 'heart') {
+      // Adailing's Pink Heart Starlight Energy Beam (愛心星光波動砲!)
+      const outerGrad = ctx.createLinearGradient(0, -width * 1.25, 0, width * 1.25);
+      outerGrad.addColorStop(0, 'rgba(236, 72, 153, 0)');
+      outerGrad.addColorStop(0.22, 'rgba(244, 114, 182, 0.88)');
+      outerGrad.addColorStop(0.5, 'rgba(255, 240, 248, 0.98)');
+      outerGrad.addColorStop(0.78, 'rgba(244, 114, 182, 0.88)');
+      outerGrad.addColorStop(1, 'rgba(236, 72, 153, 0)');
+
+      ctx.fillStyle = outerGrad;
+      ctx.beginPath();
+      ctx.moveTo(-6, -width * 0.52);
+      ctx.lineTo(len, -width * 1.18);
+      ctx.lineTo(len, width * 1.18);
+      ctx.lineTo(-6, width * 0.52);
+      ctx.closePath();
+      ctx.fill();
+
+      // Hot pastel-white inner core
+      ctx.fillStyle = '#fff5fa';
+      ctx.beginPath();
+      ctx.moveTo(-4, -width * 0.22);
+      ctx.lineTo(len, -width * 0.42);
+      ctx.lineTo(len, width * 0.42);
+      ctx.lineTo(-4, width * 0.22);
+      ctx.closePath();
+      ctx.fill();
+
+      // Twin swirling pink energy ribbons dancing along the beam
+      for (let strand = 0; strand < 2; strand++) {
+        ctx.strokeStyle = strand === 0 ? 'rgba(244, 114, 182, 0.92)' : 'rgba(251, 207, 232, 0.9)';
+        ctx.lineWidth = strand === 0 ? 5.5 : 3.5;
+        ctx.beginPath();
+        for (let sx = 0; sx <= len; sx += 24) {
+          const amp = (14 + (sx / len) * width * 0.72);
+          const sy = Math.sin(sx * 0.028 - game.time * 24 + strand * Math.PI) * amp;
+          if (sx === 0) ctx.moveTo(sx, sy); else ctx.lineTo(sx, sy);
+        }
+        ctx.stroke();
+      }
+
+      // Racing glowing Pink Hearts shooting down the beam!
+      for (let i = 0; i < 6; i++) {
+        const hx = ((game.time * 1350 + i * 140) % len);
+        const hSize = (26 + (hx / len) * 28 + b.pulse * 8) * fade;
+        ctx.save();
+        ctx.translate(hx, Math.sin(game.time * 16 + i * 1.7) * 6);
+        ctx.rotate(Math.PI * 0.5);
+        drawHeartPath(ctx, 0, 0, hSize);
+        ctx.fillStyle = 'rgba(255, 228, 242, 0.96)';
+        ctx.strokeStyle = '#ec4899';
+        ctx.lineWidth = 4;
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // Scattered floating mini pink hearts & white sparkles along edges
+      for (let i = 0; i < 10; i++) {
+        const px = ((game.time * 920 + i * 87) % len);
+        const side = i % 2 === 0 ? 1 : -1;
+        const py = side * (width * 0.65 + Math.sin(game.time * 14 + i * 2.1) * 16);
+        if (i % 3 === 0) {
+          ctx.fillStyle = '#ffffff';
+          const sp = 6 + (i % 4) * 2;
+          ctx.beginPath();
+          ctx.moveTo(px, py - sp); ctx.lineTo(px + sp * 0.3, py - sp * 0.3);
+          ctx.lineTo(px + sp, py); ctx.lineTo(px + sp * 0.3, py + sp * 0.3);
+          ctx.lineTo(px, py + sp); ctx.lineTo(px - sp * 0.3, py + sp * 0.3);
+          ctx.lineTo(px - sp, py); ctx.lineTo(px - sp * 0.3, py - sp * 0.3);
+          ctx.closePath();
+          ctx.fill();
+        } else {
+          drawHeartPath(ctx, px, py, 13 * fade);
+          ctx.fillStyle = '#f472b6';
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 1.6;
+          ctx.fill();
+          ctx.stroke();
+        }
+      }
+
+      // Giant pulsing Pink Heart muzzle burst right at palms
+      ctx.save();
+      ctx.translate(10, 0);
+      ctx.rotate(Math.PI * 0.5);
+      drawHeartPath(ctx, 0, 0, (46 + b.pulse * 14) * fade);
+      ctx.fillStyle = '#fff0f7';
+      ctx.strokeStyle = '#ec4899';
+      ctx.lineWidth = 5;
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.restore();
+      return;
+    }
+
+    // Outer violet-magenta glow aura (Kuromi)
     const outerGrad = ctx.createLinearGradient(0, -width, 0, width);
     outerGrad.addColorStop(0, 'rgba(192, 38, 211, 0)');
     outerGrad.addColorStop(0.25, 'rgba(232, 121, 249, 0.85)');
