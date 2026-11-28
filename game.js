@@ -420,7 +420,7 @@
       name: '班長小強',
       hudName: '班長小強',
       badge: '📚 熱血班長',
-      subtitle: '雙掌太極推 · 書包大風車 · 直尺昇龍斬 · 黃金課本審判',
+      subtitle: '雙掌太極推 · 書包大風車 · 飛馳穿心掌 · 期末考大審判',
       accent: '#2563eb',
       accentLight: '#60a5fa',
       accentDark: '#1e3a8a',
@@ -428,9 +428,9 @@
       walkSpeed: 240,
       runSpeed: 392,
       specialType: 'judgment',
-      specialLabel: '黃金課本審判',
-      specialShout: '黃金課本・聖光審判!!',
-      specialSub: 'GOLDEN TEXTBOOK JUDGMENT!!',
+      specialLabel: '期末考大審判',
+      specialShout: '期末考大審判!!',
+      specialSub: 'FINAL EXAM JUDGMENT!!',
       heavyShout: '書包大風車橫掃!!',
       heavySub: 'BACKPACK WINDMILL!!',
       dashLightShout: '飛馳穿心掌!!',
@@ -695,10 +695,10 @@
       { id: 'boy_dash', label: '衝刺・疾風滑步 (Dash)', triggerDesc: '低姿青色風軌滑步瞬間突進閃避', sheetKey: 'boy_dash', fallbackSheet: 'boy_idle', fps: 24, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
       { id: 'boy_lightAttack', label: '輕攻擊・雙掌太極推 (Light)', triggerDesc: '武術推掌連擊：右掌推擊→左掌蓄力→雙掌爆裂氣波推', sheetKey: 'boy_lightAttack', fallbackSheet: 'boy_idle', fps: 17, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
       { id: 'boy_attack', label: '重攻擊・書包大風車橫掃 (Heavy)', triggerDesc: '摘下深藍書包 360° 大風車猛力橫掃，爆出青色弧形衝擊波', sheetKey: 'boy_attack', fallbackSheet: 'boy_idle', fps: 16, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
-      { id: 'boy_dashLightAttack', label: '衝刺輕攻擊・飛馳穿心掌 (Dash Light)', triggerDesc: '奔跑中按輕攻疾馳突進單掌破風氣功推擊', sheetKey: 'boy_dashLightAttack', fallbackSheet: 'boy_idle', fps: 17, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
+      { id: 'boy_dashLightAttack', label: '衝刺輕攻擊・飛馳穿心掌（撞飛撞牆） (Dash Light)', triggerDesc: '奔跑中按輕攻疾馳突進近身猛推，將敵人高速打飛至畫面邊緣猛烈撞牆並撞飛沿路敵人', sheetKey: 'boy_dashLightAttack', fallbackSheet: 'boy_idle', fps: 17, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
       { id: 'boy_dashAttack', label: '衝刺重攻擊・書包肩撞鐵山靠 (Dash Heavy)', triggerDesc: '跑步中按重攻壓低身軀發動霸體鐵山靠肩撞，捲起塵浪重擊', sheetKey: 'boy_dashAttack', fallbackSheet: 'boy_idle', fps: 16, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
       { id: 'boy_tornadoKick', label: '特殊技・直尺昇龍旋風斬 (Special Skill)', triggerDesc: '↑+重攻高舉白直尺騰空螺旋昇龍，捲起青色旋風浮空連擊', sheetKey: 'boy_tornadoKick', fallbackSheet: 'boy_idle', fps: 16, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
-      { id: 'boy_special', label: '必殺技・黃金課本聖光審判 (Super Special)', triggerDesc: '躍空高舉翻開的黃金課本，全場降下五道黃金天降聖光柱審判', sheetKey: 'boy_special', fallbackSheet: 'boy_idle', fps: 12, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
+      { id: 'boy_special', label: '必殺技・期末考大審判 (Super Special)', triggerDesc: '躍空高舉雙手召喚期末考天降五道黃金審判光柱，全場多段聖光轟擊', sheetKey: 'boy_special', fallbackSheet: 'boy_idle', fps: 12, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
       { id: 'boy_hurt', label: '受傷硬直 (Hurt)', triggerDesc: '受擊爆星閃白→20°後仰踉蹌→滑步蹲姿緩衝→回復站姿', sheetKey: 'boy_hurt', fallbackSheet: 'boy_idle', fps: 15, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
       { id: 'boy_victory', label: '戰鬥勝利動作 (Victory)', triggerDesc: '過關結算專屬 10 幀躍空高舉歡呼＋金色星芒彩帶慶祝動畫', sheetKey: 'boy_victory', fallbackSheet: 'boy_idle', fps: 10, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
     ];
@@ -793,6 +793,7 @@
           flinchOnHit: true,
           hitstunMult: 1.0,
           knockbackMode: 'normal', // 'normal' | 'resist' | 'immune'
+          wallSlamMode: charId === 'aqiang_boy' ? 'dashLight' : 'off', // 'off' | 'dashLight' | 'heavy' | 'all'
           speedMult: 1.0,
           dmgMult: 1.0,
         };
@@ -806,6 +807,7 @@
         flinchOnHit: true,
         hitstunMult: 1.0,
         knockbackMode: 'normal',
+        wallSlamMode: 'off',
         speedMult: 1.0,
         dmgMult: 1.0,
       };
@@ -823,6 +825,7 @@
         flinchOnHit: typeof ov.flinchOnHit === 'boolean' ? ov.flinchOnHit : def.flinchOnHit,
         hitstunMult: typeof ov.hitstunMult === 'number' ? Math.max(0.2, Math.min(2.5, ov.hitstunMult)) : def.hitstunMult,
         knockbackMode: ['normal', 'resist', 'immune'].includes(ov.knockbackMode) ? ov.knockbackMode : def.knockbackMode,
+        wallSlamMode: ['off', 'dashLight', 'heavy', 'all'].includes(ov.wallSlamMode) ? ov.wallSlamMode : def.wallSlamMode,
         speedMult: typeof ov.speedMult === 'number' ? Math.max(0.3, Math.min(2.5, ov.speedMult)) : def.speedMult,
         dmgMult: typeof ov.dmgMult === 'number' ? Math.max(0.3, Math.min(3.0, ov.dmgMult)) : def.dmgMult,
       };
@@ -841,6 +844,7 @@
         cur.flinchOnHit !== def.flinchOnHit ||
         Math.abs(cur.hitstunMult - def.hitstunMult) > 0.01 ||
         cur.knockbackMode !== def.knockbackMode ||
+        cur.wallSlamMode !== def.wallSlamMode ||
         Math.abs(cur.speedMult - def.speedMult) > 0.01 ||
         Math.abs(cur.dmgMult - def.dmgMult) > 0.01
       );
@@ -4532,13 +4536,43 @@
         return;
       }
 
+      const isBoy = this.hero.id === 'aqiang_boy';
       let speed = 0;
-      if (progress < 0.12) speed = 310;
-      else if (progress < 0.24) speed = 200;
-      else if (progress < 0.35) speed = 110;
-      else if (progress < 0.55) speed = 80;
-      else if (progress >= 0.62 && progress < 0.8) speed = 90;
+      if (isBoy) {
+        if (progress < 0.25) speed = 420;
+        else if (progress < 0.55) speed = 340;
+        else if (progress < 0.72) speed = 150;
+        else speed = 0;
+      } else {
+        if (progress < 0.12) speed = 310;
+        else if (progress < 0.24) speed = 200;
+        else if (progress < 0.35) speed = 110;
+        else if (progress < 0.55) speed = 80;
+        else if (progress >= 0.62 && progress < 0.8) speed = 90;
+      }
       this.x += this.facing * speed * dt;
+
+      if (isBoy) {
+        // 班長小強專屬：不發射氣功／足球，近身疾馳穿心掌直接將敵人高速打飛至畫面邊緣猛烈撞牆！
+        if (progress >= 0.30 && progress <= 0.65) {
+          const hit = this.performMeleeHitbox(188, 30, true, 900, this.hitIds, {
+            wallSlam: true,
+            customWord: '飛馳穿心掌!!',
+          });
+          if (hit && !this.ballLaunched) {
+            this.ballLaunched = true;
+            addShake(9, 0.16);
+            triggerImpactFrame('#38bdf8', 0.06);
+            spawnParticles(this.x + this.facing * 92, this.z - 72, '#38bdf8', 16, 300, 7);
+            spawnParticles(this.x + this.facing * 92, this.z - 72, '#ffffff', 8, 240, 5);
+          }
+        }
+        if (this.stateTime >= totalDur) {
+          this.state = 'idle';
+          this.animTimer = 0;
+        }
+        return;
+      }
 
       if (progress >= 0.28 && progress <= 0.42) {
         this.performMeleeHitbox(148, 22, false, 180);
@@ -5130,6 +5164,14 @@
       const effReach = reach * Math.max(0.75, pCfg.scale || 1);
       const sparkCol = heavy ? (this.hero.heavySparkColor || '#facc15') : (this.hero.sparkColor || '#e879f9');
       const minDx = -(opts && opts.wideBack ? opts.wideBack : 30) * Math.max(0.8, pCfg.scale || 1);
+      const wsMode = pCfg.wallSlamMode || 'off';
+      const autoWallSlam = (
+        wsMode === 'all' ||
+        (wsMode === 'heavy' && (heavy || this.state === 'dashLightAttack' || this.state === 'dashAttack')) ||
+        (wsMode === 'dashLight' && this.state === 'dashLightAttack')
+      );
+      const effOpts = autoWallSlam ? { ...(opts || {}), wallSlam: true } : opts;
+      const effKnock = (effOpts && effOpts.wallSlam) ? Math.max(820, knockForce || 0) : knockForce;
       for (const e of game.enemies) {
         if (e.dead || hitSet.has(e.id)) continue;
         const dx = (e.x - this.x) * this.facing;
@@ -5137,7 +5179,7 @@
         const sizePadZ = Math.max(0, ((e.cfg.scale || 1) - 1) * 18);
         if (dx >= (minDx - sizePadX * 0.4) && dx <= (effReach + sizePadX) && Math.abs(e.z - this.z) <= Z_HIT_MELEE + 12 + sizePadZ) {
           hitSet.add(e.id);
-          e.takeHit(effDmg, this.facing, heavy, knockForce, sparkCol, opts && opts.customWord ? opts.customWord : null, opts);
+          e.takeHit(effDmg, this.facing, heavy || Boolean(effOpts && effOpts.wallSlam), effKnock, sparkCol, effOpts && effOpts.customWord ? effOpts.customWord : null, effOpts);
           this.energy = Math.min(this.maxEnergy, this.energy + (heavy ? 12 : 7));
           hitAny = true;
         }
@@ -5914,10 +5956,26 @@
       const canLaunch = kbMode === 'normal';
       const kbScale = kbMode === 'immune' ? 0 : (kbMode === 'resist' ? 0.42 : 1.0);
 
-      if (launchAir && canLaunch) {
+      const wantWallSlam = Boolean(opts && opts.wallSlam);
+      if (wantWallSlam && kbMode !== 'immune') {
+        this.state = 'knocked';
+        this.isLaunched = false;
+        this.wallSlamActive = true;
+        this.wallSlamHitIds = new Set([this.id]);
+        this.stateTime = 0;
+        this.frame = 2;
+        const flySpeed = Math.max(760, knockForce || 860) * (kbMode === 'resist' ? 0.65 : 1.0);
+        this.vx = dir * flySpeed;
+        this.vy = 235;
+        this.jumpY = Math.max(this.jumpY, 8);
+        if (!opts.isBowlingHit) {
+          addFloatText(this.x, hitY - 28, '💨 撞飛!!', '#38bdf8', 21);
+        }
+      } else if (launchAir && canLaunch) {
         addFloatText(this.x, hitY - 26, '▲ 浮空!!', '#e879f9', 20);
         this.state = 'knocked';
         this.isLaunched = true;
+        this.wallSlamActive = false;
         this.stateTime = 0;
         this.frame = 2;
         this.vx = dir * Math.min(knockForce || 80, 95);
@@ -5936,6 +5994,7 @@
       } else if (heavy && canLaunch) {
         this.state = 'knocked';
         this.isLaunched = false;
+        this.wallSlamActive = false;
         this.stateTime = 0;
         this.frame = 2;
         this.vx = dir * knockForce;
@@ -5943,6 +6002,7 @@
         this.jumpY = 2;
       } else if (flinchOnHit) {
         this.state = 'hurt';
+        this.wallSlamActive = false;
         this.stateTime = 0;
         this.frame = 0;
         this.vx = dir * (knockForce || 90) * kbScale;
@@ -5990,9 +6050,27 @@
       // Airborne & knockback physics (slightly floatier apex gravity when launched for juicy air juggles!)
       if (this.jumpY > 0 || this.vy > 0) {
         this.jumpY += this.vy * dt;
-        const grav = (this.isLaunched && this.vy < 140) ? 940 : 1250;
+        const grav = this.wallSlamActive ? 680 : ((this.isLaunched && this.vy < 140) ? 940 : 1250);
         this.vy -= grav * dt;
         this.x += this.vx * dt;
+
+        // Bowling knockback: flying enemy slams through other enemies in its path!
+        if (this.wallSlamActive && Math.abs(this.vx) > 260) {
+          if (Math.random() < 0.7) {
+            spawnParticles(this.x, this.z - this.jumpY - 58, '#bae6fd', 1, 90, 5);
+          }
+          const flyDir = this.vx >= 0 ? 1 : -1;
+          for (const other of game.enemies) {
+            if (other === this || other.dead) continue;
+            if (this.wallSlamHitIds && this.wallSlamHitIds.has(other.id)) continue;
+            if (Math.abs(other.x - this.x) < 68 && Math.abs(other.z - this.z) < 48) {
+              if (this.wallSlamHitIds) this.wallSlamHitIds.add(other.id);
+              other.takeHit(18, flyDir, true, 640, '#38bdf8', '連鎖撞飛!!', { wallSlam: true, isBowlingHit: true });
+              addShake(6, 0.10);
+            }
+          }
+        }
+
         if (this.jumpY <= 0) {
           this.jumpY = 0;
           this.isLaunched = false;
@@ -6005,6 +6083,7 @@
           } else {
             this.vy = 0;
             this.vx = 0;
+            this.wallSlamActive = false;
           }
         }
       }
@@ -6834,18 +6913,35 @@
 
       if (isKnockedOrFlying && impactSpeed > 85 && this.wallBounceCd <= 0) {
         // Classic arcade wall-slam rebound!
-        const reboundVx = Math.min(340, Math.max(165, impactSpeed * 0.54));
+        const isHeavySlam = Boolean(this.wallSlamActive) && impactSpeed > 260;
+        const reboundVx = isHeavySlam
+          ? Math.min(390, Math.max(220, impactSpeed * 0.45))
+          : Math.min(340, Math.max(165, impactSpeed * 0.54));
         this.vx = hitLeft ? reboundVx : -reboundVx;
-        this.vy = Math.max(this.vy, 210);
+        this.vy = Math.max(this.vy, isHeavySlam ? 310 : 210);
         if (this.jumpY < 8) this.jumpY = 8;
-        this.wallBounceCd = 0.22;
+        this.wallBounceCd = 0.24;
+        this.wallSlamActive = false;
         const wallFxX = hitLeft ? game.camX + 18 : game.camX + CANVAS_W - 18;
-        spawnParticles(wallFxX, this.z - this.jumpY - 64, '#f8fafc', 12, 220, 6);
-        spawnParticles(wallFxX, this.z - this.jumpY - 64, '#fde047', 6, 180, 5);
-        addShake(6, 0.12);
-        sfx.playHit(false);
+        spawnParticles(wallFxX, this.z - this.jumpY - 64, '#f8fafc', isHeavySlam ? 20 : 12, isHeavySlam ? 290 : 220, isHeavySlam ? 7 : 6);
+        spawnParticles(wallFxX, this.z - this.jumpY - 64, isHeavySlam ? '#38bdf8' : '#fde047', isHeavySlam ? 12 : 6, 240, 6);
+        addShake(isHeavySlam ? 11 : 6, isHeavySlam ? 0.18 : 0.12);
+        sfx.playHit(isHeavySlam);
         if (this.state !== 'dead') {
-          addFloatText(this.x, this.z - this.jumpY - 125, '撞牆!!', '#fde047', 20);
+          if (isHeavySlam) {
+            const slamDmg = 16;
+            if (!game.training || !game.training.infHp) {
+              this.hp = Math.max(0, this.hp - slamDmg);
+              if (this.hp <= 0) {
+                this.dead = true;
+                this.state = 'dead';
+                this.stateTime = 0;
+              }
+            }
+            addFloatText(this.x, this.z - this.jumpY - 128, `💥 猛烈撞牆 -${slamDmg}!!`, '#fde047', 22);
+          } else {
+            addFloatText(this.x, this.z - this.jumpY - 125, '撞牆!!', '#fde047', 20);
+          }
         }
       } else {
         if ((hitLeft && this.vx < 0) || (hitRight && this.vx > 0)) this.vx = 0;
@@ -9948,6 +10044,22 @@
           </div>
         </div>
 
+        ${activeChar.role === 'hero' ? `
+        <div class="param-cell">
+          <div class="param-cell-top">
+            <span>💨 撞飛敵人／撞牆設定</span>
+            <span id="lblParamWallSlam" class="param-val-badge">${cp.wallSlamMode === 'all' ? '全攻擊撞飛' : (cp.wallSlamMode === 'heavy' ? '重擊撞飛' : (cp.wallSlamMode === 'dashLight' ? '衝刺輕攻撞飛' : '關閉'))}</span>
+          </div>
+          <div class="param-ctrl-row">
+            <select id="selParamWallSlam" class="param-select">
+              <option value="off" ${cp.wallSlamMode === 'off' ? 'selected' : ''}>關閉（一般擊退）</option>
+              <option value="dashLight" ${cp.wallSlamMode === 'dashLight' ? 'selected' : ''}>衝刺輕攻可將敵人打飛撞牆＋連鎖撞飛</option>
+              <option value="heavy" ${cp.wallSlamMode === 'heavy' ? 'selected' : ''}>重擊與衝刺皆可打飛撞牆＋連鎖撞飛</option>
+              <option value="all" ${cp.wallSlamMode === 'all' ? 'selected' : ''}>所有攻擊皆可打飛撞牆＋連鎖撞飛</option>
+            </select>
+          </div>
+        </div>` : ''}
+
         <div class="param-cell">
           <div class="param-cell-top">
             <span>⏱️ 受擊硬直時長倍率</span>
@@ -10087,6 +10199,17 @@
         const m = selKb.value;
         StudioState.setCombatParams(activeChar.id, { knockbackMode: m });
         if (lblKb) lblKb.textContent = m === 'immune' ? '不動如山' : (m === 'resist' ? '抗浮空' : '正常浮空');
+      });
+    }
+
+    // Wall-Slam / Bowling Knockback Mode
+    const selWs = document.getElementById('selParamWallSlam');
+    const lblWs = document.getElementById('lblParamWallSlam');
+    if (selWs) {
+      selWs.addEventListener('change', () => {
+        const m = selWs.value;
+        StudioState.setCombatParams(activeChar.id, { wallSlamMode: m });
+        if (lblWs) lblWs.textContent = m === 'all' ? '全攻擊撞飛' : (m === 'heavy' ? '重擊撞飛' : (m === 'dashLight' ? '衝刺輕攻撞飛' : '關閉'));
       });
     }
 
