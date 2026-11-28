@@ -415,6 +415,60 @@
         victory: 'ad_idle',
       },
     },
+    {
+      id: 'aqiang_boy',
+      name: '班長小強',
+      hudName: '班長小強',
+      badge: '📚 熱血班長',
+      subtitle: '雙掌太極推 · 書包大風車 · 直尺昇龍斬 · 黃金課本審判',
+      accent: '#2563eb',
+      accentLight: '#60a5fa',
+      accentDark: '#1e3a8a',
+      stats: { power: 5, speed: 4, range: 5 },
+      walkSpeed: 240,
+      runSpeed: 392,
+      specialType: 'judgment',
+      specialLabel: '黃金課本審判',
+      specialShout: '黃金課本・聖光審判!!',
+      specialSub: 'GOLDEN TEXTBOOK JUDGMENT!!',
+      heavyShout: '書包大風車橫掃!!',
+      heavySub: 'BACKPACK WINDMILL!!',
+      dashLightShout: '飛馳穿心掌!!',
+      dashLightSub: 'PIERCING PALM DASH!!',
+      dashHeavyShout: '書包肩撞鐵山靠!!',
+      dashHeavySub: 'IRON SHOULDER RAM!!',
+      tornadoShout: '直尺昇龍旋風斬!!',
+      tornadoSub: 'RULER DRAGON CYCLONE!!',
+      sparkColor: '#38bdf8',
+      heavySparkColor: '#facc15',
+      sheets: {
+        idle: 'boy_idle',
+        walk: 'boy_walk',
+        run: 'boy_run',
+        dash: 'boy_dash',
+        lightAttack: 'boy_lightAttack',
+        attack: 'boy_attack',
+        dashLightAttack: 'boy_dashLightAttack',
+        dashAttack: 'boy_dashAttack',
+        tornadoKick: 'boy_tornadoKick',
+        special: 'boy_special',
+        hurt: 'boy_idle',
+        victory: 'boy_idle',
+      },
+      fallbacks: {
+        walk: 'boy_idle',
+        run: 'boy_idle',
+        dash: 'boy_idle',
+        lightAttack: 'boy_idle',
+        attack: 'boy_idle',
+        dashLightAttack: 'boy_idle',
+        dashAttack: 'boy_idle',
+        tornadoKick: 'boy_idle',
+        special: 'boy_idle',
+        hurt: 'boy_idle',
+        victory: 'boy_idle',
+      },
+    },
   ];
 
   function getSelectedHero() {
@@ -456,6 +510,17 @@
     { key: 'ad_dashAttack', file: 'assets/ad_dashAttack_sheet.webp', cols: 5, rows: 2, anchorX: 128, anchorY: 228 },
     { key: 'ad_tornadoKick', file: 'assets/ad_tornadoKick_sheet.webp', cols: 5, rows: 2, anchorX: 128, anchorY: 228 },
     { key: 'ad_special', file: 'assets/ad_special_sheet.webp', cols: 5, rows: 2, anchorX: 128, anchorY: 228 },
+    // Hero 4: 班長小強 (10-Frame 5x2 256x256 Sprite Sheets — 100% Unique Moveset & Golden Textbook Judgment!)
+    { key: 'boy_idle', file: 'assets/boy_idle_sheet.webp', cols: 5, rows: 2, anchorX: 128, anchorY: 228 },
+    { key: 'boy_walk', file: 'assets/boy_walk_sheet.webp', cols: 5, rows: 2, anchorX: 128, anchorY: 228 },
+    { key: 'boy_run', file: 'assets/boy_run_sheet.webp', cols: 5, rows: 2, anchorX: 128, anchorY: 228 },
+    { key: 'boy_dash', file: 'assets/boy_dash_sheet.webp', cols: 5, rows: 2, anchorX: 128, anchorY: 228 },
+    { key: 'boy_lightAttack', file: 'assets/boy_lightAttack_sheet.webp', cols: 5, rows: 2, anchorX: 128, anchorY: 228 },
+    { key: 'boy_attack', file: 'assets/boy_attack_sheet.webp', cols: 5, rows: 2, anchorX: 128, anchorY: 228 },
+    { key: 'boy_dashLightAttack', file: 'assets/boy_dashLightAttack_sheet.webp', cols: 5, rows: 2, anchorX: 128, anchorY: 228 },
+    { key: 'boy_dashAttack', file: 'assets/boy_dashAttack_sheet.webp', cols: 5, rows: 2, anchorX: 128, anchorY: 228 },
+    { key: 'boy_tornadoKick', file: 'assets/boy_tornadoKick_sheet.webp', cols: 5, rows: 2, anchorX: 128, anchorY: 228 },
+    { key: 'boy_special', file: 'assets/boy_special_sheet.webp', cols: 5, rows: 2, anchorX: 128, anchorY: 228 },
     // Wave 3 Brand-New Unique Monsters + Donghua Martial Grandmaster Final Boss (2x Hero Size!)
     { key: 'enemy_kangaroo_move', file: 'assets/enemy_kangaroo_move_sheet.webp', cols: 5, rows: 2, anchorX: 128, anchorY: 228 },
     { key: 'enemy_kangaroo_attack', file: 'assets/enemy_kangaroo_attack_sheet.webp', cols: 5, rows: 2, anchorX: 128, anchorY: 228 },
@@ -620,11 +685,29 @@
     ];
   }
 
+  function createDefaultBoyActions() {
+    return [
+      { id: 'boy_idle', label: '待機動畫 (Idle)', triggerDesc: '熱血班長元氣待機呼吸循環', sheetKey: 'boy_idle', fallbackSheet: null, fps: 8.5, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
+      { id: 'boy_walk', label: '行走動畫 (Walk)', triggerDesc: '精神抖擻 10 連幀上學步伐（WASD / 方向鍵）', sheetKey: 'boy_walk', fallbackSheet: 'boy_idle', fps: 12, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
+      { id: 'boy_run', label: '奔跑動畫 (Run)', triggerDesc: '前傾極速百米衝刺奔跑', sheetKey: 'boy_run', fallbackSheet: 'boy_idle', fps: 17, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
+      { id: 'boy_dash', label: '衝刺・疾風滑步 (Dash)', triggerDesc: '低姿青色風軌滑步瞬間突進閃避', sheetKey: 'boy_dash', fallbackSheet: 'boy_idle', fps: 24, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
+      { id: 'boy_lightAttack', label: '輕攻擊・雙掌太極推 (Light)', triggerDesc: '武術推掌連擊：右掌推擊→左掌蓄力→雙掌爆裂氣波推', sheetKey: 'boy_lightAttack', fallbackSheet: 'boy_idle', fps: 17, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
+      { id: 'boy_attack', label: '重攻擊・書包大風車橫掃 (Heavy)', triggerDesc: '摘下深藍書包 360° 大風車猛力橫掃，爆出青色弧形衝擊波', sheetKey: 'boy_attack', fallbackSheet: 'boy_idle', fps: 16, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
+      { id: 'boy_dashLightAttack', label: '衝刺輕攻擊・飛馳穿心掌 (Dash Light)', triggerDesc: '奔跑中按輕攻疾馳突進單掌破風氣功推擊', sheetKey: 'boy_dashLightAttack', fallbackSheet: 'boy_idle', fps: 17, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
+      { id: 'boy_dashAttack', label: '衝刺重攻擊・書包肩撞鐵山靠 (Dash Heavy)', triggerDesc: '跑步中按重攻壓低身軀發動霸體鐵山靠肩撞，捲起塵浪重擊', sheetKey: 'boy_dashAttack', fallbackSheet: 'boy_idle', fps: 16, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
+      { id: 'boy_tornadoKick', label: '特殊技・直尺昇龍旋風斬 (Special Skill)', triggerDesc: '↑+重攻高舉白直尺騰空螺旋昇龍，捲起青色旋風浮空連擊', sheetKey: 'boy_tornadoKick', fallbackSheet: 'boy_idle', fps: 16, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
+      { id: 'boy_special', label: '必殺技・黃金課本聖光審判 (Super Special)', triggerDesc: '躍空高舉翻開的黃金課本，全場降下五道黃金天降聖光柱審判', sheetKey: 'boy_special', fallbackSheet: 'boy_idle', fps: 12, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
+      { id: 'boy_hurt', label: '受傷／受擊 (Hurt)', triggerDesc: '受擊踉蹌與回復', sheetKey: 'boy_idle', fallbackSheet: 'boy_idle', fps: 14, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
+      { id: 'boy_victory', label: '戰鬥勝利動作 (Victory)', triggerDesc: '班長過關歡慶勝利', sheetKey: 'boy_idle', fallbackSheet: 'boy_idle', fps: 10, cols: 5, rows: 2, frameCount: 10, key: null, altKeys: [], rebindable: false },
+    ];
+  }
+
   function createDefaultCharacters() {
     return [
       { id: 'kuromi', name: '😈 呆呆伶（主角 1）', role: 'hero', heroId: 'kuromi', actions: createDefaultHeroActions() },
       { id: 'redpanda', name: '🦊 超級帆（主角 2）', role: 'hero', heroId: 'redpanda', actions: createDefaultRedPandaActions() },
       { id: 'adailing', name: '🎒 阿呆伶（主角 3）', role: 'hero', heroId: 'adailing', actions: createDefaultAdailingActions() },
+      { id: 'aqiang_boy', name: '📚 班長小強（主角 4）', role: 'hero', heroId: 'aqiang_boy', actions: createDefaultBoyActions() },
       createEnemyCharProfile('enemy_whale_boss', '⚓ 戰艦鯨魚魔王（海星國小 STAGE 1 BOSS）', 'enemy_whale_boss', '艦炮飛彈齊射（黑鐵巨炮＋導引艦載飛彈連發）', '深海巨浪衝擊（破浪重撞＋水花震退）', true, { role: 'boss', enemyKey: 'whale_boss' }),
       createEnemyCharProfile('enemy_donghua_boss', '🥋 冬花武聖大宗師（冬花 FINAL BOSS）', 'enemy_donghua_boss', '「武」字黃金正拳＋太極震地氣勁', '三連黃金氣功波＋流星飛躍碎地斬', true, { role: 'boss', enemyKey: 'donghua_boss' }),
       createEnemyCharProfile('enemy_star_boss', '⭐ 宇宙海星大霸王（關卡 BOSS）', 'enemy_star_boss', '巨型迴旋霸體衝撞', '三向扇形宇宙星彈齊射', false, { role: 'boss', enemyKey: 'boss', fallbackPrefix: 'enemy_star' }),
@@ -1435,6 +1518,7 @@
       this.portraits.kuromi = makeHead(this.sheets.idle || this.sheets.special || this.sheets.run, 56, 36, 162, 162);
       this.portraits.redpanda = makeHead(this.sheets.rp_idle || this.sheets.rp_run, 72, 66, 152, 152);
       this.portraits.adailing = makeHead(this.sheets.ad_idle, 72, 48, 156, 156);
+      this.portraits.aqiang_boy = makeHead(this.sheets.boy_idle, 64, 38, 136, 136);
       this.portraitCanvas = this.portraits.kuromi;
     },
 
@@ -2230,8 +2314,8 @@
         sfx.playPickup('coin');
         return;
       }
-      if (e.code === 'Digit1' || e.code === 'Digit2' || e.code === 'Digit3') {
-        const targetIdx = e.code === 'Digit1' ? 0 : (e.code === 'Digit2' ? 1 : 2);
+      if (e.code === 'Digit1' || e.code === 'Digit2' || e.code === 'Digit3' || e.code === 'Digit4') {
+        const targetIdx = e.code === 'Digit1' ? 0 : (e.code === 'Digit2' ? 1 : (e.code === 'Digit3' ? 2 : 3));
         if (HERO_ROSTER[targetIdx] && game.selectedHeroId !== HERO_ROSTER[targetIdx].id) {
           game.selectedHeroId = HERO_ROSTER[targetIdx].id;
           sfx.init();
@@ -2275,9 +2359,10 @@
 
   const SELECT_UI = {
     cards: [
-      { id: 'kuromi', x: 24, y: 424, w: 184, h: 72 },
-      { id: 'redpanda', x: 218, y: 424, w: 184, h: 72 },
-      { id: 'adailing', x: 412, y: 424, w: 184, h: 72 },
+      { id: 'kuromi', x: 20, y: 424, w: 158, h: 72 },
+      { id: 'redpanda', x: 186, y: 424, w: 158, h: 72 },
+      { id: 'adailing', x: 352, y: 424, w: 158, h: 72 },
+      { id: 'aqiang_boy', x: 518, y: 424, w: 158, h: 72 },
     ],
     stagePills: [
       { idx: 0, x: 108, y: 204, w: 176, h: 150, pinX: 196, pinY: 262, cardX: 112, cardY: 318, heroX: 196, heroY: 312 },
@@ -2285,7 +2370,7 @@
       { idx: 2, x: 562, y: 112, w: 180, h: 166, pinX: 652, pinY: 178, cardX: 566, cardY: 236, heroX: 652, heroY: 232 },
       { idx: 3, x: 774, y: 150, w: 180, h: 158, pinX: 864, pinY: 212, cardX: 778, cardY: 268, heroX: 864, heroY: 264 },
     ],
-    startBtn: { x: 616, y: 424, w: 384, h: 72 },
+    startBtn: { x: 688, y: 424, w: 316, h: 72 },
   };
 
   function canvasCoords(e) {
@@ -2658,6 +2743,7 @@
     projectiles: [],
     impactFrame: null,
     beamEffect: null,
+    judgmentBeams: [],
   };
 
   function addShake(amp, dur = 0.16) {
@@ -4722,6 +4808,109 @@
 
     updateSpecial(dt) {
       this.stateTime += dt;
+
+      // HERO 4 (班長小強) SPECIAL: 黃金課本・聖光審判 (Full-Screen Golden Sky-Beam Judgment!)
+      if (this.hero.specialType === 'judgment') {
+        const totalDur = 1.48;
+        if (this.stateTime < 0.24) {
+          // Crouch gather & leap aloft
+          this.frame = Math.min(2, Math.floor((this.stateTime / 0.24) * 3));
+          this.jumpY = (this.stateTime / 0.24) * 28;
+        } else if (this.stateTime < 1.18) {
+          const activeElapsed = this.stateTime - 0.24;
+          const holdSeq = [3, 4, 5, 6, 5, 6, 7];
+          this.frame = holdSeq[Math.min(holdSeq.length - 1, Math.floor((activeElapsed / 0.94) * holdSeq.length))];
+          this.jumpY = 28 + Math.sin(activeElapsed * 10) * 6;
+
+          if (!this.cannonImpactDone) {
+            this.cannonImpactDone = true;
+            triggerImpactFrame('#fde047', 0.095);
+            addShake(11, 0.28);
+            // Spawn 5 vertical Golden Sky-Beam Judgment Pillars across the visible battlefield
+            // Prioritize live enemies first, then spread across the visible arena!
+            const targets = [];
+            const liveEnemies = game.enemies.filter((e) => !e.dead && e.x >= game.camX + 30 && e.x <= game.camX + CANVAS_W - 30);
+            for (const e of liveEnemies) {
+              if (targets.length >= 5) break;
+              if (!targets.some((t) => Math.abs(t.x - e.x) < 95)) {
+                targets.push({ x: e.x, z: e.z });
+              }
+            }
+            const fallbackSlots = [0.16, 0.33, 0.50, 0.67, 0.84];
+            for (const frac of fallbackSlots) {
+              if (targets.length >= 5) break;
+              const sx = game.camX + CANVAS_W * frac;
+              if (!targets.some((t) => Math.abs(t.x - sx) < 95)) {
+                targets.push({ x: sx, z: Z_MIN + (Z_MAX - Z_MIN) * (0.35 + (targets.length % 3) * 0.22) });
+              }
+            }
+            targets.forEach((t, idx) => {
+              game.judgmentBeams.push({
+                x: t.x,
+                z: t.z,
+                delay: idx * 0.08,
+                elapsed: 0,
+                duration: 0.92,
+                radius: 72,
+              });
+            });
+          }
+
+          // Floating golden sparkles around the open Golden Textbook
+          if (Math.random() < 0.75) {
+            spawnParticles(
+              this.x + (Math.random() - 0.5) * 90,
+              this.z - this.jumpY - 125 + (Math.random() - 0.5) * 55,
+              Math.random() < 0.5 ? '#fde047' : '#ffffff',
+              2, 180, 6, true
+            );
+          }
+
+          // Multi-hit sky-beam judgment ticks (6 heavenly strikes across all pillars!)
+          this.cannonTickTimer -= dt;
+          if (this.cannonTicks < 6 && this.cannonTickTimer <= 0) {
+            this.cannonTicks++;
+            this.cannonTickTimer = 0.145;
+            const isFinal = this.cannonTicks === 6;
+            sfx.playCannonPulse(this.cannonTicks + 2);
+            addShake(isFinal ? 13 : 6, isFinal ? 0.26 : 0.10);
+            if (isFinal) triggerImpactFrame('#fef08a', 0.08);
+
+            for (const jb of game.judgmentBeams) {
+              if (jb.elapsed < jb.delay) continue;
+              spawnParticles(jb.x + (Math.random() - 0.5) * 44, jb.z - 28, '#fde047', isFinal ? 12 : 4, 240, 7, true);
+              for (const e of game.enemies) {
+                if (e.dead) continue;
+                if (Math.abs(e.x - jb.x) <= jb.radius + 36 && Math.abs(e.z - jb.z) <= 68) {
+                  const dir = e.x >= this.x ? 1 : -1;
+                  e.takeHit(
+                    isFinal ? 34 : 18,
+                    dir,
+                    isFinal,
+                    isFinal ? 340 : 65,
+                    isFinal ? '#ffffff' : '#fde047'
+                  );
+                }
+              }
+              for (const prop of game.props) {
+                if (prop.broken) continue;
+                if (Math.abs(prop.x - jb.x) <= jb.radius + 28 && Math.abs(prop.z - jb.z) <= 64) {
+                  prop.hit(35);
+                }
+              }
+            }
+          }
+        } else if (this.stateTime < totalDur) {
+          // Graceful hero landing
+          const landProg = (this.stateTime - 1.18) / (totalDur - 1.18);
+          this.jumpY = Math.max(0, 28 * (1 - landProg));
+          this.frame = landProg < 0.55 ? 8 : 9;
+        } else {
+          this.jumpY = 0;
+          this.state = 'idle';
+        }
+        return;
+      }
 
       // RED PANDA SPECIAL: 赤焰百拳連擊 (Blazing 100-Fist Rush!)
       if (this.hero.specialType === 'flurry') {
@@ -8377,7 +8566,7 @@
       ctx.shadowBlur = 0;
       ctx.shadowOffsetY = 0;
 
-      // 3 Interactive Hero Cards inside Left Dock
+      // 4 Interactive Hero Cards inside Left Dock
       for (let i = 0; i < HERO_ROSTER.length; i++) {
         const hero = HERO_ROSTER[i];
         const card = SELECT_UI.cards[i];
@@ -8405,23 +8594,23 @@
         if (demoSheet) {
           const fIdx = Math.floor(game.time * 8.5) % demoSheet.frameCount;
           const norm = demoSheet.custom ? 1 : (256 / Math.max(256, demoSheet.cellH || 256));
-          SpriteBank.drawFrame(ctx, demoKey, fIdx, card.x + 38, card.y + 66, 1, (isSelected ? 0.34 : 0.30) * norm, false);
+          SpriteBank.drawFrame(ctx, demoKey, fIdx, card.x + 32, card.y + 66, 1, (isSelected ? 0.32 : 0.28) * norm, false);
         }
 
         // Hero Name & Role Pill
         ctx.textAlign = 'left';
         ctx.fillStyle = isSelected ? '#1e293b' : '#475569';
-        ctx.font = '900 16px "Noto Sans TC", sans-serif';
-        ctx.fillText(hero.name, card.x + 74, card.y + 30);
+        ctx.font = '900 14.5px "Noto Sans TC", sans-serif';
+        ctx.fillText(hero.name, card.x + 62, card.y + 30);
 
         ctx.fillStyle = isSelected ? hero.accent : '#94a3b8';
         ctx.beginPath();
-        ctx.roundRect(card.x + 74, card.y + 38, 98, 20, 7);
+        ctx.roundRect(card.x + 62, card.y + 39, 88, 20, 7);
         ctx.fill();
         ctx.textAlign = 'center';
         ctx.fillStyle = '#ffffff';
-        ctx.font = '800 10.5px "Noto Sans TC", sans-serif';
-        ctx.fillText(isSelected ? '★ 出戰主角' : `按 [${i + 1}] 切換`, card.x + 123, card.y + 52);
+        ctx.font = '800 10px "Noto Sans TC", sans-serif';
+        ctx.fillText(isSelected ? '★ 出戰主角' : `按 [${i + 1}] 切換`, card.x + 106, card.y + 53);
         ctx.restore();
       }
 
@@ -8449,12 +8638,12 @@
 
       ctx.fillStyle = '#ffffff';
       ctx.textAlign = 'center';
-      ctx.font = '900 22px "Noto Sans TC", sans-serif';
+      ctx.font = '900 19px "Noto Sans TC", sans-serif';
       const startVerb = selStage.isTraining ? '進入' : '進軍';
-      ctx.fillText(`▶ ${startVerb}「${selStage.icon} ${selStage.shortName}」`, sb.x + sb.w / 2, sb.y + 34);
+      ctx.fillText(`▶ ${startVerb}「${selStage.icon} ${selStage.shortName}」`, sb.x + sb.w / 2, sb.y + 33);
       ctx.fillStyle = 'rgba(255, 255, 255, 0.92)';
-      ctx.font = '700 12.5px "Noto Sans TC", sans-serif';
-      ctx.fillText(`由「${selHero.name}」出發 · 按 ENTER 或點擊開始`, sb.x + sb.w / 2, sb.y + 57);
+      ctx.font = '700 11.5px "Noto Sans TC", sans-serif';
+      ctx.fillText(`由「${selHero.name}」出發 · 按 ENTER 或點擊開始`, sb.x + sb.w / 2, sb.y + 56);
       ctx.restore();
       ctx.restore();
       ctx.restore();
@@ -8790,6 +8979,7 @@
     game.comicBubbles = [];
     game.projectiles = [];
     game.impactFrame = null;
+    game.judgmentBeams = [];
 
     // Destructible school crates & gym drums along the 3600px campus
     game.props = [
@@ -9015,7 +9205,69 @@
     for (const ai of game.afterimages) ai.life -= dt;
     game.afterimages = game.afterimages.filter((ai) => ai.life > 0);
 
+    for (const jb of game.judgmentBeams) jb.elapsed += dt;
+    game.judgmentBeams = game.judgmentBeams.filter((jb) => jb.elapsed < jb.delay + jb.duration);
+
     updateStatusBar();
+  }
+
+  function drawJudgmentBeam(ctx, jb) {
+    const t = jb.elapsed - jb.delay;
+    ctx.save();
+    if (t < 0) {
+      // Golden magic circle telegraph on ground before pillar descends
+      const warn = Math.min(1, jb.elapsed / Math.max(0.01, jb.delay));
+      ctx.globalAlpha = 0.35 + warn * 0.45;
+      ctx.strokeStyle = '#fde047';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.ellipse(jb.x, jb.z, jb.radius * 0.72 * warn, 18 * warn, 0, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+      return;
+    }
+    const p = t / jb.duration;
+    const fade = p < 0.14 ? (p / 0.14) : (p > 0.72 ? Math.max(0, (1 - p) / 0.28) : 1);
+    const pulse = 1 + Math.sin(t * 42) * 0.09;
+    const w = jb.radius * 1.15 * pulse * (0.45 + 0.55 * fade);
+
+    // Outer radiant golden pillar from sky (y = 0) down to ground (y = jb.z)
+    const grad = ctx.createLinearGradient(jb.x - w, 0, jb.x + w, 0);
+    grad.addColorStop(0, 'rgba(250, 204, 21, 0)');
+    grad.addColorStop(0.22, `rgba(250, 204, 21, ${0.58 * fade})`);
+    grad.addColorStop(0.5, `rgba(255, 255, 230, ${0.95 * fade})`);
+    grad.addColorStop(0.78, `rgba(250, 204, 21, ${0.58 * fade})`);
+    grad.addColorStop(1, 'rgba(250, 204, 21, 0)');
+    ctx.fillStyle = grad;
+    ctx.fillRect(jb.x - w, 0, w * 2, jb.z + 8);
+
+    // Bright white-gold core beam
+    const coreW = w * 0.38;
+    ctx.fillStyle = `rgba(255, 255, 255, ${0.88 * fade})`;
+    ctx.fillRect(jb.x - coreW, 0, coreW * 2, jb.z + 4);
+
+    // Ground shockwave halo ring
+    ctx.globalAlpha = 0.85 * fade;
+    ctx.fillStyle = '#fef08a';
+    ctx.beginPath();
+    ctx.ellipse(jb.x, jb.z, w * 0.92, 22 * fade, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.ellipse(jb.x, jb.z, w * (1.05 + p * 0.35), 26 * fade, 0, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Rising golden 4-point star sparkles inside the beam
+    ctx.fillStyle = '#ffffff';
+    for (let s = 0; s < 4; s++) {
+      const sy = jb.z - ((t * 420 + s * 115) % Math.max(120, jb.z));
+      const sx = jb.x + Math.sin(t * 14 + s * 2.1) * (w * 0.45);
+      const sz = 7 + (s % 2) * 3;
+      ctx.fillRect(sx - sz, sy - 2, sz * 2, 4);
+      ctx.fillRect(sx - 2, sy - sz, 4, sz * 2);
+    }
+    ctx.restore();
   }
 
   function render() {
@@ -9054,6 +9306,9 @@
       drawList.push({ z: game.player.z, draw: () => game.player.draw(ctx) });
       if (game.beamEffect) {
         drawList.push({ z: game.beamEffect.z, draw: () => drawEnergyCannonBeam(ctx) });
+      }
+      for (const jb of game.judgmentBeams) {
+        drawList.push({ z: jb.z + 4, draw: () => drawJudgmentBeam(ctx, jb) });
       }
 
       drawList.sort((a, b) => a.z - b.z);
