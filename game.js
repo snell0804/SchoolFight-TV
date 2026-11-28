@@ -2102,10 +2102,12 @@
       const row = Math.floor(idx / sheet.cols);
       const sx = col * sheet.cellW;
       const sy = row * sheet.cellH;
+      const normScale = (sheet.custom && sheet.cellH > 270) ? (256 / sheet.cellH) : 1;
+      const finalScale = scale * normScale;
 
       ctx.save();
       ctx.translate(Math.round(x), Math.round(y));
-      ctx.scale(facing * scale, scale);
+      ctx.scale(facing * finalScale, finalScale);
       if (flashWhite) {
         ctx.filter = 'brightness(2.4) contrast(1.2)';
       }
@@ -8320,7 +8322,8 @@
           const idleSheet = SpriteBank.sheets[idleKey];
           if (idleSheet) {
             const fIdx = Math.floor(game.time * 8.5) % idleSheet.frameCount;
-            SpriteBank.drawFrame(ctx, idleKey, fIdx, pill.heroX, pill.heroY, 1, 0.44, false);
+            const norm = idleSheet.custom ? 1 : (256 / Math.max(256, idleSheet.cellH || 256));
+            SpriteBank.drawFrame(ctx, idleKey, fIdx, pill.heroX, pill.heroY, 1, 0.44 * norm, false);
           }
         }
 
@@ -8396,12 +8399,13 @@
         ctx.stroke();
         ctx.shadowBlur = 0;
 
-        // Live mini hero sprite on left of card
+        // Live mini hero sprite on left of card (auto-normalized to 256px logical cell height)
         const demoKey = hero.sheets.idle;
         const demoSheet = SpriteBank.sheets[demoKey];
         if (demoSheet) {
           const fIdx = Math.floor(game.time * 8.5) % demoSheet.frameCount;
-          SpriteBank.drawFrame(ctx, demoKey, fIdx, card.x + 38, card.y + 66, 1, isSelected ? 0.34 : 0.30, false);
+          const norm = demoSheet.custom ? 1 : (256 / Math.max(256, demoSheet.cellH || 256));
+          SpriteBank.drawFrame(ctx, demoKey, fIdx, card.x + 38, card.y + 66, 1, (isSelected ? 0.34 : 0.30) * norm, false);
         }
 
         // Hero Name & Role Pill
